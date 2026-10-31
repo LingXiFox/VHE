@@ -40,7 +40,7 @@ VoiceTemplate + PhonemeSequence + PitchCurve + Timing   (上游控制面，允�
 | 字段 | 类型 | 默认 | 校验 |
 |---|---|---|---|
 | `template` | `VoiceTemplate` | 必填 | 见下 |
-| `phonemes` | `PhonemeSequence` | 必填 | 非空；每段 `duration_s` ∈ [0.01, 60]；总时长 ≤ 60 s |
+| `phonemes` | `PhonemeSequence` | 必填 | 非空；每段 `duration_s` ∈ [0.01, 60]；总时长 ≤ 60 s；`inventory` ∈ `INVENTORIES`（默认 `"vowels"`），每段音素必须在该表内 |
 | `pitch` | `PitchCurve` | 必填 | `times_s` 严格递增、≥0；`f0_hz` ∈ [65,900]；`times_s[-1] ≥ 浊音总时长` |
 | `timing` | `Timing` | 0/0 | 前后静音各 ∈ [0, 5] s |
 | `sample_rate` | int | 24000 | ∈ (16000, 24000, 48000) |
@@ -48,6 +48,11 @@ VoiceTemplate + PhonemeSequence + PitchCurve + Timing   (上游控制面，允�
 
 派生属性：`voiced_duration_s`（各段时长之和）、`total_duration_s`（含静音）、
 `fingerprint()`（上述全部参数做 canonical JSON 后取 sha256；**不含**波形，也不含时间戳）。
+
+音素表 `INVENTORIES`（`src/vhe/synth/contract.py`）：`"vowels"` = `a/i/u`（`formant_proxy`），
+`"mandarin"` = 26 个普通话音素（`mandarin_formant`，见 `src/vhe/synth/phonology.py`）。
+`inventory` 进 `fingerprint()`，所以同一串音素在两个音素表下是不同请求。后端的
+`inventory` 与请求不一致时报错，不会把请求当另一种表解释。
 
 `VoiceTemplate`（音色控制，非 VHE 输入）：`formant_scale` [0.65,1.40]、`spectral_tilt` [0.6,3.0]、
 `breathiness` [0,0.1]、`vibrato_cents` [0,100]、`vibrato_hz` [0,10]。
@@ -79,7 +84,7 @@ VoiceTemplate + PhonemeSequence + PitchCurve + Timing   (上游控制面，允�
 
 实现方必须满足：
 
-1. `name` / `version` / `supported_phonemes` 三个属性；
+1. `name` / `version` / `supported_phonemes` / `inventory` 四个属性；
 2. `render(request) -> SynthesisResult`，且入口先 `request.validate()`；
 3. **确定性**：同一 request 在同一平台/同一版本上逐样本一致（本仓库以 SHA256 断言）；
 4. **不静默替换**：不支持的音素必须抛错，不能换成近似音；
@@ -88,7 +93,12 @@ VoiceTemplate + PhonemeSequence + PitchCurve + Timing   (上游控制面，允�
 
 注册表：`get_backend(name=None)` 取默认（`formant_proxy`），未知名字抛 `KeyError`；`list_backends()` 列出可用后端。
 
-## 8. 现有后端 `FormantProxySynth` v0.1.0 的算法与局限
+## 8. 现有后端
+
+两个后端都只做源-滤波器合成，都不是声道物理引擎。``FormantProxySynth`` 是元音基线，
+``MandarinFormantSynth`` 是 26 音素的中文发声后端；两者共享契约但音素表互斥。
+
+### 8.1 `FormantProxySynth` v0.1.0 的算法与局限
 
 算法：按段中点线性插值三条共振峰轨迹（乘 `formant_scale`）→ 对 f0 轮廓叠加正弦 vibrato（cents 转
 `2**(cents/1200)`）→ 相位用 `cumsum(f0)` 累积 → 谐波叠加，每个谐波幅度为三个高斯共振峰响应
@@ -102,6 +112,29 @@ VoiceTemplate + PhonemeSequence + PitchCurve + Timing   (上游控制面，允�
 - 无辅音意味着它无法代表真实中文语音的机械声分布；P2 之前不得据此宣称任何自然度结论。
 - 谐波上限用 `max(base_f0)` 计算，保证上升音高时不产生混叠。
 
+### 8.2 `MandarinFormantSynth` v0.1.0 的算法与局限
+
+算法：音素表给出每段的共振峰目标（F1/F2/F3，复韵母按段内分数在两个目标间插值）、浊音/噪声
+激励强度、噪声带宽、爆破时刻、闭塞段与 VOT；轨迹在 25 ms 内平滑、幅度在 8 ms 内平滑 →
+谐波求和时每帧按谐波 RMS 归一化（电平只由浊音轨道控制）→ 噪声走 STFT 带通（边沿软过渡，
+fall 终点 clamp 到 `0.45*sample_rate`）并按浊音 RMS 校准 → 爆破/送气在指定时刻叠加 →
+整体归一到 `TARGET_VOICED_RMS=0.20`、峰值上限 0.98、5 ms 淡入淡出。声调不靠后端自造，
+由 `tone_curve_points` 把 Chao 级数换算成半音偏移后并入传入的 F0 曲线。
+
+支持：a/i/u/ai/ei/au/ou/an/ang、m/n/l、b/p/d/t/g/k、f/s/sh/x、z/c/j/q。
+
+局限（必须写进任何使用它的报告）：
+
+- 擦音谱带（`/f/` 1500–8000 Hz 等）与爆破增益是**手设占位值**，未用真实语音标定；EXP-0010 实测
+  `/f/` 22% 能量落在 8–12 kHz、质心高于 `/sh/`，属已知缺陷。
+- 塞音只有闭塞→爆破→VOT 三段的固定时长，没有真实的协同发音；复韵母是线性插值，不是双目标
+  轨迹；鼻音用固定反极点近似，没有鼻腔分岔。
+- 不做韵律：不接受音节边界、重音、语速，也不生成停顿。
+- `zh/ch/r/h` 与 `ian/ie/uo/üan` 等不在表内，请求即报错；`g2p.py` 会把它们标成 `blocked`
+  而不是用近似音素顶替。
+- 26 音素"能渲染"不等于"发音正确"：EXP-0009 只验收了长度、F0、有声/无声对比、模板差异与
+  CPU/MPS 一致性，没有听音评分。
+
 ## 9. 不变量（回归门槛）
 
 - 基线字节等价：`synthesize(["a","i","u"], f0_hz=220, duration_s=1.2, sample_rate=24000, template=PRESETS["yang"], seed=42)`
@@ -110,6 +143,9 @@ VoiceTemplate + PhonemeSequence + PitchCurve + Timing   (上游控制面，允�
   **改这个常量等于改行为**，必须开新实验并解释为什么旧基线作废。
 - `write_wav` 必须在 **float32** 下量化：早期版本先转 float64，导致 13/28800 个样本相差 1 LSB（见 EXP-0003 失败记录）。
 - 16-bit 往返固有误差约 2 LSB（写 ×32767 截断、读 ÷32768），测试容差按此设定。
+- 音素表隔离：`formant_proxy` 收到 `inventory="mandarin"` 必须抛 `ValueError` 且信息里带
+  `renders the 'vowels' inventory, got 'mandarin'`；`mandarin_formant` 反向同理。任何"把 `m`
+  当元音渲染"或 `KeyError` 泄漏都算回归（`tests/test_synth_mandarin.py`）。
 
 ## 10. 与 P1 的衔接
 
@@ -123,6 +159,9 @@ P1 的成对数据构造流程固定为：
 
 ## 11. 已知缺口
 
-- 无辅音/声调建模：真实中文机械声渲染能力不足，P1 若需要辅音必须新增音素清单 + 新后端版本 + 新实验。
+- 辅音/声调已由 `mandarin_formant` 覆盖 26 音素，但擦音/爆破参数未用真实语音标定（见 8.2），
+  且 `zh/ch/r/h` 与 `ian/ie/uo/üan` 等缺失；补表必须新增音素清单 + 新后端版本 + 新实验。
+- `estimate_f0` 在默认 65–900 Hz 搜索范围下会被 F1≈800 Hz 的强谐波锁定（210 Hz 读 842 Hz，
+  300 Hz 读 902 Hz，见 EXP-0011 附录 E5），真实数据管线不能预知 f0 规避。
 - `SynthesisResult` 不携带响度（LUFS）或峰值信息；配对时会由数据处理层统一测算。
 - 未实现批量化渲染（`[B]` 个请求）；当前靠多次调用 + concat，P2 再看是否需要。

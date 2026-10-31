@@ -1,0 +1,56 @@
+{
+  "experiment_id": "EXP-0011",
+  "title": "F0 estimator octave-up failure on harmonic-rich frames",
+  "hypothesis": "The YIN CMND estimator in src/vhe/data/f0.py picks the first dip below 0.15, so a harmonic-rich voiced frame whose dominant partial is an even multiple of f0 can be read one octave high (f0=220 Hz with a formant near 880 Hz reads 441 Hz). Hypothesis: choosing the smallest lag whose CMND is within 0.02 of the global minimum removes octave-up errors on harmonic-comb stimuli and on synthesized /a/ at 200-240 Hz, keeps pure-tone accuracy, does not introduce octave-down errors, and leaves the silence/noise gating results unchanged.",
+  "created_utc": "2026-10-31T15:27:31.689130+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "b37923723895a725c6f11862c0d4e7add37aed3d",
+    "status": "M src/vhe/data/f0.py, src/vhe/data/pairing.py, src/vhe/synth/{__init__,contract,formant_proxy,registry}.py, tests/test_data_frontend.py; ?? src/vhe/data/g2p.py, src/vhe/synth/{mandarin,phonology}.py, experiments/EXP-0011/"
+  },
+  "seed": null,
+  "dataset_manifest_sha256": null,
+  "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0011/probe_octave_v2.py --out experiments/EXP-0011/logs/v2_after.json",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Completed. Estimator-only probe; no torch, no real audio, no listening test. Adopted rule: bounded second-dip search with OCTAVE_TOLERANCE=0.02 and OCTAVE_DEPTH_RATIO=0.5. Residual defects documented in README (23% comb sub-multiple dips, 13% octave-up under 10 dB SNR, plus the E5 harmonic locking case).",
+  "probe_sha256": "5ac1fec7c8738a18d42778d86c25087cb262a82b745bb5d644c0546afc72a28d",
+  "runs": [
+    {
+      "label": "v1_family_before",
+      "command": "PYTHONPATH=/tmp/vhe_exp11_head/src .venv/bin/python experiments/EXP-0011/probe_octave.py --out experiments/EXP-0011/logs/probe_before.json",
+      "note": "v1 stimulus family (unidentified fundamentals); kept unchanged, see errata E1",
+      "output": "experiments/EXP-0011/logs/probe_before.json",
+      "output_sha256": "65f93dcb36d446b816d5a62279e46c272d02219a9f71057bd399447e6acd1720"
+    },
+    {
+      "label": "v1_family_discarded_rule",
+      "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0011/probe_octave.py --out experiments/EXP-0011/logs/probe_after.json",
+      "note": "documents the discarded global-minimum rule, see errata E2",
+      "output": "experiments/EXP-0011/logs/probe_after.json",
+      "output_sha256": "9e512e481842cfae8cf5d9b1c272bab0e56e982407e65cc1d3d2df917eb21792"
+    },
+    {
+      "label": "v2_before",
+      "command": "PYTHONPATH=/tmp/vhe_exp11_before/src .venv/bin/python experiments/EXP-0011/probe_octave_v2.py --out experiments/EXP-0011/logs/v2_before.json",
+      "output": "experiments/EXP-0011/logs/v2_before.json",
+      "output_sha256": "6bcbde736bec3e2d4fff63639c90b775570b6b64d7912fc0439a8501584f8178"
+    },
+    {
+      "label": "v2_after",
+      "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0011/probe_octave_v2.py --out experiments/EXP-0011/logs/v2_after.json",
+      "output": "experiments/EXP-0011/logs/v2_after.json",
+      "output_sha256": "6b3c362439ea94329cffa84d5939cce244cbfc1c2a13275617797de048045d19"
+    }
+  ],
+  "errata": [
+    "E1: probe_octave.py (v1) let the fundamental fall up to 29 dB below the dominant partial, so 799/1410 comb frames were scored 'other' while the estimator reported a real harmonic. v2 probe adds a -12 dB fundamental floor and reports CMND at the nominal and half period. v1 logs kept unchanged.",
+    "E2: the first implemented fix (restart from the global CMND minimum) was measured and reverted: 87 comb / 13 vowel / 40 robust octave-down frames versus 0 before. probe_after.json documents that discarded rule.",
+    "E3: the first implementation of the bounded rule compared array indices instead of lags and never fired; fixed before any number was recorded as a result.",
+    "Thresholds OCTAVE_TOLERANCE=0.02 and OCTAVE_DEPTH_RATIO=0.5 were selected on this stimulus set after seeing the sweep; the selection is not pre-registered and not validated on real speech.",
+    "E5: harmonic locking is a second, separate failure class found during P1.2 acceptance: with the default 65-900 Hz search range, /a/ reads 842 Hz at f0=210 Hz (F1 near 4*f0) and 902 Hz at f0=300 Hz (F1 near 3*f0); fmax_hz=500 recovers 210.5/300.7 Hz. Not fixed here; recorded as an appendix in the README and as a documented assertion in tests/test_synth_mandarin.py."
+  ]
+}

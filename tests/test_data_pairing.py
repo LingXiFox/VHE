@@ -186,3 +186,71 @@ def test_write_pair_rejects_blocked_result(tmp_path):
     result = build_pair(path, ["ma1", "ni3", "guang3"], template=PRESETS["yang"])
     with pytest.raises(ValueError):
         write_pair(tmp_path / "pair", result)
+
+def make_mandarin_utterance(path, syllables=(("m", "a"), ("b", "a"), ("n", "a")),
+                            sample_rate=24000, f0_hz=200.0, lead=0.05, gap=0.10):
+    """Rendered "real" audio for the Mandarin backend: the pair pipeline needs energy gaps."""
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    backend = MandarinFormantSynth()
+    parts = [np.zeros(int(round(lead * sample_rate)), dtype=np.float32)]
+    for onset, nucleus in syllables:
+        durations = (onset, 0.06), (nucleus, 0.24)
+        request = SynthesisRequest(
+            template=PRESETS["yang"],
+            phonemes=PhonemeSequence(
+                tuple(PhonemeSegment(name, duration) for name, duration in durations),
+                inventory="mandarin"),
+            pitch=PitchCurve.constant(f0_hz, 0.30),
+            timing=Timing(), sample_rate=sample_rate)
+        parts.append(backend.render(request).audio)
+        parts.append(np.zeros(int(round(gap * sample_rate)), dtype=np.float32))
+    audio = np.concatenate(parts)
+    write_wav(path, audio, sample_rate)
+    return audio
+
+
+def test_build_pair_with_the_mandarin_backend_records_onset_nucleus_allocations(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "mandarin_e2e.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth())
+    assert result.status == "ok", result.issues
+    assert result.real.size == result.mechanical.size
+    assert [s["phonemes"] for s in result.syllables] == [["m", "a"], ["b", "a"], ["n", "a"]]
+    assert len(result.allocations) == 3
+    for allocation, (onset, nucleus) in zip(result.allocations, ("ma", "ba", "na")):
+        assert [entry["phoneme"] for entry in allocation] == [onset, nucleus]
+        # The plan fits the *measured* syllable duration, which the segmenter trims to the
+        # energy edges (0.268 s for a 0.30 s render), not the requested duration.
+        total = sum(entry["duration_s"] for entry in allocation)
+        assert 0.20 < total <= 0.301, total
+    # One request per syllable, each with its own seed, so the fingerprints must differ.
+    assert len(result.request_fingerprints) == 3
+    assert len(set(result.request_fingerprints)) == 3
+    assert len(result.gains_db) == 3
+    assert float(np.abs(result.mechanical).max()) <= 0.9990001
+    # The mechanical signal is audible where the recording speaks and silent in the gaps.
+    rate = result.sample_rate
+    for start in (0.05, 0.45, 0.85):
+        window = result.mechanical[int(start * rate):int((start + 0.2) * rate)]
+        assert float(np.sqrt(np.mean(window ** 2))) > 0.01
+    assert float(np.abs(result.mechanical[int(0.36 * rate):int(0.44 * rate)]).max()) < 1e-3
+
+
+def test_build_pair_blocks_a_mandarin_syllable_outside_the_inventory(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "mandarin_blocked.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "shi2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth())
+    assert result.status == "blocked"
+    assert result.mechanical is None
+    codes = {issue["code"] for issue in result.issues}
+    assert "backend_inventory_insufficient" in codes
+    blocked = [s for s in result.syllables if not s["phonemes"]]
+    assert [s["pinyin"] for s in blocked] == ["shi2"]
+    assert "apical" in blocked[0]["reason"]

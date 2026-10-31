@@ -119,6 +119,58 @@ def test_f0_rejects_invalid_range():
         estimate_f0(tone(220.0), SR, fmin_hz=900.0, fmax_hz=65.0)
 
 
+def harmonic_comb(f0_hz: float, formant_hz: float, seconds: float = 0.5,
+                  sample_rate: int = SR, h1_relative_db: float = -12.0,
+                  seed: int = 7) -> np.ndarray:
+    """Harmonic series peaked near formant_hz, with the fundamental kept audible.
+
+    A comb whose fundamental is far below the dominant partial is only identifiable at that
+    partial, so scoring it against the nominal f0 would be meaningless (EXP-0011 v1 made
+    exactly that mistake).
+    """
+    rng = np.random.default_rng(seed)
+    freqs, amps = [], []
+    for k in range(1, 80):
+        freq = k * f0_hz
+        if freq >= 0.45 * sample_rate:
+            break
+        freqs.append(freq)
+        amps.append((1.0 / k ** 1.1) * np.exp(-0.5 * ((freq - formant_hz) / 90.0) ** 2) + 0.02 / k)
+    amps = np.asarray(amps)
+    amps /= amps.max()
+    amps[0] = max(float(amps[0]), 10.0 ** (h1_relative_db / 20.0))
+    times = np.arange(int(round(seconds * sample_rate))) / sample_rate
+    out = np.zeros_like(times)
+    for freq, amp in zip(freqs, amps):
+        out += amp * np.cos(2.0 * np.pi * freq * times + rng.uniform(0.0, 2.0 * np.pi))
+    return (0.5 * out / np.max(np.abs(out))).astype(np.float32)
+
+
+@pytest.mark.parametrize("f0_hz,formant_hz", [(220.0, 500.0), (240.0, 500.0), (300.0, 700.0)])
+def test_f0_does_not_read_a_harmonic_comb_one_octave_high(f0_hz: float, formant_hz: float):
+    # EXP-0011: the first CMND dip below 0.15 sits at half the period whenever the second
+    # harmonic dominates, which reported 440 Hz for a 220 Hz comb.
+    track = estimate_f0(harmonic_comb(f0_hz, formant_hz), SR)
+    median = float(np.median(track.voiced_f0))
+    assert abs(median - f0_hz) / f0_hz <= 0.02, median
+
+
+def test_f0_does_not_read_a_synthesized_a_one_octave_high():
+    from vhe.synth import (PRESETS, PhonemeSegment, PhonemeSequence, PitchCurve,
+                           SynthesisRequest, Timing, get_backend)
+
+    request = SynthesisRequest(
+        template=PRESETS["yang"],
+        phonemes=PhonemeSequence((PhonemeSegment("a", 0.4),), inventory="mandarin"),
+        pitch=PitchCurve.constant(220.0, 0.4),
+        timing=Timing(0.0, 0.0), sample_rate=SR)
+    audio = get_backend("mandarin_formant").render(request).audio
+    track = estimate_f0(audio, SR)
+    median = float(np.median(track.voiced_f0))
+    # Before the fix 36 of 37 frames read 439.8 Hz; a 2% band still rejects that.
+    assert abs(median - 220.0) / 220.0 <= 0.02, median
+
+
 # --- segmentation -----------------------------------------------------------------
 
 

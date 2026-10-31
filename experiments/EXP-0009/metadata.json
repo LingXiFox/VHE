@@ -1,0 +1,50 @@
+{
+  "experiment_id": "EXP-0009",
+  "title": "Mandarin phoneme backend capability acceptance",
+  "hypothesis": "A 26-phoneme Mandarin source-filter backend driven only by phone ids, F0 curve, timing and a voice template renders every advertised phoneme plus multi-phoneme sequences with <=1% median F0 error, a measurable voiced/unvoiced contrast (autocorrelation peak >0.85 for vowels/nasals/laterals, <0.30 for fricatives), template-dependent formant positions, and bit-identical CPU/MPS tensor hand-off, without copying any real-recording waveform.",
+  "created_utc": "2026-10-31T15:36:59.505128+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "b37923723895a725c6f11862c0d4e7add37aed3d",
+    "status": "M src/vhe/data/f0.py\n M src/vhe/data/pairing.py\n M src/vhe/synth/__init__.py\n M src/vhe/synth/contract.py\n M src/vhe/synth/formant_proxy.py\n M src/vhe/synth/registry.py\n M tests/test_data_frontend.py\n M tests/test_data_pairing.py\n?? experiments/EXP-0011/\n?? src/vhe/data/g2p.py\n?? src/vhe/synth/mandarin.py\n?? src/vhe/synth/phonology.py\n?? tests/test_data_g2p.py\n?? tests/test_synth_mandarin.py"
+  },
+  "seed": null,
+  "dataset_manifest_sha256": null,
+  "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0009/probe_capability.py --out experiments/EXP-0009/logs/report.json --audio-dir experiments/EXP-0009/artifacts",
+  "torch_version": "2.15.0",
+  "cuda_version": null,
+  "gpu": "Apple M-series (MPS), no CUDA",
+  "config_sha256": null,
+  "notes": "Completed. Criteria C1-C6 evaluated on the final noise-mask state; three mask states recorded. No listening test was performed: no naturalness claim is made here, the WAVs under artifacts*/ are uncommitted listening material.",
+  "probe_sha256": "fc6e1356f450f732ab0792b0888d91c78e12db149f27348f3cba9294bf60181c",
+  "runs": [
+    {
+      "label": "pre_band_fix",
+      "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0009/probe_capability.py --out experiments/EXP-0009/logs/report_pre_band_fix.json --audio-dir experiments/EXP-0009/artifacts_pre_band_fix",
+      "note": "noise mask was a bump centred on the lower band edge",
+      "output": "experiments/EXP-0009/logs/report_pre_band_fix.json",
+      "output_sha256": "b58c03b6545a1c21fc7c3acc3c4c0901099c17dc8df38944eba5ad74dbf43405"
+    },
+    {
+      "label": "bandpass_only",
+      "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0009/probe_capability.py --out experiments/EXP-0009/logs/report_bandpass_only.json --audio-dir experiments/EXP-0009/artifacts_bandpass_only",
+      "note": "true band-pass, fall not yet clamped below 0.45*sr",
+      "output": "experiments/EXP-0009/logs/report_bandpass_only.json",
+      "output_sha256": "ac56471b6ade4acf4e90fda74ab5048b1308c930f04076d0af75aa980ec718ea"
+    },
+    {
+      "label": "final",
+      "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0009/probe_capability.py --out experiments/EXP-0009/logs/report.json --audio-dir experiments/EXP-0009/artifacts",
+      "note": "band-pass plus 0.45*sr stop-band clamp",
+      "output": "experiments/EXP-0009/logs/report.json",
+      "output_sha256": "ac8822cb49cead9e6f7b86309e3a6978529d51c46a0a174f2bbf8a1b569d7f2e"
+    }
+  ],
+  "errata": [
+    "E1: the probe was written and run before this README was filled in, so criteria C1-C6 existed only in probe/test code at run time; the README records them after the fact.",
+    "E2: the pre_band_fix noise mask was a bump at the lower band edge rather than a band-pass, so /s/ stopped at 6.4 kHz and /sh/ lost everything above 2.7 kHz. Found by EXP-0010, fixed in src/vhe/synth/mandarin.py::_noise.",
+    "E3: after the fix /f/ still carries 22% of its energy in 8-12 kHz and has a higher spectral centroid (6156 Hz) than /sh/ (5051 Hz). Bands are hand-set placeholders awaiting real fricative spectra; not tuned away here.",
+    "E4: estimate_f0 locks onto a high harmonic for /a/ at 210 Hz (842 Hz) and 300 Hz (902 Hz) with the default 65-900 Hz search range; the probe avoids this with fmax_hz=1.5*f0, which a real pipeline cannot do. Cross-recorded in EXP-0011."
+  ]
+}

@@ -1,14 +1,17 @@
 """Build (x_mechanical, x_real) pairs from one real utterance.
 
-The pipeline is deliberately strict about what it can render: the only synthesizer
-backend in this repository speaks the phoneme inventory {a, i, u} without consonants, so
-a Mandarin syllable such as "guang3" cannot be reproduced without silently deleting its
-onset and coda. Such a syllable BLOCKS the pair instead of being approximated; the
-blocked reason is part of the record.
+The pipeline is deliberately strict about what it can render. The pinyin token is mapped
+to phoneme ids by :mod:`vhe.data.g2p` against the *backend's own* inventory, and a syllable
+whose onset or nucleus is missing from that inventory BLOCKS the pair instead of being
+approximated: "guang3" is not silently rendered as "uang", and an apical "si" is not
+silently rendered as /si/. The blocked reason is part of the record.
 
 Timing fidelity: each syllable is rendered on its own and placed at the onset measured
-from the real utterance, so the two signals share a length and share the pauses. The cost
-is a 30 ms fade at every syllable edge, which the pair record reports as an issue.
+from the real utterance, with no lead/tail silence of its own, so the two signals share a
+length and share the pauses. Inside a syllable the onset/nucleus split is the fixed
+heuristic from g2p (nominal onset length, nucleus takes the remainder), not a forced
+alignment; the allocation is recorded per syllable. The cost is a fade at every syllable
+edge, which the pair record reports as an issue.
 
 Nothing here is committed to Git: real recordings never enter the repository, and the
 mechanical signal is derived from the real one only through F0/timing analysis.
@@ -24,9 +27,10 @@ from typing import Optional
 import numpy as np
 
 from ..audio import read_wav, write_wav
-from ..synth import (PHONEME_INVENTORY, PitchCurve, PhonemeSegment, PhonemeSequence,
-                     SynthesisRequest, SynthBackend, Timing, VoiceTemplate, get_backend)
+from ..synth import (PitchCurve, PhonemeSegment, PhonemeSequence, SynthesisRequest,
+                     SynthBackend, Timing, VoiceTemplate, get_backend)
 from ..synth.contract import F0_MAX_HZ, F0_MIN_HZ
+from .g2p import syllable_plan, syllable_phonemes
 from .aishell3 import file_sha256
 from .f0 import F0Track, estimate_f0
 from .resample import resample
@@ -43,16 +47,26 @@ class Syllable:
     initial: str
     final: str
     tone: int
-    phoneme: Optional[str]
+    phonemes: tuple[str, ...] = ()
     reason: Optional[str] = None
+
+    @property
+    def phoneme(self) -> Optional[str]:
+        """The single phoneme of a one-phoneme syllable, else None (kept for callers)."""
+        return self.phonemes[0] if len(self.phonemes) == 1 else None
 
     def as_dict(self) -> dict:
         return {"pinyin": self.pinyin, "initial": self.initial, "final": self.final,
-                "tone": self.tone, "phoneme": self.phoneme, "reason": self.reason}
+                "tone": self.tone, "phonemes": list(self.phonemes),
+                "phoneme": self.phoneme, "reason": self.reason}
 
 
-def parse_syllable(pinyin: str) -> Syllable:
-    """Split an AISHELL-3 token like "guang3" into initial/final/tone (no fuzzy matching)."""
+def parse_syllable(pinyin: str, inventory: str = "vowels") -> Syllable:
+    """Split an AISHELL-3 token like "guang3" into initial/final/tone (no fuzzy matching).
+
+    "vowels" keeps the original behaviour of the {a, i, u} backend; "mandarin" resolves
+    onsets and codas through :mod:`vhe.data.g2p`.
+    """
     token = pinyin.strip().lower()
     if not token or token[-1] not in "12345":
         raise ValueError(f"pinyin token must end with a tone digit 1-5: {pinyin!r}")
@@ -64,12 +78,8 @@ def parse_syllable(pinyin: str) -> Syllable:
     final = body[len(initial):]
     if not final:
         raise ValueError(f"pinyin token has no final: {pinyin!r}")
-    if initial == "" and final in PHONEME_INVENTORY:
-        return Syllable(pinyin, initial, final, tone, final)
-    missing = "onset" if initial else "final"
-    return Syllable(pinyin, initial, final, tone, None,
-                    f"{missing} {initial or final!r} not in backend inventory "
-                    f"{list(PHONEME_INVENTORY)}")
+    phonemes, reason = syllable_phonemes(initial, final, inventory)
+    return Syllable(pinyin, initial, final, tone, phonemes, reason)
 
 
 @dataclass
@@ -87,6 +97,8 @@ class PairResult:
     request_fingerprint: Optional[str] = None
     request_fingerprints: list[str] = field(default_factory=list)
     gains_db: list[float] = field(default_factory=list)
+    #: per syllable, the (phoneme, seconds) allocation handed to the synthesizer
+    allocations: list[list[dict]] = field(default_factory=list)
     real_sha256: Optional[str] = None
     mechanical_sha256: Optional[str] = None
     template: Optional[dict] = None
@@ -105,6 +117,7 @@ class PairResult:
             "request_fingerprint": self.request_fingerprint,
             "request_fingerprints": self.request_fingerprints,
             "gains_db": self.gains_db,
+            "allocations": self.allocations,
             "template": self.template,
             "f0_stats": self.f0_stats,
             "segmentation_stats": self.segmentation_stats,
@@ -174,19 +187,22 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
     check_syllable_count(seg, len(pinyins))
     result.issues.extend(issue for issue in seg.issues if issue not in result.issues)
 
+    synth = backend or get_backend()
+    inventory = getattr(synth, "inventory", "vowels")
     try:
-        syllables = [parse_syllable(token) for token in pinyins]
+        syllables = [parse_syllable(token, inventory) for token in pinyins]
     except ValueError as error:
         result.add_issue("bad_pinyin", str(error), "error")
         return result
     result.syllables = [syllable.as_dict() for syllable in syllables]
-    blocked = [syllable for syllable in syllables if syllable.phoneme is None]
+    blocked = [syllable for syllable in syllables if not syllable.phonemes]
     if blocked:
         unique = sorted({syllable.pinyin for syllable in blocked})
         result.add_issue(
             "backend_inventory_insufficient",
             f"{len(blocked)}/{len(syllables)} syllables cannot be rendered by the backend "
-            f"({', '.join(unique[:8])}); consonants/diphthongs would be silently dropped",
+            f"inventory {inventory!r} ({', '.join(unique[:8])}); "
+            f"first reason: {blocked[0].reason}",
             "error")
         result.status = "blocked"
         return result
@@ -200,20 +216,32 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
     # (PhonemeSequence has no silence slots), so it produced a shorter signal and the
     # real signal had to be truncated. Per-syllable placement keeps both signals the
     # same length and keeps every pause where it was.
-    synth = backend or get_backend()
     mechanical = np.zeros_like(audio)
     fingerprints: list[str] = []
     for index, (syllable, segment) in enumerate(zip(syllables, seg.segments)):
         duration = max(0.01, float(segment.duration_s))
+        plan, plan_reason = syllable_plan(syllable.initial, syllable.final, duration,
+                                          inventory)
+        if plan_reason is not None:
+            result.add_issue("syllable_plan_blocked",
+                             f"syllable {index} {syllable.pinyin!r}: {plan_reason}", "error")
+            result.status = "blocked"
+            return result
+        result.allocations.append([{"phoneme": phoneme, "duration_s": round(seconds, 4)}
+                                   for phoneme, seconds in plan])
         pitch = _pitch_curve(track, segment.start_s, duration, result)
         if pitch is None:
             return result
         request = SynthesisRequest(
             template=template,
-            phonemes=PhonemeSequence((PhonemeSegment(phoneme=syllable.phoneme,
-                                                     duration_s=duration),)),
+            phonemes=PhonemeSequence(
+                tuple(PhonemeSegment(phoneme=phoneme, duration_s=seconds)
+                      for phoneme, seconds in plan), inventory=inventory),
             pitch=pitch,
-            timing=Timing(),
+            # No lead/tail silence: the pauses are already in the real signal, and a 20 ms
+            # lead would shift every syllable 20 ms late while a 50 ms tail would overlap
+            # the next syllable's onset and cut the previous fade-out.
+            timing=Timing(lead_silence_s=0.0, tail_silence_s=0.0),
             sample_rate=sample_rate,
             # Vary the seed per syllable: a shared seed would repeat the same breath-noise
             # draw in every syllable, which the model could learn as a position cue.
@@ -260,11 +288,13 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
                                  f"syllable {index} gain {20.0 * np.log10(gain / clipped_gain):.2f} dB "
                                  "below the RMS match to keep the pair below full scale")
                 gain = clipped_gain
-        result.gains_db.append(round(20.0 * np.log10(gain), 3) if gain > 0 else 0.0)
+        result.gains_db.append(round(float(20.0 * np.log10(gain)), 3) if gain > 0 else 0.0)
         mechanical[offset:stop] = (piece * gain).astype(np.float32)
     result.add_issue("syllablewise_render",
                      f"{len(syllables)} syllables rendered separately at measured onsets; "
-                     "each render applies a 30 ms fade, so boundaries dip more than in real speech")
+                     "each render applies a short fade in/out, so boundaries dip more than in "
+                     "real speech, and the onset/nucleus split inside a syllable is the g2p "
+                     "nominal-length heuristic, not a forced alignment")
     # The composite fingerprint covers every syllable request; overwriting it with the last
     # syllable's fingerprint (as this function used to) made two different utterances with the
     # same final syllable indistinguishable.

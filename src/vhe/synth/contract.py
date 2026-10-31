@@ -26,6 +26,8 @@ from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 
+from .phonology import MANDARIN_PHONEME_IDS
+
 SUPPORTED_SAMPLE_RATES: tuple[int, ...] = (16000, 24000, 48000)
 F0_MIN_HZ: float = 65.0
 F0_MAX_HZ: float = 900.0
@@ -55,14 +57,29 @@ PHONEME_INVENTORY: dict[str, VowelTarget] = {
 }
 
 
+# Named inventories. A backend declares which one it speaks, and a PhonemeSequence
+# carries the name so that "a" cannot silently mean the vowel-only a when a Mandarin
+# backend is asked to render it (the two inventories disagree on formant values).
+INVENTORIES: dict[str, tuple[str, ...]] = {
+    "vowels": tuple(PHONEME_INVENTORY),
+    "mandarin": MANDARIN_PHONEME_IDS,
+}
+
+
 def supported_phonemes() -> tuple[str, ...]:
     return tuple(PHONEME_INVENTORY)
 
 
-def inventory_error(phoneme: str | None = None) -> str:
-    names = ",".join(PHONEME_INVENTORY)
+def inventory_error(phoneme: str | None = None, inventory: str = "vowels") -> str:
+    if inventory == "vowels":
+        names = ",".join(PHONEME_INVENTORY)
+        prefix = ("No phonemes supplied. " if phoneme is None
+                  else f"Unsupported phoneme {phoneme!r}. ")
+        return prefix + f"MVP accepts only vowel phonemes {names}. Do not silently skip others."
+    names = ",".join(INVENTORIES[inventory])
     prefix = "No phonemes supplied. " if phoneme is None else f"Unsupported phoneme {phoneme!r}. "
-    return prefix + f"MVP accepts only vowel phonemes {names}. Do not silently skip others."
+    return (prefix + f"Inventory {inventory!r} accepts {len(INVENTORIES[inventory])} phonemes "
+            f"({names}). Do not silently substitute a different phoneme.")
 
 
 @dataclass(frozen=True)
@@ -108,31 +125,45 @@ class PhonemeSegment:
     phoneme: str
     duration_s: float
 
-    def validate(self) -> None:
-        if self.phoneme not in PHONEME_INVENTORY:
-            raise ValueError(inventory_error(self.phoneme))
+    def validate(self, inventory: str = "vowels") -> None:
+        if inventory not in INVENTORIES:
+            raise ValueError(f"unknown inventory {inventory!r}; expected one of {list(INVENTORIES)}")
+        if self.phoneme not in INVENTORIES[inventory]:
+            raise ValueError(inventory_error(self.phoneme, inventory))
         if not 0.01 <= self.duration_s <= MAX_DURATION_S:
             raise ValueError(f"segment duration_s must be 0.01..{MAX_DURATION_S}")
 
 
 @dataclass(frozen=True)
 class PhonemeSequence:
-    """Ordered phoneme timeline; total voiced duration = sum of segment durations."""
+    """Ordered phoneme timeline; total voiced duration = sum of segment durations.
+
+    inventory names the phoneme alphabet the ids belong to (see INVENTORIES). It is part
+    of the request identity because the same id means different articulations in different
+    inventories.
+    """
 
     segments: tuple[PhonemeSegment, ...]
+    inventory: str = "vowels"
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "segments", tuple(self.segments))
+
+    @property
+    def allowed_phonemes(self) -> tuple[str, ...]:
+        return INVENTORIES.get(self.inventory, ())
 
     @property
     def duration_s(self) -> float:
         return float(sum(segment.duration_s for segment in self.segments))
 
     def validate(self) -> None:
+        if self.inventory not in INVENTORIES:
+            raise ValueError(f"unknown inventory {self.inventory!r}; expected one of {list(INVENTORIES)}")
         if not self.segments:
-            raise ValueError(inventory_error())
+            raise ValueError(inventory_error(inventory=self.inventory))
         for segment in self.segments:
-            segment.validate()
+            segment.validate(self.inventory)
         if self.duration_s > MAX_DURATION_S:
             raise ValueError(f"total phoneme duration exceeds {MAX_DURATION_S} s")
 
@@ -239,6 +270,7 @@ class SynthesisRequest:
                 "vibrato_hz": self.template.vibrato_hz,
             },
             "phonemes": [[s.phoneme, s.duration_s] for s in self.phonemes.segments],
+            "inventory": self.phonemes.inventory,
             "pitch": {"times_s": list(self.pitch.times_s), "f0_hz": list(self.pitch.f0_hz)},
             "timing": {
                 "lead_silence_s": self.timing.lead_silence_s,

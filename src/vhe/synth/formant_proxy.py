@@ -23,11 +23,17 @@ class FormantProxySynth:
     """Deterministic source-filter proxy: [request] -> float32 [N] waveform."""
 
     name = "formant_proxy"
+    inventory = "vowels"
     version = "0.2.0"
     supported_phonemes = supported_phonemes()
 
     def render(self, request: SynthesisRequest) -> SynthesisResult:
         request.validate()
+        if request.phonemes.inventory != self.inventory:
+            raise ValueError(
+                f"{self.name} renders the {self.inventory!r} inventory, "
+                f"got {request.phonemes.inventory!r}"
+            )
         sample_rate = request.sample_rate
         template = request.template
         segments = request.phonemes.segments

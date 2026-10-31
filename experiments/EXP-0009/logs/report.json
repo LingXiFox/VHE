@@ -1,0 +1,526 @@
+{
+  "backend": {
+    "inventory": "mandarin",
+    "name": "mandarin_formant",
+    "phonemes": [
+      "a",
+      "i",
+      "u",
+      "ai",
+      "ei",
+      "au",
+      "ou",
+      "an",
+      "ang",
+      "m",
+      "n",
+      "l",
+      "b",
+      "p",
+      "d",
+      "t",
+      "g",
+      "k",
+      "f",
+      "s",
+      "sh",
+      "x",
+      "z",
+      "c",
+      "j",
+      "q"
+    ],
+    "version": "0.1.0"
+  },
+  "f0": {
+    "110": {
+      "error_fraction": 0.0022707299636536503,
+      "median_hz": 110.2497802960019,
+      "voiced_ratio": 1.0
+    },
+    "200": {
+      "error_fraction": 0.002204089245613403,
+      "median_hz": 200.44081784912268,
+      "voiced_ratio": 1.0
+    },
+    "350": {
+      "error_fraction": 0.0022150234831311926,
+      "median_hz": 350.7752582190959,
+      "voiced_ratio": 1.0
+    },
+    "440": {
+      "error_fraction": 0.00223254963304785,
+      "median_hz": 440.98232183854105,
+      "voiced_ratio": 1.0
+    },
+    "65": {
+      "error_fraction": 0.0020880394429820645,
+      "median_hz": 65.13572256379383,
+      "voiced_ratio": 1.0
+    },
+    "880": {
+      "error_fraction": 0.00220016787887661,
+      "median_hz": 881.9361477334114,
+      "voiced_ratio": 1.0
+    }
+  },
+  "phonemes": {
+    "a": {
+      "autocorrelation_peak": 0.943818211555481,
+      "expected_samples": 3600,
+      "fingerprint": "e70ffbff4a864e818e523fe6a472e180796e3dd069c98589fcea07d8baead76b",
+      "finite": true,
+      "peak": 0.4352835416793823,
+      "rms": 0.19750438630580902,
+      "samples": 3600,
+      "spectral_centroid_hz": 2806.551192077083,
+      "voiced_ratio": 1.0
+    },
+    "ai": {
+      "autocorrelation_peak": 0.9368968605995178,
+      "expected_samples": 3600,
+      "fingerprint": "d79b9432a6cd4380e07e0ac26ed73fa138a5fc8461080148a302d100cb0dd5ef",
+      "finite": true,
+      "peak": 0.4081304371356964,
+      "rms": 0.1970323771238327,
+      "samples": 3600,
+      "spectral_centroid_hz": 2451.109499594924,
+      "voiced_ratio": 1.0
+    },
+    "an": {
+      "autocorrelation_peak": 0.9404553174972534,
+      "expected_samples": 3600,
+      "fingerprint": "46681743600ebd405d0bf73c91a02be99608cf2c45650f21ef48b4321ee3f43d",
+      "finite": true,
+      "peak": 0.41368216276168823,
+      "rms": 0.19709159433841705,
+      "samples": 3600,
+      "spectral_centroid_hz": 2009.0654194820634,
+      "voiced_ratio": 1.0
+    },
+    "ang": {
+      "autocorrelation_peak": 0.9432367086410522,
+      "expected_samples": 3600,
+      "fingerprint": "328a6fa2de8965069c5e8a4d9aeac6408c8bdb3fd8a2eaff072d4dc9bd9bab86",
+      "finite": true,
+      "peak": 0.4714762568473816,
+      "rms": 0.1971694380044937,
+      "samples": 3600,
+      "spectral_centroid_hz": 2041.9707735198183,
+      "voiced_ratio": 1.0
+    },
+    "au": {
+      "autocorrelation_peak": 0.9377663731575012,
+      "expected_samples": 3600,
+      "fingerprint": "568f4cd65e78f10fe5da307b70f02226c039a5d9b7fa73452e9ea022fce03e25",
+      "finite": true,
+      "peak": 0.4759148359298706,
+      "rms": 0.19707344472408295,
+      "samples": 3600,
+      "spectral_centroid_hz": 2380.216943100979,
+      "voiced_ratio": 1.0
+    },
+    "b": {
+      "autocorrelation_peak": 0.9560273289680481,
+      "expected_samples": 3600,
+      "fingerprint": "12fc41691bc3c8c30f2c173d38d5db60636345537fc69b77af40ac1053bdb252",
+      "finite": true,
+      "peak": 0.41344594955444336,
+      "rms": 0.1987077295780182,
+      "samples": 3600,
+      "spectral_centroid_hz": 1926.882206343115,
+      "voiced_ratio": 0.8333333333333334
+    },
+    "c": {
+      "autocorrelation_peak": 0.8195075988769531,
+      "expected_samples": 3600,
+      "fingerprint": "9b2cae4d77f4c022dfadd2e4e390c3503fb195f55c875d8735ffe084f6800a48",
+      "finite": true,
+      "peak": 0.770878791809082,
+      "rms": 0.20533859729766846,
+      "samples": 3600,
+      "spectral_centroid_hz": 5894.7713563595,
+      "voiced_ratio": 0.4166666666666667
+    },
+    "d": {
+      "autocorrelation_peak": 0.9560081362724304,
+      "expected_samples": 3600,
+      "fingerprint": "acbeed45c048d3965c1fb55039bab61d10ff50034c3568cfea2eff4ce434433b",
+      "finite": true,
+      "peak": 0.48203739523887634,
+      "rms": 0.19847124814987183,
+      "samples": 3600,
+      "spectral_centroid_hz": 2058.0606975256883,
+      "voiced_ratio": 0.8333333333333334
+    },
+    "ei": {
+      "autocorrelation_peak": 0.9458469152450562,
+      "expected_samples": 3600,
+      "fingerprint": "f334189222336ee5d85c3485041fa8289632d8f1da7b793f221be23573076f01",
+      "finite": true,
+      "peak": 0.4191915690898895,
+      "rms": 0.19689291715621948,
+      "samples": 3600,
+      "spectral_centroid_hz": 2749.8700430142294,
+      "voiced_ratio": 1.0
+    },
+    "f": {
+      "autocorrelation_peak": 0.06744227558374405,
+      "expected_samples": 3600,
+      "fingerprint": "7e5d69a46b6fed477ca9d56e8d83b5c8b3c9af65c37a6531e4302879ef742350",
+      "finite": true,
+      "peak": 0.15994185209274292,
+      "rms": 0.034499745815992355,
+      "samples": 3600,
+      "spectral_centroid_hz": 6156.115415996403,
+      "voiced_ratio": 0.0
+    },
+    "g": {
+      "autocorrelation_peak": 0.9565313458442688,
+      "expected_samples": 3600,
+      "fingerprint": "f482f5745928eb1ab77b5e96b3b5c1b64e20cbaf76083719bce52ceb0c72cd75",
+      "finite": true,
+      "peak": 0.40524789690971375,
+      "rms": 0.19848084449768066,
+      "samples": 3600,
+      "spectral_centroid_hz": 2214.2758410114175,
+      "voiced_ratio": 0.8333333333333334
+    },
+    "i": {
+      "autocorrelation_peak": 0.947346568107605,
+      "expected_samples": 3600,
+      "fingerprint": "90b61b7b5ca5ccf5163b11e1bc188adceed4eb1204210be0f568fe8166ec55af",
+      "finite": true,
+      "peak": 0.3734537661075592,
+      "rms": 0.19682914018630981,
+      "samples": 3600,
+      "spectral_centroid_hz": 2754.893569332686,
+      "voiced_ratio": 1.0
+    },
+    "j": {
+      "autocorrelation_peak": 0.841891348361969,
+      "expected_samples": 3600,
+      "fingerprint": "e0591607a4909d4549a27393745f5fd6142fb15e9c3eb2dd2ccbbfa9562369be",
+      "finite": true,
+      "peak": 0.7666143178939819,
+      "rms": 0.20274965465068817,
+      "samples": 3600,
+      "spectral_centroid_hz": 5009.62591480093,
+      "voiced_ratio": 0.4166666666666667
+    },
+    "k": {
+      "autocorrelation_peak": 0.8576809167861938,
+      "expected_samples": 3600,
+      "fingerprint": "8a1f3f475f3ddda96858a86d0dcaff93f84d0ef1e0e4312554a8f4a28ed4dcf7",
+      "finite": true,
+      "peak": 0.5969712734222412,
+      "rms": 0.19825872778892517,
+      "samples": 3600,
+      "spectral_centroid_hz": 3541.8461897676534,
+      "voiced_ratio": 0.4166666666666667
+    },
+    "l": {
+      "autocorrelation_peak": 0.9490262866020203,
+      "expected_samples": 3600,
+      "fingerprint": "5b34dc9ee9b4479ea09d30a1fef06486ba3ff4ef0a63dff397198ba0e3d57e8d",
+      "finite": true,
+      "peak": 0.33337581157684326,
+      "rms": 0.1967703253030777,
+      "samples": 3600,
+      "spectral_centroid_hz": 2177.263922750795,
+      "voiced_ratio": 1.0
+    },
+    "m": {
+      "autocorrelation_peak": 0.9491733312606812,
+      "expected_samples": 3600,
+      "fingerprint": "67f495210c6337dba2de61c5c2dca064c57772ca99c7f22ef684900bbf97c2af",
+      "finite": true,
+      "peak": 0.3095620572566986,
+      "rms": 0.1965496838092804,
+      "samples": 3600,
+      "spectral_centroid_hz": 2080.697061020551,
+      "voiced_ratio": 1.0
+    },
+    "n": {
+      "autocorrelation_peak": 0.9491815567016602,
+      "expected_samples": 3600,
+      "fingerprint": "d5a9c9a52a98ca229e8aa18489eda073dc121e67332dc8a1be92324e6334022b",
+      "finite": true,
+      "peak": 0.3048163652420044,
+      "rms": 0.19654643535614014,
+      "samples": 3600,
+      "spectral_centroid_hz": 2094.9805789470993,
+      "voiced_ratio": 1.0
+    },
+    "ou": {
+      "autocorrelation_peak": 0.9454876780509949,
+      "expected_samples": 3600,
+      "fingerprint": "8ce50d01a8e31a852e19f75fb91941b88b570b0b0e5c3997c77cc1eb62486659",
+      "finite": true,
+      "peak": 0.4577730894088745,
+      "rms": 0.19693495333194733,
+      "samples": 3600,
+      "spectral_centroid_hz": 2566.5911434444174,
+      "voiced_ratio": 1.0
+    },
+    "p": {
+      "autocorrelation_peak": 0.8739931583404541,
+      "expected_samples": 3600,
+      "fingerprint": "fd7caf1d4c45ac805d07bb8082c36ce142c69aae95b4162461072d51d24fb200",
+      "finite": true,
+      "peak": 0.5843526124954224,
+      "rms": 0.19874021410942078,
+      "samples": 3600,
+      "spectral_centroid_hz": 2135.360362805987,
+      "voiced_ratio": 0.4166666666666667
+    },
+    "q": {
+      "autocorrelation_peak": 0.841891348361969,
+      "expected_samples": 3600,
+      "fingerprint": "497073bff80565e15e8ee5c4893721a977c421f5749d24e5dee835f41c45ca7e",
+      "finite": true,
+      "peak": 0.7666143178939819,
+      "rms": 0.20274965465068817,
+      "samples": 3600,
+      "spectral_centroid_hz": 5009.62591480093,
+      "voiced_ratio": 0.4166666666666667
+    },
+    "s": {
+      "autocorrelation_peak": 0.08615735918283463,
+      "expected_samples": 3600,
+      "fingerprint": "8807663387189dabc27d0538dc70a045007b1f162853a8c539835bfd153e7faa",
+      "finite": true,
+      "peak": 0.3794715106487274,
+      "rms": 0.08392222225666046,
+      "samples": 3600,
+      "spectral_centroid_hz": 7897.06478348873,
+      "voiced_ratio": 0.0
+    },
+    "sh": {
+      "autocorrelation_peak": 0.08231803774833679,
+      "expected_samples": 3600,
+      "fingerprint": "423d7fc60f6da052bdb547b97a10e138d4f8ff68bd762cd05088dc34446c045b",
+      "finite": true,
+      "peak": 0.33338940143585205,
+      "rms": 0.07394805550575256,
+      "samples": 3600,
+      "spectral_centroid_hz": 5050.945484696197,
+      "voiced_ratio": 0.0
+    },
+    "t": {
+      "autocorrelation_peak": 0.8764598369598389,
+      "expected_samples": 3600,
+      "fingerprint": "dfa41ba7eb8f210368920f086ffe5452a0a3fc6100a9e9f373fef1eb55b68fe6",
+      "finite": true,
+      "peak": 0.6848272085189819,
+      "rms": 0.19855383038520813,
+      "samples": 3600,
+      "spectral_centroid_hz": 4375.939561389598,
+      "voiced_ratio": 0.4166666666666667
+    },
+    "u": {
+      "autocorrelation_peak": 0.9475582838058472,
+      "expected_samples": 3600,
+      "fingerprint": "534e7590e53e72ad3af959f230d6015aee48a7967a1523dccaac1dbba75b9257",
+      "finite": true,
+      "peak": 0.37082716822624207,
+      "rms": 0.19692490994930267,
+      "samples": 3600,
+      "spectral_centroid_hz": 2644.786364218952,
+      "voiced_ratio": 1.0
+    },
+    "x": {
+      "autocorrelation_peak": 0.08102381229400635,
+      "expected_samples": 3600,
+      "fingerprint": "9b129799e8a9a2f52b238d019ca84dcd1c85d95e2f6bd9018be0c4a75aefb255",
+      "finite": true,
+      "peak": 0.3421376645565033,
+      "rms": 0.06901026517152786,
+      "samples": 3600,
+      "spectral_centroid_hz": 6876.248093354275,
+      "voiced_ratio": 0.0
+    },
+    "z": {
+      "autocorrelation_peak": 0.8195075988769531,
+      "expected_samples": 3600,
+      "fingerprint": "3c31f3a7cde3dd130812e3d2ae330528cef4cc3b58d2c421dc61bcf7851787e1",
+      "finite": true,
+      "peak": 0.770878791809082,
+      "rms": 0.20533859729766846,
+      "samples": 3600,
+      "spectral_centroid_hz": 5894.7713563595,
+      "voiced_ratio": 0.4166666666666667
+    }
+  },
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "probe": "exp0009_mandarin_capability",
+  "python": "3.14.6",
+  "sample_rate": 24000,
+  "sequences": {
+    "a_ai": {
+      "expected_samples": 9600,
+      "f0_error_fraction": 2.194376319422986e-05,
+      "f0_median_hz": 200.00438875263885,
+      "fingerprint": "7adeed2b7b57bfa91e1ba25509a10b98c19dfc5d48ed69fc1e83f9b530c644aa",
+      "peak": 0.4342985451221466,
+      "phonemes": [
+        [
+          "a",
+          0.15
+        ],
+        [
+          "ai",
+          0.25
+        ]
+      ],
+      "samples": 9600,
+      "voiced_ratio": 1.0
+    },
+    "ai_au_ei_ou": {
+      "expected_samples": 14400,
+      "f0_error_fraction": 0.00010022144393971644,
+      "f0_median_hz": 199.97995571121206,
+      "fingerprint": "0fdb9e4c44b3173bb45caef29ca52ef80db9adf4e7bb01a0d2c7edf7439d4de2",
+      "peak": 0.47946101427078247,
+      "phonemes": [
+        [
+          "ai",
+          0.15
+        ],
+        [
+          "au",
+          0.15
+        ],
+        [
+          "ei",
+          0.15
+        ],
+        [
+          "ou",
+          0.15
+        ]
+      ],
+      "samples": 14400,
+      "voiced_ratio": 1.0
+    },
+    "ba": {
+      "expected_samples": 7200,
+      "f0_error_fraction": 0.001657639335355725,
+      "f0_median_hz": 200.33152786707115,
+      "fingerprint": "03e46a47c5d18eba382c678efac574d1ad1193a7f33b55be9d523071b82d4462",
+      "peak": 0.4712425172328949,
+      "phonemes": [
+        [
+          "b",
+          0.04
+        ],
+        [
+          "a",
+          0.26
+        ]
+      ],
+      "samples": 7200,
+      "voiced_ratio": 0.9629629629629629
+    },
+    "ma": {
+      "expected_samples": 7200,
+      "f0_error_fraction": 0.0011925229749321887,
+      "f0_median_hz": 200.23850459498644,
+      "fingerprint": "dc9baba7222426e0b714012028ab150d0b190e40b53d2fc21b7ee9eec942856c",
+      "peak": 0.47962644696235657,
+      "phonemes": [
+        [
+          "m",
+          0.06
+        ],
+        [
+          "a",
+          0.24
+        ]
+      ],
+      "samples": 7200,
+      "voiced_ratio": 1.0
+    },
+    "ma_ba_na": {
+      "expected_samples": 13920,
+      "f0_error_fraction": 0.0012072009187093613,
+      "f0_median_hz": 199.75855981625813,
+      "fingerprint": "e67c6fca2887101b02e67c258df3fda7002d000a00e15700dd0dded2b0668eeb",
+      "peak": 0.5033170580863953,
+      "phonemes": [
+        [
+          "m",
+          0.06
+        ],
+        [
+          "a",
+          0.14
+        ],
+        [
+          "b",
+          0.04
+        ],
+        [
+          "a",
+          0.14
+        ],
+        [
+          "n",
+          0.06
+        ],
+        [
+          "a",
+          0.14
+        ]
+      ],
+      "samples": 13920,
+      "voiced_ratio": 0.9818181818181818
+    },
+    "sa": {
+      "expected_samples": 7680,
+      "f0_error_fraction": 0.0002455629943601423,
+      "f0_median_hz": 199.95088740112797,
+      "fingerprint": "03c11f654b25b523d7092cbcdaaa4da1d3df5e2854b06d228f4b2163ee21cb70",
+      "peak": 0.5315513610839844,
+      "phonemes": [
+        [
+          "s",
+          0.1
+        ],
+        [
+          "a",
+          0.22
+        ]
+      ],
+      "samples": 7680,
+      "voiced_ratio": 0.7586206896551724
+    }
+  },
+  "templates": {
+    "yang": {
+      "fingerprint": "25e6875e6e37fe57a67d8e37f34ef4632151458f7e5cd11f0591f8b3ed62357e",
+      "peaks_hz": [
+        820.3125,
+        1078.125,
+        1312.5
+      ],
+      "rms": 0.19879336655139923
+    },
+    "yin": {
+      "fingerprint": "af211fe89e50de22a3221a78aa130158b079190cf4eefaa794d9a53280b62eaf",
+      "peaks_hz": [
+        585.9375,
+        679.6875,
+        867.1875
+      ],
+      "rms": 0.19873245060443878
+    }
+  },
+  "tensor_handoff": {
+    "cpu_roundtrip_bit_equal": true,
+    "mps_available": true,
+    "mps_dtype": "torch.float32",
+    "mps_roundtrip_bit_equal": true,
+    "torch": "2.15.0"
+  }
+}

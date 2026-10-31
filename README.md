@@ -1,6 +1,6 @@
 # VHE — 基于说话人无关神经声学修正的人声自然化模型
 
-**Research status: EXP-0006 / 未训练 VHE / macOS Apple M5 MPS 真机已验收（EXP-0002），Windows RTX 4090 CUDA 真机仍未验证；P1 数据侧因本机无 AISHELL-3 而阻塞（适配器、信号前端、配对构造均只在合成信号上验证），且后端音素表只有 a/i/u，真实普通话音节会被配对流程显式判为 blocked。**
+**Research status: EXP-0011 / 未训练 VHE / macOS Apple M5 MPS 真机已验收（EXP-0002），Windows RTX 4090 CUDA 真机仍未验证；P1 数据侧因本机无 AISHELL-3 而阻塞（适配器、信号前端、配对构造均只在合成信号上验证）。中文机械声后端已能渲染 26 个普通话音素（EXP-0009 能力验收、EXP-0010 算法审计），但擦音谱带仍是手设占位值、`zh/ch/r/h/ian/uo/...` 仍显式判为 blocked，真实语料的对齐与听音验收未做。**
 
 目标：输入仅为物理/参数合成器生成的**机械人声音频张量** `x [B,1,N]`，输出自然化人声音频 `y [B,1,N]`。VHE **不接收**文本、拼音、音素、MIDI 或说话人 ID，不生成目标内容/音色/音高；这些均由上游合成器决定。
 
@@ -20,12 +20,13 @@ Voice Template + Phonemes + MIDI/Expression
 
 ## 已有内容（非神经模型）
 
-- `src/vhe/synth/`：**机械声**上游契约与后端。`contract.py` 定义 `SynthesisRequest`/`SynthesisResult`/`SynthBackend`（分段时长、线性 F0 曲线、前后静音、请求指纹），`formant_proxy.py` 是谐波＋共振峰**代理**实现，`registry.py` 负责后端注册。当前只支持 `a/i/u`，不是声道物理引擎，没有辅音、声调、韵律，也不支持中文整句或 `yuan`。契约细节见 **[docs/SYNTH_CONTRACT.md](docs/SYNTH_CONTRACT.md)**。
+- `src/vhe/synth/`：**机械声**上游契约与后端。`contract.py` 定义 `SynthesisRequest`/`SynthesisResult`/`SynthBackend`（分段时长、线性 F0 曲线、前后静音、请求指纹、音素表 `inventory`），`formant_proxy.py` 是谐波＋共振峰**代理**实现（vowels 表 `a/i/u`），`mandarin.py` 是 26 音素的中文发声后端（`phonology.py` 存音素表、共振峰目标、Chao 声调轮廓），`registry.py` 负责后端注册。`mandarin` 覆盖韵母 a/i/u/ai/ei/au/ou/an/ang、鼻音 m/n、边音 l、塞音 b/p/d/t/g/k、擦音 f/s/sh/x、塞擦音 z/c/j/q，**不含** zh/ch/r/h 与 ian/ie/uo/üan 等韵母；它是源-滤波器合成，不是声道物理引擎，没有协同发音建模与韵律。契约细节见 **[docs/SYNTH_CONTRACT.md](docs/SYNTH_CONTRACT.md)**。
 - `src/vhe/audio.py`：16-bit PCM 读写与峰值归一；量化固定在 float32 下进行（字节级可复现）。
 - `src/vhe/data/`：数据侧（未接入真实数据）：AISHELL-3 适配器、manifest CLI、重采样/F0/能量分段、成对构造（`pairing.py`）。
   - `aishell3.py`：**AISHELL-3 适配器**。只读目录结构与 WAV 头，把每一条被拒文件记成显式 issue code（missing_wav / not_mono / empty_text / too_short …），按说话人切 dev 且不动官方 test，输出只含相对路径与 SHA256 的 JSONL manifest。
+  - `g2p.py`：**带声调拼音 → 音素计划**。按后端暴露的 `inventory` 生成 `PhonemeSegment` 序列与时长分配；无法用现有音素表表示的声母/韵母返回显式 `blocked` 理由（如 `zh` 缺卷舌塞擦音、`apical` 的 `z/c/s` 与 `zh/ch/sh` 对立、`üan` 缺介音），**不会用近似音素顶替**。
   - `resample.py` / `f0.py` / `segment.py`：44.1 kHz → 契约采样率的多相 windowed-sinc 重采样（15 kHz 残留 -88 dB）、F0 CMND/YIN 跟踪（16/24/48 kHz × 65–880 Hz 合成信号误差 ≤0.01%，静音帧强制 unvoiced）、能量谷音节分段（先做样本级边界精修再合并，60 ms 停顿可分辨；丢弃的短突发记 `segment_too_short`，静音记 `no_speech`）。
-- `tests/test_synth.py` / `tests/test_synth_contract.py`：尺寸、确定性、参数差异、不支持音素报错、禁止覆盖；以及请求字段白名单、静音不改浊音样本、指纹追踪、**历史 WAV 基线的 SHA256 字节级回归**。
+- `tests/test_synth.py` / `tests/test_synth_contract.py` / `tests/test_synth_mandarin.py`：尺寸、确定性、参数差异、不支持音素报错、禁止覆盖；以及请求字段白名单、静音不改浊音样本、指纹追踪、**历史 WAV 基线的 SHA256 字节级回归**。
 - `src/vhe/backend.py`：CUDA/MPS/CPU 自动检测，设备指定失败时不偷偷回退。
 - `src/vhe/model.py`：`ResidualUNet`（v0.1 波形残差 U-Net，1,001,089 参数，实测感受野 1224 样本 ≈ 51.0 ms，输出层零初始化故初始严格恒等，**未训练**）与 `ResidualVHE` 小原型；`build_model()` 按名字构建。设计取舍见 **[docs/VHE_ARCHITECTURE_RESEARCH.md](docs/VHE_ARCHITECTURE_RESEARCH.md)**。
 - `src/vhe/losses.py`：多分辨率 STFT（谱收敛＋对数幅度）、自相关周期结构、能量轮廓（形状/电平分离）、残差惩罚；默认权重**未经标定**。定义、盲区与实测见 **[docs/LOSS_DESIGN.md](docs/LOSS_DESIGN.md)**。
@@ -73,7 +74,7 @@ PowerShell 也可直接运行 `py -3.11 -m pip install -e '.[dev]'`（需要先�
 
 **数据集不随代码分发，也不要自动下载 19GB AISHELL-3。** 真实数据必须按 `docs/DATA_POLICY.md` 管理，手动审查许可/本地路径。禁止把录音、个人信息、大模型权重上传到 Git。
 
-AISHELL-3 的格式与许可已在 [docs/DATA_POLICY.md](docs/DATA_POLICY.md) 中核实并记录（Apache-2.0、44.1 kHz mono 16-bit、`content.txt` 为「汉字+带声调拼音」交替）。适配器在合成夹具上通过（EXP-0004），**真实语料尚未解析、尚未人工听音**。成对构造（`src/vhe/data/pairing.py`）在合成元音上等长、保留停顿、非法音节显式 `blocked`（EXP-0006），但因为后端只能发 `a/i/u`，带声母的普通话音节无法渲染，20 对真人对听在现后端下不可达。
+AISHELL-3 的格式与许可已在 [docs/DATA_POLICY.md](docs/DATA_POLICY.md) 中核实并记录（Apache-2.0、44.1 kHz mono 16-bit、`content.txt` 为「汉字+带声调拼音」交替）。适配器在合成夹具上通过（EXP-0004），**真实语料尚未解析、尚未人工听音**。成对构造（`src/vhe/data/pairing.py`）在合成元音上等长、保留停顿、非法音节显式 `blocked`（EXP-0006），现已改为从后端读取 `inventory` 与 `supported_phonemes`，可用 `mandarin` 后端渲染 `ba/ma/shi/...` 这类音节（每音节 onset+nucleus 分配、逐段增益匹配、`gains_db` 与逐音节指纹入账）；但 `zh/ch/r/h` 与 `ian/ie/uo/üan` 等仍被 `g2p` 显式阻塞，真实 AISHELL-3 句子里这类音节占比很高，20 对真人对听仍不可达。
 
 ## 科学实验门槛
 

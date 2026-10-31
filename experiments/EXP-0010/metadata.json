@@ -1,0 +1,51 @@
+{
+  "experiment_id": "EXP-0010",
+  "title": "Audit of the Mandarin backend excitation, boundaries, formants and level",
+  "hypothesis": "The Mandarin backend is spectrally self-consistent: (a) less than 1e-3 of the energy lies above 0.45*sr at f0 up to 880 Hz, (b) sibilants /s sh x/ put more relative energy in 2-8 kHz than /f/ or vowels, (c) envelope jumps at phoneme boundaries do not exceed the largest within-phoneme envelope jump, (d) formant trajectories inside diphthongs move smoothly (frame-to-frame spectral flux below a hard-spliced control), and (e) the same nucleus rendered in different consonant contexts stays within 3 dB RMS.",
+  "created_utc": "2026-10-31T15:36:59.556171+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "b37923723895a725c6f11862c0d4e7add37aed3d",
+    "status": "M src/vhe/data/f0.py\n M src/vhe/data/pairing.py\n M src/vhe/synth/__init__.py\n M src/vhe/synth/contract.py\n M src/vhe/synth/formant_proxy.py\n M src/vhe/synth/registry.py\n M tests/test_data_frontend.py\n M tests/test_data_pairing.py\n?? experiments/EXP-0009/\n?? experiments/EXP-0011/\n?? src/vhe/data/g2p.py\n?? src/vhe/synth/mandarin.py\n?? src/vhe/synth/phonology.py\n?? tests/test_data_g2p.py\n?? tests/test_synth_mandarin.py"
+  },
+  "seed": null,
+  "dataset_manifest_sha256": null,
+  "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0010/probe_audit.py --out experiments/EXP-0010/logs/audit.json",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Completed on synthetic signals only; no listening test. Criteria (b) and (c) fail and are kept as failures. The audit found a real defect (noise mask was a bump at the lower band edge) whose fix introduced a second defect (10% of /s/ energy above 0.45*sr) that the same audit caught on the next pass.",
+  "probe_sha256": "c47d852c393d63e509cabe14c68d56676e122ae9d50dec910954ef283c303e5a",
+  "runs": [
+    {
+      "label": "pre_band_fix",
+      "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0010/probe_audit.py --out experiments/EXP-0010/logs/audit_pre_band_fix.json",
+      "note": "noise mask bumped at the lower band edge; /s/ confined to 2-4 kHz",
+      "output": "experiments/EXP-0010/logs/audit_pre_band_fix.json",
+      "output_sha256": "4d1b636c975c5de6a4d7ed6d55414507bda3a54e5e05d37c3e0195101807a295"
+    },
+    {
+      "label": "bandpass_only",
+      "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0010/probe_audit.py --out experiments/EXP-0010/logs/audit_bandpass_only.json",
+      "note": "band-pass fix alone: aliasing rises to 1.05e-1 from /s/",
+      "output": "experiments/EXP-0010/logs/audit_bandpass_only.json",
+      "output_sha256": "dd07cc4d6e92e0eff05382461a7ecfc65e3a81a6ce32918e0ebaf5e899b3ff91"
+    },
+    {
+      "label": "final",
+      "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0010/probe_audit.py --out experiments/EXP-0010/logs/audit.json",
+      "note": "band-pass plus 0.45*sr stop-band clamp",
+      "output": "experiments/EXP-0010/logs/audit.json",
+      "output_sha256": "6a75f097bd75299dadf66117fdfe7d0b1628002a38a3d87c1977e6efb5e0865d"
+    }
+  ],
+  "errata": [
+    "E1: the formant peak tracker is unreliable (ou naive max step 1734 Hz is a set-selection artefact; the nearest-frequency matcher reports the same value). The primary smoothness criterion moved to spectral flux; both tracker outputs are kept in audit.json.formant_steps.",
+    "E2: criterion (b) as pre-registered is invalid for a 4-10 kHz /s/; it passes in the pre_band_fix state only because the broken mask squeezed /s/ into 2-4 kHz. Judged FAIL on the final state and left as a failure.",
+    "E3: the band-pass fix regressed aliasing to 1.05e-1 above 0.45*sr (/s/ fall reached 13.5 kHz). Fixed by clamping the fall endpoint to 0.45*sample_rate; verified 2.12e-4.",
+    "E4: criterion (c) fails for ba/ka/sa while the sample-level click ratio stays <=1.08, i.e. the 5 ms frame RMS metric cannot separate a fast physical onset from a discontinuity. The criterion is left failing rather than redefined after the fact.",
+    "E5: README assembled after the three runs; the criteria text itself was written into metadata.json before the first run."
+  ]
+}

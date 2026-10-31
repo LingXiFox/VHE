@@ -89,6 +89,13 @@ def _difference(x: np.ndarray, lag_min: int, lag_max: int) -> tuple[np.ndarray, 
     return lags, diff, cmnd
 
 
+#: Absolute CMND margin by which the second dip must beat the first one before the estimator
+#: accepts the longer period (EXP-0011; swept 0.008..0.08, see the experiment README).
+OCTAVE_TOLERANCE = 0.02
+#: Relative depth: the global minimum must also be at most this fraction of the first dip.
+OCTAVE_DEPTH_RATIO = 0.5
+
+
 def _estimate_frame(frame: np.ndarray, sample_rate: int, fmin_hz: float, fmax_hz: float,
                     threshold: float) -> tuple[float, float]:
     centered = frame - frame.mean()
@@ -113,6 +120,34 @@ def _estimate_frame(frame: np.ndarray, sample_rate: int, fmin_hz: float, fmax_hz
             best += 1
     else:
         best = int(np.argmin(search))
+    # The first dip is not enough on its own: a frame whose energy is dominated by an even
+    # harmonic of f0 also matches at half the period, and that dip comes first. /a/ at 220 Hz
+    # with F1 near 440 Hz was read as 440 Hz for exactly this reason (EXP-0011). The true
+    # period matches the *whole* waveform, so its dip is strictly deeper than any sub-multiple
+    # dip. Look for it in the only place it can be: between the chosen dip and twice that lag.
+    #
+    # The search is deliberately bounded. An unbounded "restart from the global minimum" rule
+    # was tried first and made things worse: several lags reach ~0 for a periodic frame, so
+    # floating point decides, and under 10 dB noise the global minimum drifts to twice the
+    # period (EXP-0011 measured 87 octave-down frames on clean combs, 40 on noisy ones).
+    # Both the relative and the absolute condition are needed; each alone re-labels the error
+    # instead of fixing it.
+    current_cmnd = float(search[best])
+    if current_cmnd > 1e-9:
+        # Lags, not array indices: search starts at lag_min, so doubling the index would only
+        # reach half the period that has to be inspected.
+        current_lag = int(lags[best + offset])
+        upper_lag = min(int(lags[-1]), 2 * current_lag + 2)
+        upper = int(np.searchsorted(lags, upper_lag, side="right")) - 1 - offset
+        upper = min(upper, search.size - 1)
+        window = search[best + 1:upper + 1]
+        if window.size:
+            local = best + 1 + int(np.argmin(window))
+            candidate = float(search[local])
+            deep_enough = candidate <= OCTAVE_DEPTH_RATIO * current_cmnd
+            clearly_better = current_cmnd - candidate >= OCTAVE_TOLERANCE
+            if deep_enough and clearly_better:
+                best = local
     best += offset
     voicing = float(np.clip(1.0 - float(cmnd[best]), 0.0, 1.0))
     if voicing < threshold:

@@ -1,0 +1,696 @@
+{
+  "comb": {
+    "100Hz_F1000": {
+      "expected_hz": 100.0,
+      "formant_hz": 1000.0,
+      "frames": 47,
+      "median_hz": 100.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "100Hz_F1250": {
+      "expected_hz": 100.0,
+      "formant_hz": 1250.0,
+      "frames": 47,
+      "median_hz": 100.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "100Hz_F500": {
+      "expected_hz": 100.0,
+      "formant_hz": 500.0,
+      "frames": 47,
+      "median_hz": 100.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "100Hz_F700": {
+      "expected_hz": 100.0,
+      "formant_hz": 700.0,
+      "frames": 47,
+      "median_hz": 100.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "100Hz_F800": {
+      "expected_hz": 100.0,
+      "formant_hz": 800.0,
+      "frames": 47,
+      "median_hz": 100.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "150Hz_F1000": {
+      "expected_hz": 150.0,
+      "formant_hz": 1000.0,
+      "frames": 47,
+      "median_hz": 150.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "150Hz_F1250": {
+      "expected_hz": 150.0,
+      "formant_hz": 1250.0,
+      "frames": 47,
+      "median_hz": 150.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "150Hz_F500": {
+      "expected_hz": 150.0,
+      "formant_hz": 500.0,
+      "frames": 47,
+      "median_hz": 150.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "150Hz_F700": {
+      "expected_hz": 150.0,
+      "formant_hz": 700.0,
+      "frames": 47,
+      "median_hz": 150.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "150Hz_F800": {
+      "expected_hz": 150.0,
+      "formant_hz": 800.0,
+      "frames": 47,
+      "median_hz": 150.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "200Hz_F1000": {
+      "expected_hz": 200.0,
+      "formant_hz": 1000.0,
+      "frames": 47,
+      "median_hz": 200.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "200Hz_F1250": {
+      "expected_hz": 200.0,
+      "formant_hz": 1250.0,
+      "frames": 47,
+      "median_hz": 200.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "200Hz_F500": {
+      "expected_hz": 200.0,
+      "formant_hz": 500.0,
+      "frames": 47,
+      "median_hz": 200.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "200Hz_F700": {
+      "expected_hz": 200.0,
+      "formant_hz": 700.0,
+      "frames": 47,
+      "median_hz": 200.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "200Hz_F800": {
+      "expected_hz": 200.0,
+      "formant_hz": 800.0,
+      "frames": 47,
+      "median_hz": 200.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "220Hz_F1000": {
+      "expected_hz": 220.0,
+      "formant_hz": 1000.0,
+      "frames": 47,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "220Hz_F1250": {
+      "expected_hz": 220.0,
+      "formant_hz": 1250.0,
+      "frames": 47,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "220Hz_F500": {
+      "expected_hz": 220.0,
+      "formant_hz": 500.0,
+      "frames": 47,
+      "median_hz": 221.2,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "220Hz_F700": {
+      "expected_hz": 220.0,
+      "formant_hz": 700.0,
+      "frames": 47,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "220Hz_F800": {
+      "expected_hz": 220.0,
+      "formant_hz": 800.0,
+      "frames": 47,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "240Hz_F1000": {
+      "expected_hz": 240.0,
+      "formant_hz": 1000.0,
+      "frames": 47,
+      "median_hz": 240.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "240Hz_F1250": {
+      "expected_hz": 240.0,
+      "formant_hz": 1250.0,
+      "frames": 47,
+      "median_hz": 240.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "240Hz_F500": {
+      "expected_hz": 240.0,
+      "formant_hz": 500.0,
+      "frames": 47,
+      "median_hz": 241.21,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "240Hz_F700": {
+      "expected_hz": 240.0,
+      "formant_hz": 700.0,
+      "frames": 47,
+      "median_hz": 240.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "240Hz_F800": {
+      "expected_hz": 240.0,
+      "formant_hz": 800.0,
+      "frames": 47,
+      "median_hz": 240.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "300Hz_F1000": {
+      "expected_hz": 300.0,
+      "formant_hz": 1000.0,
+      "frames": 47,
+      "median_hz": 300.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "300Hz_F1250": {
+      "expected_hz": 300.0,
+      "formant_hz": 1250.0,
+      "frames": 47,
+      "median_hz": 300.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "300Hz_F500": {
+      "expected_hz": 300.0,
+      "formant_hz": 500.0,
+      "frames": 47,
+      "median_hz": 300.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "300Hz_F700": {
+      "expected_hz": 300.0,
+      "formant_hz": 700.0,
+      "frames": 47,
+      "median_hz": 300.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "300Hz_F800": {
+      "expected_hz": 300.0,
+      "formant_hz": 800.0,
+      "frames": 47,
+      "median_hz": 300.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    }
+  },
+  "guards": {
+    "silence": {
+      "frames": 0,
+      "median_hz": null,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 0,
+      "ok_ratio": 0.0,
+      "other": 0
+    },
+    "sine_220": {
+      "frames": 47,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "sine_440": {
+      "frames": 47,
+      "median_hz": 440.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "sine_65": {
+      "frames": 47,
+      "median_hz": 65.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "sine_880": {
+      "frames": 47,
+      "median_hz": 880.01,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "white_noise": {
+      "frames": 0,
+      "median_hz": null,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 0,
+      "ok_ratio": 0.0,
+      "other": 0
+    }
+  },
+  "numpy": "2.5.4",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.6",
+  "robustness": {
+    "comb_220Hz_F500_snr10_s11": {
+      "frames": 47,
+      "median_hz": 110.05,
+      "octave_down": 30,
+      "octave_up": 0,
+      "ok": 7,
+      "ok_ratio": 0.1489,
+      "other": 10,
+      "seed": 11,
+      "snr_db": 10.0
+    },
+    "comb_220Hz_F500_snr10_s12": {
+      "frames": 47,
+      "median_hz": 110.0,
+      "octave_down": 27,
+      "octave_up": 0,
+      "ok": 10,
+      "ok_ratio": 0.2128,
+      "other": 10,
+      "seed": 12,
+      "snr_db": 10.0
+    },
+    "comb_220Hz_F500_snr20_s11": {
+      "frames": 47,
+      "median_hz": 221.2,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0,
+      "seed": 11,
+      "snr_db": 20.0
+    },
+    "comb_220Hz_F500_snr20_s12": {
+      "frames": 47,
+      "median_hz": 221.2,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0,
+      "seed": 12,
+      "snr_db": 20.0
+    },
+    "comb_220Hz_F500_snr30_s11": {
+      "frames": 47,
+      "median_hz": 221.2,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0,
+      "seed": 11,
+      "snr_db": 30.0
+    },
+    "comb_220Hz_F500_snr30_s12": {
+      "frames": 47,
+      "median_hz": 221.2,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 47,
+      "ok_ratio": 1.0,
+      "other": 0,
+      "seed": 12,
+      "snr_db": 30.0
+    },
+    "vowel_a_220Hz_snr10_s11": {
+      "frames": 37,
+      "median_hz": 110.12,
+      "octave_down": 10,
+      "octave_up": 0,
+      "ok": 14,
+      "ok_ratio": 0.3784,
+      "other": 13,
+      "seed": 11,
+      "snr_db": 10.0
+    },
+    "vowel_a_220Hz_snr10_s12": {
+      "frames": 37,
+      "median_hz": 110.1,
+      "octave_down": 15,
+      "octave_up": 0,
+      "ok": 13,
+      "ok_ratio": 0.3514,
+      "other": 9,
+      "seed": 12,
+      "snr_db": 10.0
+    },
+    "vowel_a_220Hz_snr20_s11": {
+      "frames": 37,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0,
+      "seed": 11,
+      "snr_db": 20.0
+    },
+    "vowel_a_220Hz_snr20_s12": {
+      "frames": 37,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0,
+      "seed": 12,
+      "snr_db": 20.0
+    },
+    "vowel_a_220Hz_snr30_s11": {
+      "frames": 37,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0,
+      "seed": 11,
+      "snr_db": 30.0
+    },
+    "vowel_a_220Hz_snr30_s12": {
+      "frames": 37,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0,
+      "seed": 12,
+      "snr_db": 30.0
+    }
+  },
+  "sr": 24000,
+  "summary": {
+    "comb_cases": 30,
+    "comb_clean_cases": 30,
+    "comb_frames": 1410,
+    "comb_octave_down": 0,
+    "comb_octave_up": 0,
+    "comb_octave_up_ratio": 0.0,
+    "robust_cases": 12,
+    "robust_cases_clean": 8,
+    "robust_frames": 504,
+    "robust_octave_down": 82,
+    "robust_octave_up": 0,
+    "vowel_frames": 555,
+    "vowel_octave_up": 0,
+    "vowel_octave_up_ratio": 0.0
+  },
+  "vowel": {
+    "a_110Hz": {
+      "expected_hz": 110.0,
+      "frames": 37,
+      "median_hz": 110.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "a_200Hz": {
+      "expected_hz": 200.0,
+      "frames": 37,
+      "median_hz": 199.99,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "a_220Hz": {
+      "expected_hz": 220.0,
+      "frames": 37,
+      "median_hz": 220.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "a_240Hz": {
+      "expected_hz": 240.0,
+      "frames": 37,
+      "median_hz": 240.0,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "a_350Hz": {
+      "expected_hz": 350.0,
+      "frames": 37,
+      "median_hz": 349.97,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "i_110Hz": {
+      "expected_hz": 110.0,
+      "frames": 37,
+      "median_hz": 110.01,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "i_200Hz": {
+      "expected_hz": 200.0,
+      "frames": 37,
+      "median_hz": 199.97,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "i_220Hz": {
+      "expected_hz": 220.0,
+      "frames": 37,
+      "median_hz": 220.02,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "i_240Hz": {
+      "expected_hz": 240.0,
+      "frames": 37,
+      "median_hz": 239.94,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "i_350Hz": {
+      "expected_hz": 350.0,
+      "frames": 37,
+      "median_hz": 349.95,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "u_110Hz": {
+      "expected_hz": 110.0,
+      "frames": 37,
+      "median_hz": 110.01,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "u_200Hz": {
+      "expected_hz": 200.0,
+      "frames": 37,
+      "median_hz": 199.98,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "u_220Hz": {
+      "expected_hz": 220.0,
+      "frames": 37,
+      "median_hz": 220.01,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "u_240Hz": {
+      "expected_hz": 240.0,
+      "frames": 37,
+      "median_hz": 239.99,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    },
+    "u_350Hz": {
+      "expected_hz": 350.0,
+      "frames": 37,
+      "median_hz": 349.95,
+      "octave_down": 0,
+      "octave_up": 0,
+      "ok": 37,
+      "ok_ratio": 1.0,
+      "other": 0
+    }
+  }
+}

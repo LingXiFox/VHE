@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from .contract import SynthBackend
 from .formant_proxy import FormantProxySynth
+from .mandarin import MandarinFormantSynth
 
 DEFAULT_BACKEND = "formant_proxy"
 
 _FACTORIES = {
     FormantProxySynth.name: FormantProxySynth,
+    MandarinFormantSynth.name: MandarinFormantSynth,
 }
 
 
