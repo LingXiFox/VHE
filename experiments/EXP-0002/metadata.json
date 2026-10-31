@@ -1,0 +1,43 @@
+{
+  "experiment_id": "EXP-0002",
+  "title": "macOS Apple M5 真机 MPS 后端验收与确定性复测",
+  "hypothesis": "同一 FP32 残差 Conv1d 原型可在 Apple M5 MPS 真机完成前向/反向/优化器更新，且同 seed 机械声 WAV 与历史 Linux 基线逐字节一致",
+  "created_utc": "2026-10-31T14:16:52.897858+00:00",
+  "python": "3.14.6 (uv venv)",
+  "platform": "macOS-27.2-arm64 (Darwin 27.2.0)",
+  "git": {
+    "commit": "c7e102a764790870e56678e5c1d58e0bb39b1293",
+    "status": ""
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "N/A; synthetic sine fixture only, no dataset",
+  "command": ".venv/bin/python -m vhe smoke --device mps --samples 1024 --steps 3",
+  "torch_version": "2.15.0",
+  "cuda_version": null,
+  "gpu": "Apple M5 (MPS), 32 GB unified memory; no NVIDIA GPU",
+  "config_sha256": null,
+  "notes": "18 passed, 1 skipped (CUDA hardware missing). MPS smoke losses identical to CPU. Same-seed mechanical WAV sha256 equals historical Linux baseline. No training, no humanization claim.",
+  "metrics": {
+    "test_passed": 18,
+    "test_skipped_cuda_no_gpu": 1,
+    "test_skipped_mps_no_gpu": 0,
+    "mps_smoke_losses": [
+      0.0010205598082393408,
+      0.0009619559277780354,
+      0.0008714072173461318
+    ],
+    "cpu_smoke_losses": [
+      0.0010205598082393408,
+      0.0009619559277780354,
+      0.0008714072173461318
+    ],
+    "mechanical_wav_sha256": "cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985",
+    "status": "backend smoke only; naturalization NOT trained"
+  },
+  "artifacts": {
+    "logs/doctor-auto.json": "device report",
+    "logs/smoke-mps.json": "mps smoke",
+    "logs/smoke-cpu.json": "cpu smoke",
+    "logs/pytest.txt": "test log"
+  }
+}

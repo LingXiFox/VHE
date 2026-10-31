@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Volumes/Development/Projects/projects/VHE
+configfile: pyproject.toml
+testpaths: tests
+collected 19 items
+
+tests/test_backend.py ......                                             [ 31%]
+tests/test_experiment.py ..                                              [ 42%]
+tests/test_model.py ...s..                                               [ 73%]
+tests/test_synth.py .....                                                [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_model.py:35: requires actual NVIDIA CUDA
+======================== 18 passed, 1 skipped in 0.85s =========================

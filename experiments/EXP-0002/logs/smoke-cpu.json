@@ -1,0 +1,30 @@
+{
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.6",
+  "requested_device": "cpu",
+  "torch_installed": true,
+  "selected_device": "cpu",
+  "torch_version": "2.15.0",
+  "torch_cuda_runtime": null,
+  "cuda_available": false,
+  "mps_built": true,
+  "mps_available": true,
+  "precision_policy": "float32 (all platforms; mixed precision disabled in MVP)",
+  "status": "backend-smoke-passed-not-humanization",
+  "batch_size": 1,
+  "samples": 1024,
+  "steps": 3,
+  "seed": 42,
+  "model_parameters": 6265,
+  "losses": [
+    0.0010205598082393408,
+    0.0009619559277780354,
+    0.0008714072173461318
+  ],
+  "output_shape": [
+    1,
+    1,
+    1024
+  ],
+  "output_dtype": "torch.float32"
+}

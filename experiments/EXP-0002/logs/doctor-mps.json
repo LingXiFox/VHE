@@ -1,0 +1,13 @@
+{
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.6",
+  "requested_device": "mps",
+  "torch_installed": true,
+  "selected_device": "mps",
+  "torch_version": "2.15.0",
+  "torch_cuda_runtime": null,
+  "cuda_available": false,
+  "mps_built": true,
+  "mps_available": true,
+  "precision_policy": "float32 (all platforms; mixed precision disabled in MVP)"
+}
