@@ -26,6 +26,15 @@ def main() -> None:
     smoke.add_argument("--samples", type=int, default=2048)
     smoke.add_argument("--steps", type=int, default=3)
     smoke.add_argument("--seed", type=int, default=42)
+    manifest = sub.add_parser("manifest", help="Build a speaker-grouped manifest from a local AISHELL-3 root")
+    manifest.add_argument("--root", required=True, help="AISHELL-3 directory holding train/ and test/")
+    manifest.add_argument("--output", required=True, help="JSONL manifest path; refuses to overwrite")
+    manifest.add_argument("--dev-fraction", type=float, default=0.1,
+                          help="share of official train speakers held out as dev (speaker-grouped)")
+    manifest.add_argument("--seed", type=int, default=42)
+    manifest.add_argument("--no-hashes", action="store_true", help="skip per-file SHA256 (fast inventory)")
+    manifest.add_argument("--fail-on-errors", action="store_true",
+                          help="exit 2 if any utterance was rejected")
     args = parser.parse_args()
     if args.command == "doctor":
         from .backend import inspect_runtime
@@ -41,6 +50,29 @@ def main() -> None:
         except (RuntimeError, ValueError, FloatingPointError, AssertionError) as exc:
             parser.exit(2, f"Backend smoke failed: {exc}\n")
         print(json.dumps(report, indent=2, ensure_ascii=False))
+    elif args.command == "manifest":
+        from .data import (apply_speaker_split, build_manifest, carve_speaker_split,
+                           check_no_speaker_leak, write_manifest)
+        try:
+            built = build_manifest(args.root, compute_hashes=not args.no_hashes)
+            grouped = apply_speaker_split(built, carve_speaker_split(
+                built, dev_fraction=args.dev_fraction, seed=args.seed))
+            check_no_speaker_leak(grouped)  # raises instead of writing a leaky manifest
+            digest = write_manifest(args.output, grouped)
+        except (FileNotFoundError, FileExistsError, ValueError) as exc:
+            parser.exit(2, f"Manifest build failed: {exc}\n")
+        stats = grouped.stats()
+        print(json.dumps({
+            "root": grouped.root,
+            "output": args.output,
+            "manifest_sha256": digest,
+            "content_sha256": grouped.content_hash(),
+            "stats": stats,
+            "issues": [issue.as_dict() for issue in grouped.issues[:20]],
+            "status": "manifest-only; no audio copied",
+        }, indent=2, ensure_ascii=False))
+        if args.fail_on_errors and grouped.errors:
+            parser.exit(2, f"{len(grouped.errors)} utterance(s) rejected; see {args.output}\n")
     elif args.command == "synth":
         phones = [s.strip() for s in args.phonemes.split(",")]
         audio = synthesize(phones, f0_hz=args.f0, duration_s=args.duration,

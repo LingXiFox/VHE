@@ -1,0 +1,67 @@
+{
+  "root": "/tmp/vhe_exp0004/AISHELL-3",
+  "output": "experiments/EXP-0004/logs/manifest_demo.jsonl",
+  "manifest_sha256": "d49953ec4d33bc0d1a1781d20a35f85e6c3f911563be2efa91af3e015a612cde",
+  "content_sha256": "744fe02daeed62ab5b204883063f4415a457deabc0b6a689040bf8ce0cb78fce",
+  "stats": {
+    "utterances": 4,
+    "speakers": 3,
+    "total_hours": 0.0007,
+    "min_duration_s": 0.6,
+    "max_duration_s": 0.6,
+    "errors": 4,
+    "warnings": 1,
+    "speakers_per_split": {
+      "train": 1,
+      "dev": 1,
+      "test": 1
+    },
+    "error_codes": {
+      "not_mono": 1,
+      "empty_text": 1,
+      "missing_wav": 1,
+      "too_short": 1
+    },
+    "warning_codes": {
+      "pinyin_mismatch": 1
+    }
+  },
+  "issues": [
+    {
+      "split": "test",
+      "where": "SSB00120001",
+      "code": "not_mono",
+      "detail": "2 channels; downmixing is a silent content change",
+      "severity": "error"
+    },
+    {
+      "split": "test",
+      "where": "SSB00110002",
+      "code": "empty_text",
+      "detail": "content.txt has no characters",
+      "severity": "error"
+    },
+    {
+      "split": "train",
+      "where": "SSB00090002",
+      "code": "pinyin_mismatch",
+      "detail": "14 characters vs 0 syllables",
+      "severity": "warn"
+    },
+    {
+      "split": "train",
+      "where": "SSB00090002",
+      "code": "missing_wav",
+      "detail": "train/wav/SSB0009/SSB00090002.wav",
+      "severity": "error"
+    },
+    {
+      "split": "train",
+      "where": "SSB00090003",
+      "code": "too_short",
+      "detail": "0.100s < 0.5s",
+      "severity": "error"
+    }
+  ],
+  "status": "manifest-only; no audio copied"
+}

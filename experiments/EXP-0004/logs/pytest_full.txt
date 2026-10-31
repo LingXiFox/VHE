@@ -1,0 +1,2 @@
+SKIPPED [1] tests/test_model.py:35: requires actual NVIDIA CUDA
+49 passed, 1 skipped in 0.98s

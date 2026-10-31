@@ -47,3 +47,16 @@
   契约测试自身也写错两次（过零率冒充音高、未归一化自相关偏向长滞后；WAV 往返 1 LSB 容差不成立），改法与原因见实验记录。
 - 流程偏差（不隐去）：实验记录在实现完成后、验证运行前创建，晚于 AGENTS.md 要求的"运行前"。
 - **VHE 仍未训练**，无任何自然度或音色保持证据。证据：`experiments/EXP-0003/`。
+
+## 2026-10-31 | EXP-0004 AISHELL-3 适配器（合成夹具验证，真实语料阻塞）
+
+- 新增 `src/vhe/data/aishell3.py`：目录发现、`content.txt`/`spk-info.txt`/`pinyin.txt` 解析、只读 WAV 头的校验、
+  SHA256 溯源、按说话人分组切 dev（官方 test 不动）、JSONL manifest 读写；新增 `python -m vhe manifest`。
+- 失败可见：拒绝项一律落成 `ParseIssue`（missing_wav / not_mono / not_16bit / empty_text / too_short / too_long /
+  unexpected_sample_rate(warn) / pinyin_mismatch(warn) / bad_line / unreadable_wav），不静默过滤。
+- 结果：适配器 **14 passed**，全库 **49 passed, 1 skipped**（CUDA）；manifest SHA256 `d49953ec…`（10 行），
+  同一输入可复现，重复写入被拒绝（退出码 2）。
+- 真实 AISHELL-3 不在本机，且未获授权下载 19 GB 语料 → **真实解析率、听音抽检、P1 真实验收均未完成**。
+- 失败记录（保留）：`empty_text` 曾被 `strip` 吃掉 TAB 退化成 bad_line；测试路径漏了说话人目录导致假失败；
+  夹具重写 WAV 触发拒绝覆盖。记录创建晚于实现（流程偏差，同 EXP-0003）。
+- **VHE 仍未训练**，无自然度或音色保持证据。证据：`experiments/EXP-0004/`。

@@ -1,6 +1,6 @@
 # VHE — 基于说话人无关神经声学修正的人声自然化模型
 
-**Research status: EXP-0003 / 未训练 VHE / macOS Apple M5 MPS 真机已验收（EXP-0002），Windows RTX 4090 CUDA 真机仍未验证。**
+**Research status: EXP-0004 / 未训练 VHE / macOS Apple M5 MPS 真机已验收（EXP-0002），Windows RTX 4090 CUDA 真机仍未验证；P1 数据侧因本机无 AISHELL-3 而阻塞。**
 
 目标：输入仅为物理/参数合成器生成的**机械人声音频张量** `x [B,1,N]`，输出自然化人声音频 `y [B,1,N]`。VHE **不接收**文本、拼音、音素、MIDI 或说话人 ID，不生成目标内容/音色/音高；这些均由上游合成器决定。
 
@@ -22,6 +22,7 @@ Voice Template + Phonemes + MIDI/Expression
 
 - `src/vhe/synth/`：**机械声**上游契约与后端。`contract.py` 定义 `SynthesisRequest`/`SynthesisResult`/`SynthBackend`（分段时长、线性 F0 曲线、前后静音、请求指纹），`formant_proxy.py` 是谐波＋共振峰**代理**实现，`registry.py` 负责后端注册。当前只支持 `a/i/u`，不是声道物理引擎，没有辅音、声调、韵律，也不支持中文整句或 `yuan`。契约细节见 **[docs/SYNTH_CONTRACT.md](docs/SYNTH_CONTRACT.md)**。
 - `src/vhe/audio.py`：16-bit PCM 读写与峰值归一；量化固定在 float32 下进行（字节级可复现）。
+- `src/vhe/data/`：**AISHELL-3 适配器**（未接入真实数据）。只读目录结构与 WAV 头，把每一条被拒文件记成显式 issue code（missing_wav / not_mono / empty_text / too_short …），按说话人切 dev 且不动官方 test，输出只含相对路径与 SHA256 的 JSONL manifest。
 - `tests/test_synth.py` / `tests/test_synth_contract.py`：尺寸、确定性、参数差异、不支持音素报错、禁止覆盖；以及请求字段白名单、静音不改浊音样本、指纹追踪、**历史 WAV 基线的 SHA256 字节级回归**。
 - `src/vhe/backend.py`：CUDA/MPS/CPU 自动检测，设备指定失败时不偷偷回退。
 - `src/vhe/model.py`：可移植的残差 Conv1d **未训练原型**（初始化为恒等映射）。
@@ -60,6 +61,7 @@ python -m venv .venv
 python -m pip install -e '.[dev]'
 pytest -q
 python -m vhe synth --phonemes a,i,u --preset yang --f0 220 --duration 1.2 --sr 24000 --seed 42 --output data/demo/new_yang_aiu.wav
+python -m vhe manifest --root data/raw/aishell3 --output data/manifests/aishell3.jsonl  # 需要本地 AISHELL-3；拒绝覆盖
 python tools/new_experiment.py --id EXP-00NN --title "<实验标题>" --hypothesis "<预注册假设>"  # 编号只增不改，已存在会直接失败
 ```
 
@@ -67,6 +69,8 @@ Windows PowerShell 激活：`\.venv\Scripts\Activate.ps1`；macOS/Linux：`sourc
 PowerShell 也可直接运行 `py -3.11 -m pip install -e '.[dev]'`（需要先选定解释器，建议虚拟环境）。
 
 **数据集不随代码分发，也不要自动下载 19GB AISHELL-3。** 真实数据必须按 `docs/DATA_POLICY.md` 管理，手动审查许可/本地路径。禁止把录音、个人信息、大模型权重上传到 Git。
+
+AISHELL-3 的格式与许可已在 [docs/DATA_POLICY.md](docs/DATA_POLICY.md) 中核实并记录（Apache-2.0、44.1 kHz mono 16-bit、`content.txt` 为「汉字+带声调拼音」交替）。适配器在合成夹具上通过（EXP-0004），**真实语料尚未解析、尚未人工听音**。
 
 ## 科学实验门槛
 
