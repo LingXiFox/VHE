@@ -1,6 +1,6 @@
 # VHE — 基于说话人无关神经声学修正的人声自然化模型
 
-**Research status: EXP-0001 / 未训练 VHE / 双平台设备接口已实现，真机 CUDA/MPS 尚待验证。**
+**Research status: EXP-0003 / 未训练 VHE / macOS Apple M5 MPS 真机已验收（EXP-0002），Windows RTX 4090 CUDA 真机仍未验证。**
 
 目标：输入仅为物理/参数合成器生成的**机械人声音频张量** `x [B,1,N]`，输出自然化人声音频 `y [B,1,N]`。VHE **不接收**文本、拼音、音素、MIDI 或说话人 ID，不生成目标内容/音色/音高；这些均由上游合成器决定。
 
@@ -20,13 +20,14 @@ Voice Template + Phonemes + MIDI/Expression
 
 ## 已有内容（非神经模型）
 
-- `src/vhe/synth.py`：**机械感**谐波＋共振峰代理模型，当前只支持 `a/i/u`，并非完整声道物理引擎，也不支持中文整句或 `yuan`。
-- `tests/test_synth.py`：尺寸、确定性、参数差异、不支持音素报错、禁止覆盖原文件。
+- `src/vhe/synth/`：**机械声**上游契约与后端。`contract.py` 定义 `SynthesisRequest`/`SynthesisResult`/`SynthBackend`（分段时长、线性 F0 曲线、前后静音、请求指纹），`formant_proxy.py` 是谐波＋共振峰**代理**实现，`registry.py` 负责后端注册。当前只支持 `a/i/u`，不是声道物理引擎，没有辅音、声调、韵律，也不支持中文整句或 `yuan`。契约细节见 **[docs/SYNTH_CONTRACT.md](docs/SYNTH_CONTRACT.md)**。
+- `src/vhe/audio.py`：16-bit PCM 读写与峰值归一；量化固定在 float32 下进行（字节级可复现）。
+- `tests/test_synth.py` / `tests/test_synth_contract.py`：尺寸、确定性、参数差异、不支持音素报错、禁止覆盖；以及请求字段白名单、静音不改浊音样本、指纹追踪、**历史 WAV 基线的 SHA256 字节级回归**。
 - `src/vhe/backend.py`：CUDA/MPS/CPU 自动检测，设备指定失败时不偷偷回退。
 - `src/vhe/model.py`：可移植的残差 Conv1d **未训练原型**（初始化为恒等映射）。
 - `src/vhe/smoke.py`：合成张量的前/反向传播和优化器自检，**不是语音自然化训练**。
 - `src/vhe/checkpoint.py`：跨平台 `state_dict` 存取工具。
-- `docs/`：实验协议、数据授权、研究日志、文献、里程碑。
+- `docs/`：实验协议、数据授权、研究日志、文献、里程碑、合成器契约、平台验收规范。
 - `agent/START_HERE.md`：交给本地 Agent 的可执行开发任务。
 - `tools/new_experiment.py`：创建只增不改的实验目录和模板记录。
 
@@ -59,7 +60,7 @@ python -m venv .venv
 python -m pip install -e '.[dev]'
 pytest -q
 python -m vhe synth --phonemes a,i,u --preset yang --f0 220 --duration 1.2 --sr 24000 --seed 42 --output data/demo/new_yang_aiu.wav
-python tools/new_experiment.py --id EXP-0001 --title "baseline试听与记录" --hypothesis "可重复生成机械人声"
+python tools/new_experiment.py --id EXP-00NN --title "<实验标题>" --hypothesis "<预注册假设>"  # 编号只增不改，已存在会直接失败
 ```
 
 Windows PowerShell 激活：`\.venv\Scripts\Activate.ps1`；macOS/Linux：`source .venv/bin/activate`。
@@ -84,4 +85,6 @@ PowerShell 也可直接运行 `py -3.11 -m pip install -e '.[dev]'`（需要先�
 - 研究日志只追加：`docs/RESEARCH_LOG.md`。
 - 每个运行单独建 `experiments/EXP-XXXX/`，保留失败实验，不能覆盖旧实验。
 - 修改结论必须留下修订条目，不能擦掉最初错误猜想。
-- 每个阶段提交 Git，暂不创建远程仓库，不替用户选择开源许可证。
+- 每个阶段提交 Git；远程仓库为 <https://github.com/LingXiFox/VHE>（public，不含任何真实录音）。
+- **未选择开源许可证**：许可证由项目所有者决定，仓库当前无 LICENSE 文件。
+- 真实录音、数据集与训练产物不得进入 Git（见 `docs/DATA_POLICY.md` 与 `.gitignore`）。

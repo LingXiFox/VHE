@@ -1,0 +1,38 @@
+{
+  "experiment_id": "EXP-0003",
+  "title": "P0-B 合成器契约重构与字节级等价回归",
+  "hypothesis": "把单体 synth.py 重构为 SynthesisRequest/SynthesisResult + 可插拔 SynthBackend 契约后，旧 CLI 路径（a,i,u / yang / 220Hz / 1.2s / 24kHz / seed 42）仍生成与历史基线逐字节相同的 WAV（sha256 cefbcaec...），且新增的显式音高曲线/分段时长/静音能力不改变默认行为",
+  "created_utc": "2026-10-31T14:20:35.147815+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "890f009d4ecd579e3ba42f62c5ace99bb91f1696",
+    "status": "D src/vhe/synth.py\n?? src/vhe/audio.py\n?? src/vhe/synth/\n?? tests/test_synth_contract.py",
+    "note": "dirty by design: the refactor under test is uncommitted; commit follows this record"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "N/A; synthetic vowel fixtures only, no dataset",
+  "command": ".venv/bin/python -m pytest -q -v ; .venv/bin/python -m vhe synth --phonemes a,i,u --preset yang --f0 220 --duration 1.2 --sr 24000 --seed 42 --output <path> (twice)",
+  "torch_version": "2.15.0",
+  "cuda_version": null,
+  "gpu": "Apple M5 (MPS), 32 GB unified memory; no NVIDIA GPU",
+  "config_sha256": null,
+  "notes": "35 passed, 1 skipped (CUDA hardware missing). Byte-identical baseline WAV before/after refactor. One self-inflicted regression (float64 in write_wav, 13/28800 samples 1 LSB off) found and fixed. No training, no humanization claim.",
+  "metrics": {
+    "test_passed": 35,
+    "test_passed_before_refactor": 18,
+    "test_skipped_cuda_no_gpu": 1,
+    "baseline_wav_sha256_run_a": "cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985",
+    "baseline_wav_sha256_run_b": "cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985",
+    "baseline_wav_sha256_exp0000_exp0002": "cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985",
+    "default_request_fingerprint": "6ce3178192aa11dd54507ab303068f1c0cf24463e94294273e72644cb2075188",
+    "samples": 28800,
+    "sample_rate": 24000,
+    "regression_case": "write_wav float64 conversion shifted 13/28800 samples by 1 LSB; fixed by quantising in float32",
+    "status": "contract refactor only; naturalization NOT trained"
+  },
+  "artifacts": {
+    "logs/pytest.txt": "full pytest -v output",
+    "logs/baseline_equivalence.txt": "two CLI runs, sha256 vs historical baseline, git scope"
+  }
+}

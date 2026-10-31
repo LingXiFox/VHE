@@ -1,0 +1,18 @@
+$ .venv/bin/python -m pytest -q -v
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Volumes/Development/Projects/projects/VHE
+configfile: pyproject.toml
+testpaths: tests
+collected 36 items
+
+tests/test_backend.py ......                                             [ 16%]
+tests/test_experiment.py ..                                              [ 22%]
+tests/test_model.py ...s..                                               [ 38%]
+tests/test_synth.py .....                                                [ 52%]
+tests/test_synth_contract.py .................                           [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_model.py:35: requires actual NVIDIA CUDA
+======================== 35 passed, 1 skipped in 0.91s =========================
+[exit 0]

@@ -1,0 +1,26 @@
+$ git diff --stat HEAD (refactor scope)
+ D src/vhe/synth.py
+?? experiments/EXP-0003/
+?? src/vhe/audio.py
+?? src/vhe/synth/
+?? tests/test_synth_contract.py
+
+$ sha256 of the two CLI outputs
+cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985  /tmp/vhe_check/exp0003_run_a.wav
+cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985  /tmp/vhe_check/exp0003_run_b.wav
+
+EXP-0000 baseline expected: cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985
+{
+  "output": "/tmp/vhe_check/exp0003_run_a.wav",
+  "samples": 28800,
+  "sr": 24000,
+  "sha256": "cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985",
+  "status": "mechanical-baseline-only"
+}
+{
+  "output": "/tmp/vhe_check/exp0003_run_b.wav",
+  "samples": 28800,
+  "sr": 24000,
+  "sha256": "cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985",
+  "status": "mechanical-baseline-only"
+}

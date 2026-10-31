@@ -35,3 +35,15 @@
 - 显式 `--device cuda` 在本机退出码 2，未静默回退。
 - **仍未训练 VHE**，无自然度/音色保持证据。Windows RTX 4090 真机仍未验证。
 - 证据：`experiments/EXP-0002/`。
+
+## 2026-10-31 | EXP-0003 P0-B 合成器契约重构（字节级等价）
+
+- 变更：`src/vhe/synth.py`（126 行单体）→ `src/vhe/synth/{contract,formant_proxy,registry,__init__}.py` + `src/vhe/audio.py`。
+  新增 `SynthesisRequest`（template/phonemes/pitch/timing/sample_rate/seed）、`SynthesisResult`（含 backend 版本与 request fingerprint）、
+  `PitchCurve`（线性插值、区间外 clamp）、`Timing`（前后静音 ≤5 s）、`SynthBackend` 协议与注册表。
+- 结果：`pytest -q` **35 passed, 1 skipped**（跳过项为无 NVIDIA CUDA）；重构前 18 passed。
+- 字节等价：同一 CLI 命令连续两次输出 SHA256 均为 `cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985`，与 EXP-0000/EXP-0002 完全一致。
+- 失败记录（保留）：重构中把 `write_wav` 的量化改成 float64，导致 13/28800 个样本相差 1 LSB；已改回 float32 量化并以测试固定。
+  契约测试自身也写错两次（过零率冒充音高、未归一化自相关偏向长滞后；WAV 往返 1 LSB 容差不成立），改法与原因见实验记录。
+- 流程偏差（不隐去）：实验记录在实现完成后、验证运行前创建，晚于 AGENTS.md 要求的"运行前"。
+- **VHE 仍未训练**，无任何自然度或音色保持证据。证据：`experiments/EXP-0003/`。
