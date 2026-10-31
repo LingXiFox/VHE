@@ -73,3 +73,17 @@
   通带用峰值测量在 4 kHz 得到 -1.25 dB（6 样本/周期、相位误差 `20log10(cos30°)`），改整周期 RMS 后为 0 dB；
   分段时长曾加满窗导致 20 ms 点击算成 65 ms，改为 `frames*hop`；15 ms 点击仍卡在 60 ms 边界，记为已知限制。
 - **仅合成信号**：本机无 AISHELL-3，真实语音上的 F0/分段精度与人工听音均未验证。证据：`experiments/EXP-0005/`。
+
+## 2026-10-31 | EXP-0006 成对数据构造：按实测起点渲染 + 显式阻塞（仅合成元音）
+
+- 新增 `src/vhe/data/pairing.py`：`parse_syllable`（声母/韵母/声调拆分，无模糊匹配）、`build_pair`（重采样 → F0 →
+  能量分段 → 音节解析 → 逐音节渲染回填）、`write_pair`（real.wav / mechanical.wav / pair.json，拒绝覆盖）。
+- 结果：3 元音 fixture `ok`，22800 / 22800 样本严格等长，停顿窗 RMS 0.0 / 0.0，3 段全 voiced，0 issue；
+  44.1 kHz 输入重采样后仍等长；`ma1/ni3/guang3` → `blocked`，3/3 音节给出 `onset 'm' not in backend inventory` 理由；
+  `pytest -q` **85 passed, 1 skipped**。report SHA256 `1390212f…`。
+- 失败记录（保留）：① `blocked` 分支忘记改 `status`，被误记成 `rejected`；② 第一版用单个拼接请求，
+  `PhonemeSequence` 没有静音槽位 → 机械信号只有 18240 样本（0.76 s）而真实 22800（0.95 s），旧代码用 `min()`
+  **截断真实音频**，已删除该逻辑改为按实测起点逐音节回填；③ 连续元音无能量谷 → 3 音节并成 1 段，固有限制，
+  已写成测试 `test_continuous_vowels_collapse_into_one_segment`；④ 本机无 AISHELL-3（三个候选路径均不存在），
+  未授权下载，且即使有语料，当前后端只能发 `a/i/u`，普通话音节会整体 `blocked`。
+- **结论边界**：没有任何真实语音、自然度或音色保持结论；P1 的 20 对真人对听在当前后端下不可达。证据：`experiments/EXP-0006/`。

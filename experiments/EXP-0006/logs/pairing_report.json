@@ -1,0 +1,158 @@
+{
+  "backend": {
+    "name": "formant_proxy",
+    "version": "0.1.0",
+    "phonemes": [
+      "a",
+      "i",
+      "u"
+    ]
+  },
+  "sample_rate": 24000,
+  "vowel_pair": {
+    "status": "ok",
+    "real_samples": 22800,
+    "mechanical_samples": 22800,
+    "equal_length": true,
+    "issues": [
+      {
+        "code": "syllablewise_render",
+        "detail": "3 syllables rendered separately at measured onsets; each render applies a 30 ms fade, so boundaries dip more than in real speech",
+        "severity": "warning"
+      }
+    ],
+    "f0_stats": {
+      "frames": 92,
+      "voiced_frames": 63,
+      "voiced_ratio": 0.6848,
+      "median_f0_hz": 199.96,
+      "p05_f0_hz": 198.9,
+      "p95_f0_hz": 200.78
+    },
+    "segmentation_stats": {
+      "segments": 3,
+      "speech_duration_s": 0.62,
+      "voiced_segments": 3,
+      "issues": 0,
+      "issue_codes": []
+    },
+    "request_fingerprint": "3ea14fbc26ffd3ab7b9dc755eb41ff44c6066f7e73a1af970273117bc3cb1023",
+    "real_sha256": "945db6edd6a159874faf483dad4519ce896e4e60d7884b15a1959b3332c377d4",
+    "mechanical_sha256": "f7606ca84026dbe6f0321dbc76cf70265d246fcaafcfd803d131bf48077cf39f",
+    "gap_window": [
+      6000,
+      7200
+    ],
+    "gap_rms": {
+      "real": 0.0,
+      "mechanical": 0.0
+    }
+  },
+  "written_pair": {
+    "pair_json_sha256": "dace35fd62486eb077b365ed3fa34cacfd3e1dcb7ea8a91de88db4c82b71f8b9",
+    "files": {
+      "real": "real.wav",
+      "mechanical": "mechanical.wav"
+    },
+    "mechanical_sha256": "f7606ca84026dbe6f0321dbc76cf70265d246fcaafcfd803d131bf48077cf39f"
+  },
+  "resampled_pair": {
+    "status": "ok",
+    "real_samples": 22800,
+    "mechanical_samples": 22800,
+    "equal_length": true,
+    "issues": [
+      {
+        "code": "resampled",
+        "detail": "44100 Hz -> 24000 Hz",
+        "severity": "warning"
+      },
+      {
+        "code": "syllablewise_render",
+        "detail": "3 syllables rendered separately at measured onsets; each render applies a 30 ms fade, so boundaries dip more than in real speech",
+        "severity": "warning"
+      }
+    ],
+    "f0_stats": {
+      "frames": 92,
+      "voiced_frames": 63,
+      "voiced_ratio": 0.6848,
+      "median_f0_hz": 199.96,
+      "p05_f0_hz": 198.9,
+      "p95_f0_hz": 200.78
+    },
+    "segmentation_stats": {
+      "segments": 3,
+      "speech_duration_s": 0.62,
+      "voiced_segments": 3,
+      "issues": 0,
+      "issue_codes": []
+    },
+    "request_fingerprint": "3a6ba09d7bd719a762a611df659bc3b72cb6ba7c855ecc92cfb5cd44575ea3eb",
+    "real_sha256": "434e3702e6bcdfa6e7239f0a6acded333a9fbaa5d7795d6104fdd8916341ad4c",
+    "mechanical_sha256": "3f2ff456098df97356661e798525597acbbf8ec3cb27fe13a579858a81e9d598"
+  },
+  "blocked_pair": {
+    "status": "blocked",
+    "real_samples": 22800,
+    "mechanical_samples": null,
+    "equal_length": false,
+    "issues": [
+      {
+        "code": "backend_inventory_insufficient",
+        "detail": "3/3 syllables cannot be rendered by the backend (guang3, ma1, ni3); consonants/diphthongs would be silently dropped",
+        "severity": "error"
+      }
+    ],
+    "f0_stats": {
+      "frames": 92,
+      "voiced_frames": 63,
+      "voiced_ratio": 0.6848,
+      "median_f0_hz": 199.96,
+      "p05_f0_hz": 198.9,
+      "p95_f0_hz": 200.78
+    },
+    "segmentation_stats": {
+      "segments": 3,
+      "speech_duration_s": 0.62,
+      "voiced_segments": 3,
+      "issues": 0,
+      "issue_codes": []
+    },
+    "request_fingerprint": null,
+    "real_sha256": "945db6edd6a159874faf483dad4519ce896e4e60d7884b15a1959b3332c377d4",
+    "mechanical_sha256": null,
+    "syllables": [
+      {
+        "pinyin": "ma1",
+        "initial": "m",
+        "final": "a",
+        "tone": 1,
+        "phoneme": null,
+        "reason": "onset 'm' not in backend inventory ['a', 'i', 'u']"
+      },
+      {
+        "pinyin": "ni3",
+        "initial": "n",
+        "final": "i",
+        "tone": 3,
+        "phoneme": null,
+        "reason": "onset 'n' not in backend inventory ['a', 'i', 'u']"
+      },
+      {
+        "pinyin": "guang3",
+        "initial": "g",
+        "final": "uang",
+        "tone": 3,
+        "phoneme": null,
+        "reason": "onset 'g' not in backend inventory ['a', 'i', 'u']"
+      }
+    ]
+  },
+  "aishell3_probe": {
+    "/Volumes/Development/Projects/projects/VHE/data/raw/aishell3": false,
+    "/Volumes/Development/Projects/projects/VHE/data/raw/AISHELL-3": false,
+    "/Users/lingxifox/data/aishell3": false
+  },
+  "real_corpus_available": false
+}

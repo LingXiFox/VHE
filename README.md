@@ -1,6 +1,6 @@
 # VHE — 基于说话人无关神经声学修正的人声自然化模型
 
-**Research status: EXP-0005 / 未训练 VHE / macOS Apple M5 MPS 真机已验收（EXP-0002），Windows RTX 4090 CUDA 真机仍未验证；P1 数据侧因本机无 AISHELL-3 而阻塞（适配器与信号前端仅在合成信号上验证）。**
+**Research status: EXP-0006 / 未训练 VHE / macOS Apple M5 MPS 真机已验收（EXP-0002），Windows RTX 4090 CUDA 真机仍未验证；P1 数据侧因本机无 AISHELL-3 而阻塞（适配器、信号前端、配对构造均只在合成信号上验证），且后端音素表只有 a/i/u，真实普通话音节会被配对流程显式判为 blocked。**
 
 目标：输入仅为物理/参数合成器生成的**机械人声音频张量** `x [B,1,N]`，输出自然化人声音频 `y [B,1,N]`。VHE **不接收**文本、拼音、音素、MIDI 或说话人 ID，不生成目标内容/音色/音高；这些均由上游合成器决定。
 
@@ -22,7 +22,7 @@ Voice Template + Phonemes + MIDI/Expression
 
 - `src/vhe/synth/`：**机械声**上游契约与后端。`contract.py` 定义 `SynthesisRequest`/`SynthesisResult`/`SynthBackend`（分段时长、线性 F0 曲线、前后静音、请求指纹），`formant_proxy.py` 是谐波＋共振峰**代理**实现，`registry.py` 负责后端注册。当前只支持 `a/i/u`，不是声道物理引擎，没有辅音、声调、韵律，也不支持中文整句或 `yuan`。契约细节见 **[docs/SYNTH_CONTRACT.md](docs/SYNTH_CONTRACT.md)**。
 - `src/vhe/audio.py`：16-bit PCM 读写与峰值归一；量化固定在 float32 下进行（字节级可复现）。
-- `src/vhe/data/`：数据侧（未接入真实数据）。
+- `src/vhe/data/`：数据侧（未接入真实数据）：AISHELL-3 适配器、manifest CLI、重采样/F0/能量分段、成对构造（`pairing.py`）。
   - `aishell3.py`：**AISHELL-3 适配器**。只读目录结构与 WAV 头，把每一条被拒文件记成显式 issue code（missing_wav / not_mono / empty_text / too_short …），按说话人切 dev 且不动官方 test，输出只含相对路径与 SHA256 的 JSONL manifest。
   - `resample.py` / `f0.py` / `segment.py`：44.1 kHz → 契约采样率的多相 windowed-sinc 重采样（15 kHz 残留 -87 dB）、F0 自相关跟踪（100–400 Hz 合成信号误差 <1%）、能量谷音节分段（丢弃的短突发记 `segment_too_short`，静音记 `no_speech`）。
 - `tests/test_synth.py` / `tests/test_synth_contract.py`：尺寸、确定性、参数差异、不支持音素报错、禁止覆盖；以及请求字段白名单、静音不改浊音样本、指纹追踪、**历史 WAV 基线的 SHA256 字节级回归**。
@@ -72,7 +72,7 @@ PowerShell 也可直接运行 `py -3.11 -m pip install -e '.[dev]'`（需要先�
 
 **数据集不随代码分发，也不要自动下载 19GB AISHELL-3。** 真实数据必须按 `docs/DATA_POLICY.md` 管理，手动审查许可/本地路径。禁止把录音、个人信息、大模型权重上传到 Git。
 
-AISHELL-3 的格式与许可已在 [docs/DATA_POLICY.md](docs/DATA_POLICY.md) 中核实并记录（Apache-2.0、44.1 kHz mono 16-bit、`content.txt` 为「汉字+带声调拼音」交替）。适配器在合成夹具上通过（EXP-0004），**真实语料尚未解析、尚未人工听音**。
+AISHELL-3 的格式与许可已在 [docs/DATA_POLICY.md](docs/DATA_POLICY.md) 中核实并记录（Apache-2.0、44.1 kHz mono 16-bit、`content.txt` 为「汉字+带声调拼音」交替）。适配器在合成夹具上通过（EXP-0004），**真实语料尚未解析、尚未人工听音**。成对构造（`src/vhe/data/pairing.py`）在合成元音上等长、保留停顿、非法音节显式 `blocked`（EXP-0006），但因为后端只能发 `a/i/u`，带声母的普通话音节无法渲染，20 对真人对听在现后端下不可达。
 
 ## 科学实验门槛
 

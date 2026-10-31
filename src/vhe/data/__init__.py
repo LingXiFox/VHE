@@ -7,6 +7,13 @@ repository or fed to VHE from this package.
 from .f0 import F0Frame, F0Track, estimate_f0
 from .resample import resample
 from .segment import Segment, Segmentation, check_syllable_count, segment_by_energy
+from .pairing import (
+    PairResult,
+    Syllable,
+    build_pair,
+    parse_syllable,
+    write_pair,
+)
 from .aishell3 import (
     Manifest,
     ParseIssue,
@@ -24,5 +31,6 @@ __all__ = [
     "F0Frame", "F0Track", "estimate_f0", "resample", "Segment", "Segmentation",
     "check_syllable_count", "segment_by_energy", "Manifest", "ParseIssue", "Utterance", "apply_speaker_split", "build_manifest",
     "carve_speaker_split", "check_no_speaker_leak", "discover_splits", "read_manifest",
-    "write_manifest",
+    "write_manifest", "PairResult", "Syllable", "build_pair", "parse_syllable",
+    "write_pair",
 ]

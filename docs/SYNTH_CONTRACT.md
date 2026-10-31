@@ -117,7 +117,7 @@ P1 的成对数据构造流程固定为：
 
 1. 从授权录音读出 `wav`；
 2. 分析得到 F0 曲线、能量分段（音节级段长）、质量标记；
-3. 用**同一份控制信息**构造 `SynthesisRequest`，渲染 `x_mechanical`；
+3. 用**同一份控制信息**构造 `SynthesisRequest`，渲染 `x_mechanical`。注意 `PhonemeSequence` 没有静音槽位，多个音节塞进一个请求会把音节间停顿压掉；P1 的做法是**逐音节渲染并按实测起点回填**到等长缓冲区（代价是每段 30 ms 淡入淡出，`pairing` 记为 `syllablewise_render` warning，见 EXP-0006）；
 4. 机械/真人配对共享 `request_fingerprint` 与 speaker 分组，写入 manifest；
 5. 分析失败（F0 无浊音、段长为零、信噪比过低）必须进 `failures` 列表并在统计里可见，**不得静默丢弃**。
 

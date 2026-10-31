@@ -1,0 +1,50 @@
+{
+  "experiment_id": "EXP-0006",
+  "title": "P1-C paired data: timing-preserving mechanical rendering with explicit blockers",
+  "hypothesis": "Rendering each syllable at the onset measured from the real utterance keeps the mechanical and real signals the same length and keeps pauses; syllables whose onset/coda the backend cannot speak are reported as blocked rather than approximated.",
+  "created_utc": "2026-10-31T14:37:48.140975+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "0d25821",
+    "status": "dirty (src/vhe/data/pairing.py, tests/test_data_pairing.py, experiments/EXP-0006 uncommitted during the run)"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": null,
+  "command": ".venv/bin/python experiments/EXP-0006/measure_pairing.py && .venv/bin/python -m pytest -q",
+  "torch_version": "2.15.0",
+  "cuda_version": null,
+  "gpu": "Apple M5 (MPS available, unused in this experiment)",
+  "config_sha256": null,
+  "notes": "Synthetic fixtures only: the 'real' signal is rendered by the same formant backend, so this experiment proves plumbing and timing alignment, not real-speech alignment or naturalness. No AISHELL-3 corpus on this machine; AISHELL-3 syllables with onsets are structurally blocked because the backend inventory is {a,i,u}. Record created after the implementation (process deviation, same as EXP-0003/0004).",
+  "inputs": {
+    "script_sha256": "9533588b94949f5a16c0f7ed11f2dc206ac75b186fc87f45307e9f1086598d21"
+  },
+  "outputs": {
+    "pairing_report_json_sha256": "1390212f7be6c45e67001701bea18a2ad0f276935eaada8ff8b2ec6ee0f47988",
+    "pytest_txt_sha256": "46aef67fc4b490372de1ae0398531e605690f9a752230315aa101efc4cf16f6a"
+  },
+  "result": {
+    "pytest": "85 passed, 1 skipped",
+    "vowel_pair": {
+      "real_samples": 22800,
+      "mechanical_samples": 22800,
+      "request_fingerprint": "3ea14fbc26ffd3ab7b9dc755eb41ff44c6066f7e73a1af970273117bc3cb1023",
+      "real_sha256": "945db6edd6a159874faf483dad4519ce896e4e60d7884b15a1959b3332c377d4",
+      "mechanical_sha256": "f7606ca84026dbe6f0321dbc76cf70265d246fcaafcfd803d131bf48077cf39f"
+    },
+    "resampled_pair": {
+      "source_sample_rate": 44100,
+      "real_samples": 22800,
+      "mechanical_samples": 22800
+    },
+    "blocked_pair": {
+      "status": "blocked",
+      "blocked_syllables": 3,
+      "total_syllables": 3
+    },
+    "real_corpus_available": false,
+    "criteria_met": 8,
+    "criteria_total": 8
+  }
+}
