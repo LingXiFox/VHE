@@ -1,0 +1,10 @@
+{
+  "version": "0.0.1",
+  "sample_rate": 24000,
+  "phonemes": ["a", "i", "u"],
+  "f0_hz": 220,
+  "duration_s": 1.2,
+  "voice_preset": "yang",
+  "seed": 42,
+  "note": "CPU source-filter proxy baseline. No neural VHE or Mandarin phoneme synthesis."
+}

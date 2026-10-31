@@ -1,0 +1,26 @@
+{
+  "experiment_id": "EXP-0000",
+  "title": "CPU机械元音基线与复现验证",
+  "hypothesis": "固定seed的机械合成器应输出相同字节WAV",
+  "created_utc": "2026-10-31T13:51:09.442733+00:00",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "git": {
+    "commit": "unavailable",
+    "status": "unavailable"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "N/A; no dataset used",
+  "command": "PYTHONPATH=src:. python -m vhe synth --phonemes a,i,u --preset yang --f0 220 --duration 1.2 --sr 24000 --seed 42 --output data/demo/yang_aiu.wav",
+  "torch_version": "N/A",
+  "cuda_version": "N/A",
+  "gpu": "N/A, CPU baseline",
+  "config_sha256": "c4774e1fc7aec9e0b518cce261fa3eeb9fc86fc967290db482bd728fb6b23b1a",
+  "notes": "7 tests passed with PYTHONPATH=src:.; two separate 24000 Hz WAV runs byte identical; pip install -e .[dev] failed because isolated tool environment cannot reach package index for ruff; not a trained VHE result.",
+  "artifacts": {
+    "data/demo/yang_aiu.wav": "cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985",
+    "data/demo/yang_aiu_repeat.wav": "cefbcaec99a276683989f05abc537c6dfb8edfeef164be7728ee22775ada7985"
+  },
+  "runtime_sec": null,
+  "peak_vram_mb": null
+}

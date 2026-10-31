@@ -1,0 +1,36 @@
+{
+  "experiment_id": "EXP-0001",
+  "title": "跨平台CUDA-MPS-CPU设备调度及梯度自检",
+  "hypothesis": "单一FP32残差Conv1d网络可经统一调度在CPU和可用CUDA/MPS运行，且输入输出形状一致、反向传播正确",
+  "created_utc": "2026-10-31T14:03:37.321799+00:00",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "git": {
+    "commit": "unavailable",
+    "status": "unavailable"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "N/A; generated sine fixture only",
+  "command": "PYTHONPATH=src:. python -m vhe smoke --device cpu --steps 3 --samples 1024",
+  "torch_version": "2.10.0+cpu",
+  "cuda_version": null,
+  "gpu": "N/A; current CI/container is Linux CPU-only",
+  "config_sha256": null,
+  "notes": "Windows CUDA/macOS MPS actual hardware not in current runtime; explicit cuda/mps doctor --device failed with exit 2 as expected; need real-device experiments for GPU validation. No real speech training.",
+  "design": "No datasets or real-voice target used. 1D Conv1d residual prototype with synthetic sine scaling sanity target.",
+  "precision": "float32",
+  "device": "cpu",
+  "batch_size": 1,
+  "samples": 1024,
+  "metrics": {
+    "test_passed": 17,
+    "test_skipped_cuda_no_gpu": 1,
+    "test_skipped_mps_no_gpu": 1,
+    "cpu_synthetic_loss": [
+      0.0010205598082393408,
+      0.0009619559277780354,
+      0.0008714072173461318
+    ],
+    "status": "backend smoke only; naturalization NOT trained"
+  }
+}
