@@ -60,3 +60,16 @@
 - 失败记录（保留）：`empty_text` 曾被 `strip` 吃掉 TAB 退化成 bad_line；测试路径漏了说话人目录导致假失败；
   夹具重写 WAV 触发拒绝覆盖。记录创建晚于实现（流程偏差，同 EXP-0003）。
 - **VHE 仍未训练**，无自然度或音色保持证据。证据：`experiments/EXP-0004/`。
+
+## 2026-10-31 | EXP-0005 信号前端：有理数重采样、自相关 F0、能量分段（仅合成信号）
+
+- 新增 `src/vhe/data/resample.py`（多相 windowed-sinc，Kaiser β=8.6，按 `Fraction(src,dst)` 精确映射相位）、
+  `src/vhe/data/f0.py`（FFT 自相关 + 无偏修正 + 抛物线插值 + 三倍频保护）、`src/vhe/data/segment.py`（能量谷分段 + 质量 issue）。
+- 结果：通带 0.5/1/2/4 kHz 偏差 ≤0.0001 dB，15 kHz 残留 **-87.28 dB**（线性插值对照 **-0.34 dB**，别名原样通过）；
+  稳态 F0 100–400 Hz 误差 0.02%–0.84%，100→400 Hz 扫频平均误差 0.14%；4 突发精确分为 4 段且全 voiced、0 issue；
+  10 ms 点击被丢弃并记 `segment_too_short`；纯静音记 `no_speech`(error)。`pytest -q` **71 passed, 1 skipped**。
+- 失败记录（保留）：多相索引把 `Fraction(dst,src)` 的分子/分母当 (step, phases)，上采样直接 `IndexError`；
+  F0 无偏修正偏袒长滞后，220 Hz 与 400 Hz 分别读成 73.33 Hz、133.25 Hz（=f0/3），加"最短强局部峰"规则后修正；
+  通带用峰值测量在 4 kHz 得到 -1.25 dB（6 样本/周期、相位误差 `20log10(cos30°)`），改整周期 RMS 后为 0 dB；
+  分段时长曾加满窗导致 20 ms 点击算成 65 ms，改为 `frames*hop`；15 ms 点击仍卡在 60 ms 边界，记为已知限制。
+- **仅合成信号**：本机无 AISHELL-3，真实语音上的 F0/分段精度与人工听音均未验证。证据：`experiments/EXP-0005/`。

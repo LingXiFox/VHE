@@ -1,0 +1,126 @@
+{
+  "resampler": {
+    "length": {
+      "44100->24000": {
+        "input": 22050,
+        "output": 12000,
+        "expected": 12000,
+        "exact": true
+      },
+      "16000->24000": {
+        "input": 8000,
+        "output": 12000,
+        "expected": 12000,
+        "exact": true
+      },
+      "48000->24000": {
+        "input": 24000,
+        "output": 12000,
+        "expected": 12000,
+        "exact": true
+      }
+    },
+    "passband": {
+      "500": 0.0001,
+      "1000": 0.0001,
+      "2000": 0.0001,
+      "4000": 0.0
+    },
+    "stopband_db": -87.28,
+    "naive_linear_control": {
+      "passband_rms_db": {
+        "500": -0.0037,
+        "1000": -0.0147,
+        "2000": -0.0587,
+        "4000": -0.235
+      },
+      "stopband_db": -0.34
+    }
+  },
+  "f0": {
+    "steady": {
+      "100": {
+        "voiced_ratio": 1.0,
+        "median_hz": 99.16,
+        "rel_error": 0.0084
+      },
+      "120": {
+        "voiced_ratio": 1.0,
+        "median_hz": 119.96,
+        "rel_error": 0.0003
+      },
+      "220": {
+        "voiced_ratio": 1.0,
+        "median_hz": 219.96,
+        "rel_error": 0.0002
+      },
+      "300": {
+        "voiced_ratio": 1.0,
+        "median_hz": 299.31,
+        "rel_error": 0.0023
+      },
+      "400": {
+        "voiced_ratio": 1.0,
+        "median_hz": 399.33,
+        "rel_error": 0.0017
+      }
+    },
+    "glide": {
+      "voiced_ratio": 1.0,
+      "mean_rel_error": 0.0014,
+      "max_rel_error": 0.0064,
+      "start_hz": 105.99,
+      "end_hz": 394.05
+    },
+    "silence_voiced_ratio": 0.0
+  },
+  "segmentation": {
+    "four_syllables": {
+      "threshold": 0.0509,
+      "segments": [
+        {
+          "start_s": 0.02,
+          "end_s": 0.18,
+          "voiced": true
+        },
+        {
+          "start_s": 0.24,
+          "end_s": 0.4,
+          "voiced": true
+        },
+        {
+          "start_s": 0.46,
+          "end_s": 0.62,
+          "voiced": true
+        },
+        {
+          "start_s": 0.68,
+          "end_s": 0.84,
+          "voiced": true
+        }
+      ],
+      "stats": {
+        "segments": 4,
+        "speech_duration_s": 0.64,
+        "voiced_segments": 4,
+        "issues": 0,
+        "issue_codes": []
+      }
+    },
+    "click_10ms": {
+      "segments": 2,
+      "codes": [
+        "segment_too_short"
+      ]
+    },
+    "silence": {
+      "segments": 0,
+      "codes": [
+        "no_speech"
+      ],
+      "severities": [
+        "error"
+      ]
+    }
+  }
+}

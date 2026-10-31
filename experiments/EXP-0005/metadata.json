@@ -1,0 +1,32 @@
+{
+  "experiment_id": "EXP-0005",
+  "title": "Signal front-end: rational resampling, autocorrelation F0 and energy-based syllable segmentation",
+  "hypothesis": "A windowed-sinc rational resampler (44.1 kHz -> 24 kHz, L/M=80/147) preserves the 0.5-4 kHz passband within 0.5 dB and attenuates a 15 kHz tone by >=40 dB; normalized-autocorrelation F0 tracking recovers 100-400 Hz contours within 3% on synthetic signals; energy-valley segmentation recovers 4 synthetic syllables without merging; every analysis failure is reported as a counted issue instead of being filtered out.",
+  "created_utc": "2026-10-31T14:29:51.699315+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "765001bec05f0ba0fab3c7496866274545b1171b",
+    "status": "dirty (src/vhe/data/{f0,resample,segment}.py, tests/test_data_frontend.py uncommitted during the run)"
+  },
+  "seed": null,
+  "notes": "No RNG is used: every signal is analytic, so repeated runs are byte-identical. Synthetic signals only; the AISHELL-3 corpus is not on this machine, so no real-speech or listening evidence exists.",
+  "dataset_manifest_sha256": null,
+  "command": ".venv/bin/python experiments/EXP-0005/measure_frontend.py && .venv/bin/python -m pytest -q",
+  "inputs": {
+    "script_sha256": "9f78f30f8434c505da0f6d9f8b3e0e020903c843e34b2f9d2b5ee15569796960"
+  },
+  "outputs": {
+    "frontend_report_json_sha256": "71b4430a4827ed931054df87db255c35594c76b6834d4728f4652ef074811e4b",
+    "pytest_txt_sha256": "a4189cdf2f782b179dcbb1d59e85f640cca71121ba0e899d7eb6b6b5566f94fb"
+  },
+  "result": {
+    "pytest": "71 passed, 1 skipped",
+    "criteria_met": 7,
+    "criteria_total": 7
+  },
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null
+}
