@@ -26,6 +26,8 @@ dist/
 *.npz
 *.parquet
 runs/
+.tmp/
+scratch/
 checkpoints/
 wandb/
 data/raw/
