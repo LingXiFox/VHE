@@ -1,0 +1,447 @@
+{
+  "src": "/Volumes/Development/Projects/projects/VHE/experiments/EXP-0007",
+  "numpy": "2.5.4",
+  "synth": {
+    "short_voiced": {
+      "0.010": {
+        "ok": true,
+        "n": 240,
+        "first": 0.0,
+        "peak": 0.8500000238418579,
+        "env_jump": 0.2335
+      },
+      "0.020": {
+        "ok": true,
+        "n": 480,
+        "first": 0.0,
+        "peak": 0.8500000238418579,
+        "env_jump": 0.1828
+      },
+      "0.029": {
+        "ok": true,
+        "n": 696,
+        "first": 0.0,
+        "peak": 0.8500000238418579,
+        "env_jump": 0.126
+      },
+      "0.030": {
+        "ok": true,
+        "n": 720,
+        "first": 0.0,
+        "peak": 0.8500000238418579,
+        "env_jump": 0.1203
+      },
+      "0.045": {
+        "ok": true,
+        "n": 1080,
+        "first": 0.0,
+        "peak": 0.8500000238418579,
+        "env_jump": 0.0854
+      },
+      "0.061": {
+        "ok": true,
+        "n": 1464,
+        "first": 0.0,
+        "peak": 0.8500000238418579,
+        "env_jump": 0.0672
+      },
+      "0.200": {
+        "ok": true,
+        "n": 4800,
+        "first": 0.0,
+        "peak": 0.8500000238418579,
+        "env_jump": 0.0558
+      }
+    },
+    "envelope_step": {},
+    "peak_normalisation": {
+      "yin_peak": 0.8500000238418579,
+      "yang_peak": 0.8500000238418579,
+      "yin_rms": 0.48786494284523546,
+      "yang_rms": 0.3183336993669765
+    },
+    "spectral": {
+      "tilt_0.8": 2385.7235325361257,
+      "tilt_1.3": 3079.6915780132235,
+      "tilt_2.2": 4555.344695985819,
+      "scale_0.75": 2509.911140497029,
+      "scale_1.35": 3663.9597994402343
+    }
+  },
+  "f0": {
+    "pure_tones": [
+      {
+        "sr": 16000,
+        "f0": 65.0,
+        "measured": 65.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 16000,
+        "f0": 80.0,
+        "measured": 80.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 16000,
+        "f0": 100.0,
+        "measured": 100.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 16000,
+        "f0": 150.0,
+        "measured": 150.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 16000,
+        "f0": 220.0,
+        "measured": 220.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 16000,
+        "f0": 300.0,
+        "measured": 299.99,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 16000,
+        "f0": 440.0,
+        "measured": 440.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 16000,
+        "f0": 600.0,
+        "measured": 599.96,
+        "error_pct": -0.01,
+        "voiced": 1.0
+      },
+      {
+        "sr": 16000,
+        "f0": 880.0,
+        "measured": 880.04,
+        "error_pct": 0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 65.0,
+        "measured": 65.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 80.0,
+        "measured": 80.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 100.0,
+        "measured": 100.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 150.0,
+        "measured": 150.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 220.0,
+        "measured": 220.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 300.0,
+        "measured": 300.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 440.0,
+        "measured": 440.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 600.0,
+        "measured": 599.98,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 24000,
+        "f0": 880.0,
+        "measured": 880.01,
+        "error_pct": 0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 65.0,
+        "measured": 65.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 80.0,
+        "measured": 80.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 100.0,
+        "measured": 100.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 150.0,
+        "measured": 150.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 220.0,
+        "measured": 220.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 300.0,
+        "measured": 300.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 440.0,
+        "measured": 440.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 600.0,
+        "measured": 600.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      },
+      {
+        "sr": 48000,
+        "f0": 880.0,
+        "measured": 880.0,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      }
+    ],
+    "harmonic_stack": [
+      {
+        "f0": 100.0,
+        "measured": 99.98,
+        "error_pct": -0.02,
+        "voiced": 1.0
+      },
+      {
+        "f0": 220.0,
+        "measured": 220.0,
+        "error_pct": 0.0,
+        "voiced": 1.0
+      },
+      {
+        "f0": 390.0,
+        "measured": 389.99,
+        "error_pct": -0.0,
+        "voiced": 1.0
+      }
+    ],
+    "silence": [
+      {
+        "amp": 1e-06,
+        "voiced": 0.0
+      },
+      {
+        "amp": 0.001,
+        "voiced": 0.0
+      }
+    ],
+    "edge_cases": {
+      "220hz_at_24k": 220.0,
+      "missing_fundamental_200": 400.91,
+      "step_transition_frames": [
+        100.0,
+        100.0
+      ]
+    }
+  },
+  "segment": {
+    "bursts": [
+      {
+        "true_onset": 0.37,
+        "true_duration": 0.3,
+        "detected": true,
+        "onset": 0.37,
+        "end": 0.67,
+        "onset_error_ms": 0.0,
+        "duration_error_ms": -0.0
+      },
+      {
+        "true_onset": 1.0,
+        "true_duration": 0.15,
+        "detected": true,
+        "onset": 1.0,
+        "end": 1.15,
+        "onset_error_ms": 0.0,
+        "duration_error_ms": -0.0
+      },
+      {
+        "true_onset": 0.5,
+        "true_duration": 0.08,
+        "detected": true,
+        "onset": 0.5,
+        "end": 0.58,
+        "onset_error_ms": 0.0,
+        "duration_error_ms": -0.0
+      },
+      {
+        "true_onset": 0.5,
+        "true_duration": 0.3,
+        "detected": true,
+        "onset": 0.5,
+        "end": 0.8,
+        "onset_error_ms": 0.0,
+        "duration_error_ms": -0.0
+      }
+    ],
+    "gaps": [
+      {
+        "gap_s": 0.0,
+        "segments": 1
+      },
+      {
+        "gap_s": 0.02,
+        "segments": 1
+      },
+      {
+        "gap_s": 0.06,
+        "segments": 2
+      }
+    ],
+    "clicks": [
+      {
+        "length_s": 0.01,
+        "segments": 0,
+        "issues": [
+          "segment_too_short",
+          "no_speech"
+        ]
+      },
+      {
+        "length_s": 0.02,
+        "segments": 0,
+        "issues": [
+          "segment_too_short",
+          "no_speech"
+        ]
+      }
+    ]
+  },
+  "pitch_curve": {
+    "midpoint_hz": 200.0,
+    "midpoint_cents_vs_geometric_mean": 0.0,
+    "first": 99.99999999999997,
+    "last": 399.97689576126425
+  },
+  "resample": {
+    "passband_db": {
+      "1000": {
+        "44100->24000": 0.0,
+        "48000->24000": 0.0
+      },
+      "8000": {
+        "44100->24000": 0.0,
+        "48000->24000": 0.0
+      },
+      "10000": {
+        "44100->24000": -0.001,
+        "48000->24000": -0.001
+      },
+      "11000": {
+        "44100->24000": -0.62,
+        "48000->24000": -0.66
+      },
+      "15000": {
+        "44100->24000": -88.224,
+        "48000->24000": -90.09
+      },
+      "20000": {
+        "44100->24000": -98.893,
+        "48000->24000": -109.536
+      }
+    },
+    "impulse": {
+      "44100->24000": {
+        "peak_index": 12000,
+        "expected_index": 12000.0,
+        "peak": 0.5442
+      },
+      "48000->24000": {
+        "peak_index": 12000,
+        "expected_index": 12000.0,
+        "peak": 0.5
+      },
+      "16000->24000": {
+        "peak_index": 12000,
+        "expected_index": 12000.0,
+        "peak": 1.0
+      }
+    }
+  },
+  "pairing": {
+    "status": "ok",
+    "n_real": 27360,
+    "n_mechanical": 27360,
+    "fingerprint_is_last_syllable": false,
+    "fingerprint_is_composite": true,
+    "renders": 3,
+    "issues": [
+      "syllablewise_render"
+    ],
+    "gains_db": [
+      0.064,
+      -5.879,
+      -1.866
+    ],
+    "mechanical_peak": 0.8563048243522644,
+    "syllable_0_rms_ratio": 1.0,
+    "syllable_1_rms_ratio": 1.0,
+    "syllable_2_rms_ratio": 1.0,
+    "mechanical_zero_where_real_active": 0.0127,
+    "mechanical_active_where_real_silent": 0.0265
+  }
+}

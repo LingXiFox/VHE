@@ -109,10 +109,15 @@ def test_pitch_curve_units_and_interpolation():
     curve = PitchCurve(times_s=(0.0, 0.5), f0_hz=(110.0, 440.0))
     samples = curve.sample(5, 4)  # t = 0, .25, .5, .75, 1.0 seconds
     assert samples[0] == pytest.approx(110.0)
-    assert samples[1] == pytest.approx(275.0)
+    # Two octaves over 0.5 s: the midpoint is the geometric mean (220 Hz), not the arithmetic
+    # mean (275 Hz). Interpolating Hz would make the glide 386 cents sharp of a linear pitch
+    # sweep, which is audible; see EXP-0007.
+    assert samples[1] == pytest.approx(220.0)
     assert samples[2] == pytest.approx(440.0)
     assert samples[3] == pytest.approx(440.0)  # clamped, never extrapolated
     assert samples[4] == pytest.approx(440.0)
+    constant = PitchCurve.constant(180.0, 1.0).sample(100, 100)
+    assert np.all(constant == 180.0)  # a flat curve stays bit-identical
 
 
 def test_pitch_curve_rejects_bad_input():
@@ -191,7 +196,8 @@ def test_rising_pitch_curve_raises_pitch_track():
         centre = (index * 4000) + 2000
         window = audio[centre - width // 2:centre + width // 2]
         estimates.append(_autocorrelation_f0(window, rate))
-    expected = [110.0 + 330.0 * (index * 0.25 + 0.125) for index in range(4)]
+    # 110 -> 440 Hz is two octaves, interpolated linearly in log2(f0).
+    expected = [110.0 * 4.0 ** (index * 0.25 + 0.125) for index in range(4)]
     assert estimates == sorted(estimates), (estimates, expected)
     for estimate, target in zip(estimates, expected):
         assert estimate == pytest.approx(target, rel=0.08), (estimates, expected)

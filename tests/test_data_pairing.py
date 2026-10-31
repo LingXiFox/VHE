@@ -84,6 +84,10 @@ def test_build_pair_vowel_only_succeeds(tmp_path):
     assert "syllablewise_render" in codes
     # Pauses survive: the 100 ms gaps between the isolated fixture syllables stay silent.
     assert np.abs(result.mechanical[6000:7200]).max() == 0.0
+    # Loudness matching is recorded per syllable and never pushes the pair past full scale.
+    assert len(result.gains_db) == 3
+    assert all(np.isfinite(result.gains_db))
+    assert float(np.abs(result.mechanical).max()) <= 0.9990001
 
 
 def test_continuous_vowels_collapse_into_one_segment(tmp_path):
@@ -97,6 +101,28 @@ def test_continuous_vowels_collapse_into_one_segment(tmp_path):
     codes = {issue["code"] for issue in result.issues}
     assert "segment_syllable_mismatch" in codes
     assert "syllable_count_mismatch" in codes
+
+
+def test_gain_match_is_per_syllable_and_capped_at_full_scale(tmp_path):
+    # A full-scale square has much more RMS per unit peak than the sine-like render, so the
+    # loudness match asks for ~3x gain; without the cap the pair would clip at ~2.7 and the
+    # dataset consumer could not tell that distortion from the model's own artefact.
+    audio = make_utterance(tmp_path / "base.wav").copy()
+    rate = 24000
+    start = int(round(0.05 * rate))
+    stop = start + int(round(0.2 * rate))
+    t = np.arange(stop - start) / rate
+    audio[start:stop] = np.sign(np.sin(2 * np.pi * 200.0 * t)).astype(np.float32)
+    path = tmp_path / "loud_first.wav"
+    write_wav(path, audio, rate)
+    result = build_pair(path, ["a1", "i2", "u3"], template=PRESETS["yang"])
+    assert result.status == "ok", result.issues
+    codes = {issue["code"] for issue in result.issues}
+    assert "gain_limited_by_peak" in codes
+    assert float(np.abs(result.mechanical).max()) <= 0.9990001
+    # The cap trades exact loudness matching for headroom, so that syllable stays louder
+    # than the recording (documented, not silent).
+    assert result.gains_db[0] < 20.0 * np.log10(2.0)
 
 
 def test_build_pair_blocks_mandarin_syllables_with_consonants(tmp_path):

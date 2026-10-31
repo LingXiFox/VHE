@@ -96,6 +96,36 @@ def segmentation_threshold(rms: np.ndarray, *, floor_percentile: float = 10.0,
     return floor + relative * (peak - floor)
 
 
+def _refine_edges(signal: np.ndarray, sample_rate: int, start_s: float, end_s: float,
+                  slack_s: float) -> tuple[float, float]:
+    """Move frame-level segment edges onto the sample where the gate is crossed.
+
+    The gate is 5% of the segment's own peak amplitude (-26 dB) with a 1e-4 absolute floor.
+    It is a *relative* gate on purpose: an absolute one would clip quiet syllables, and a
+    voicing gate would move the edge by however long the attack ramp is.
+    """
+    size = signal.size
+    start = min(max(int(round(start_s * sample_rate)), 0), size - 1)
+    stop = min(max(int(round(end_s * sample_rate)), start + 1), size)
+    magnitude = np.abs(signal)
+    peak = float(np.max(magnitude[start:stop]))
+    if peak <= 0.0:
+        return start_s, end_s
+    gate = max(0.05 * peak, 1e-4)
+    slack = max(1, int(round(slack_s * sample_rate)))
+    low = max(0, start - slack)
+    high = min(size, stop + slack)
+    above = np.flatnonzero(magnitude[low:high] > gate)
+    if above.size == 0:
+        return start_s, end_s
+    first = int(above[0]) + low
+    last = int(above[-1]) + low + 1
+    # Never invert the interval if the refinement disagrees with the frame-level edges.
+    if last <= first:
+        return start_s, end_s
+    return first / sample_rate, last / sample_rate
+
+
 def segment_by_energy(audio: np.ndarray, sample_rate: int, *, frame_ms: float = 25.0,
                       hop_ms: float = 10.0, floor_percentile: float = 10.0,
                       peak_percentile: float = 95.0, relative_threshold: float = 0.12,
@@ -133,21 +163,32 @@ def segment_by_energy(audio: np.ndarray, sample_rate: int, *, frame_ms: float = 
         result.add_issue("no_speech", "no frame exceeded the energy threshold", "error")
         return result
 
-    merge_frames = max(1, int(round(merge_gap_s / result.hop_s)))
-    merged: list[list[int]] = [list(runs[0])]
-    for start, stop in runs[1:]:
-        if start - merged[-1][1] <= merge_frames:
-            merged[-1][1] = stop
-        else:
-            merged.append([start, stop])
-
-    times, f0 = (f0_track.contour() if f0_track is not None else (None, None))
-    for start_frame, stop_frame in merged:
+    slack_s = (frame_ms + hop_ms) / 1000.0
+    # Snap every raw run to sample edges BEFORE merging. Merging first would measure the gap
+    # between two inflated frame-level runs: a real 60 ms pause shrank to ~10 ms of frame space
+    # and was merged, i.e. the merge threshold was effectively tighter than advertised.
+    refined: list[list[float]] = []
+    for start_frame, stop_frame in runs:
         # A frame is window samples long but frames are counted on hop; using hop * count
         # keeps durations unbiased (adding the window would inflate every burst by ~25 ms).
         start_s = start_frame * result.hop_s
         end_s = min(signal.size / sample_rate, stop_frame * result.hop_s)
         end_s = max(end_s, start_s + result.hop_s)
+        low, high = _refine_edges(signal, sample_rate, start_s, end_s, slack_s)
+        refined.append([low, high, float(start_frame), float(stop_frame)])
+    merged: list[list[float]] = [refined[0]]
+    for low, high, start_frame, stop_frame in refined[1:]:
+        if low - merged[-1][1] <= merge_gap_s:
+            merged[-1][1] = max(merged[-1][1], high)
+            merged[-1][3] = stop_frame
+        else:
+            merged.append([low, high, start_frame, stop_frame])
+
+    times, f0 = (f0_track.contour() if f0_track is not None else (None, None))
+    for start_s, end_s, start_frame, stop_frame in merged:
+        start_s = float(start_s)
+        end_s = min(float(end_s), signal.size / sample_rate)
+        start_frame, stop_frame = int(start_frame), int(stop_frame) + 1
         duration = end_s - start_s
         if duration < min_segment_s:
             result.add_issue("segment_too_short",

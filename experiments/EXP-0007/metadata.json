@@ -1,0 +1,45 @@
+{
+  "experiment_id": "EXP-0007",
+  "title": "Signal front-end audit: F0, segmentation, envelope, pitch interpolation, pairing alignment",
+  "hypothesis": "Seven suspected defect classes in the signal front-end produce measurable, silent errors: (1) FormantProxySynth envelope fails for voiced regions shorter than 2x30 ms; (2) autocorrelation F0 misreports 65-100 Hz as ~900 Hz; (3) F0 voicing gate is absolute, so any low-level periodic residue counts as voiced; (4) energy segmentation shifts onsets by -30 ms and inflates durations by +40 ms; (5) PitchCurve interpolates f0 linearly in Hz, up to +386 cents away from the perceptual midpoint; (6) per-syllable peak normalisation erases the loudness contour, which VHE cannot recover; (7) pairing overwrites the composite request fingerprint with the last syllable's fingerprint.",
+  "created_utc": "2026-10-31T14:56:43.288628+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "692c0ca2cb3447a00512f89b7a5c42b20f185608",
+    "status": ""
+  },
+  "seed": null,
+  "dataset_manifest_sha256": null,
+  "command": null,
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Probe script was written before this record existed; see errata.",
+  "runs": [
+    {
+      "run": "before",
+      "purpose": "baseline of the unfixed front-end",
+      "command": "PYTHONPATH=/tmp/vhe_head/src .venv/bin/python experiments/EXP-0007/audit_signal.py --out experiments/EXP-0007/logs/audit_before.json",
+      "git_commit": "692c0ca2cb3447a00512f89b7a5c42b20f185608",
+      "git_status": "clean (source tree = 692c0ca via git worktree)",
+      "output": "experiments/EXP-0007/logs/audit_before.json",
+      "output_sha256": "ea10fd24945bf1bcf1337d2668c3a5ecbeae31d42f0b3f06ff6ea11071fe2852"
+    },
+    {
+      "run": "after",
+      "purpose": "same probes on the tree carrying the fixes for hypotheses 1-7",
+      "command": ".venv/bin/python experiments/EXP-0007/audit_signal.py --out experiments/EXP-0007/logs/audit_after.json",
+      "git_commit": "692c0ca2cb3447a00512f89b7a5c42b20f185608 + uncommitted fix patch",
+      "git_status": "dirty: src/vhe/data/{f0,segment,pairing}.py, src/vhe/synth/{contract,formant_proxy}.py, tests/*",
+      "output": "experiments/EXP-0007/logs/audit_after.json",
+      "output_sha256": "b5622d140b50bda991106390b91b5c5db4a98f1e00c68f4620b9df00655f404f"
+    }
+  ],
+  "probe_sha256": "82162a312550395efe3aad70dfddc9c096018facc103f4ea4926d4882c12e4c5",
+  "errata": [
+    "2026-10-31: audit_signal.py and the before run were produced before tools/new_experiment.py created this directory, i.e. the record was opened after the probe existed. Original placeholder fields are kept; run details live in runs[].",
+    "2026-10-31: the after log was regenerated twice (once adding gains_db/mechanical_peak to the probe, once after the pairing peak cap), so its hash differs from any earlier copy. Only this version is authoritative."
+  ]
+}

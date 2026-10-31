@@ -26,11 +26,11 @@ import numpy as np
 from ..audio import read_wav, write_wav
 from ..synth import (PHONEME_INVENTORY, PitchCurve, PhonemeSegment, PhonemeSequence,
                      SynthesisRequest, SynthBackend, Timing, VoiceTemplate, get_backend)
-from ..synth.contract import F0_MAX_HZ, F0_MIN_HZ, MAX_SILENCE_S
+from ..synth.contract import F0_MAX_HZ, F0_MIN_HZ
 from .aishell3 import file_sha256
 from .f0 import F0Track, estimate_f0
 from .resample import resample
-from .segment import Segmentation, Segment, check_syllable_count, segment_by_energy
+from .segment import Segmentation, check_syllable_count, segment_by_energy
 
 INITIALS = ("zh", "ch", "sh", "b", "p", "m", "f", "d", "t", "n", "l", "g", "k", "h",
             "j", "q", "x", "r", "z", "c", "s", "y", "w")
@@ -85,6 +85,8 @@ class PairResult:
     real: Optional[np.ndarray] = None
     mechanical: Optional[np.ndarray] = None
     request_fingerprint: Optional[str] = None
+    request_fingerprints: list[str] = field(default_factory=list)
+    gains_db: list[float] = field(default_factory=list)
     real_sha256: Optional[str] = None
     mechanical_sha256: Optional[str] = None
     template: Optional[dict] = None
@@ -101,6 +103,8 @@ class PairResult:
             "real_sha256": self.real_sha256,
             "mechanical_sha256": self.mechanical_sha256,
             "request_fingerprint": self.request_fingerprint,
+            "request_fingerprints": self.request_fingerprints,
+            "gains_db": self.gains_db,
             "template": self.template,
             "f0_stats": self.f0_stats,
             "segmentation_stats": self.segmentation_stats,
@@ -130,16 +134,6 @@ def _pitch_curve(track: F0Track, start_s: float, voiced_s: float,
         t = np.append(t, voiced_s)
         values = np.append(values, values[-1])
     return PitchCurve(times_s=tuple(float(v) for v in t), f0_hz=tuple(float(v) for v in values))
-
-
-def _timing(first: Segment, last: Segment, total_s: float, result: PairResult) -> Timing:
-    lead = max(0.0, first.start_s)
-    tail = max(0.0, total_s - last.end_s)
-    if lead > MAX_SILENCE_S or tail > MAX_SILENCE_S:
-        result.add_issue("silence_clipped",
-                         f"lead {lead:.3f}s / tail {tail:.3f}s exceeds {MAX_SILENCE_S}s; clamped")
-        lead, tail = min(lead, MAX_SILENCE_S), min(tail, MAX_SILENCE_S)
-    return Timing(lead_silence_s=lead, tail_silence_s=tail)
 
 
 def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTemplate,
@@ -209,7 +203,7 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
     synth = backend or get_backend()
     mechanical = np.zeros_like(audio)
     fingerprints: list[str] = []
-    for syllable, segment in zip(syllables, seg.segments):
+    for index, (syllable, segment) in enumerate(zip(syllables, seg.segments)):
         duration = max(0.01, float(segment.duration_s))
         pitch = _pitch_curve(track, segment.start_s, duration, result)
         if pitch is None:
@@ -221,7 +215,9 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
             pitch=pitch,
             timing=Timing(),
             sample_rate=sample_rate,
-            seed=seed,
+            # Vary the seed per syllable: a shared seed would repeat the same breath-noise
+            # draw in every syllable, which the model could learn as a position cue.
+            seed=seed + index,
         )
         try:
             request.validate()
@@ -231,21 +227,52 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
         rendered = synth.render(request)
         fingerprints.append(rendered.request_fingerprint)
         offset = int(round(segment.start_s * sample_rate))
-        stop = min(mechanical.size, offset + rendered.audio.size)
-        if stop <= offset:
+        stop = offset + rendered.audio.size
+        if offset >= mechanical.size:
             result.add_issue("segment_out_of_range",
                              f"segment at {segment.start_s:.3f}s starts past the signal end",
                              "error")
             return result
-        mechanical[offset:stop] = rendered.audio[: stop - offset]
+        if stop > mechanical.size:
+            result.add_issue("segment_truncated",
+                             f"syllable {index} at {segment.start_s:.3f}s overruns the signal by "
+                             f"{stop - mechanical.size} samples and is truncated")
+        stop = min(mechanical.size, stop)
+        piece = rendered.audio[: stop - offset].astype(np.float64)
+        # The synthesizer peak-normalises every render, so placing the syllables as-is erases
+        # the loudness contour of the utterance (a syllable 6 dB quieter in the recording came
+        # back 6 dB louder). Match each syllable's RMS to the real segment it replaces; the
+        # gain is recorded so it can be audited.
+        real_rms = float(np.sqrt(np.mean(np.square(
+            audio[offset:stop].astype(np.float64))))) if stop > offset else 0.0
+        synth_rms = float(np.sqrt(np.mean(np.square(piece)))) if piece.size else 0.0
+        gain = 1.0
+        if real_rms > 1e-6 and synth_rms > 1e-9:
+            gain = float(np.clip(real_rms / synth_rms, 0.05, 20.0))
+        # Never let loudness matching push the pair outside [-1, 1]: clipping would add a
+        # distortion cue that is neither in the recording nor in the synthesizer, and the
+        # dataset consumer cannot tell it from the model's own artefact.
+        peak = float(np.max(np.abs(piece))) if piece.size else 0.0
+        if gain * peak > 0.999:
+            clipped_gain = 0.999 / peak if peak > 0 else gain
+            if clipped_gain < gain:
+                result.add_issue("gain_limited_by_peak",
+                                 f"syllable {index} gain {20.0 * np.log10(gain / clipped_gain):.2f} dB "
+                                 "below the RMS match to keep the pair below full scale")
+                gain = clipped_gain
+        result.gains_db.append(round(20.0 * np.log10(gain), 3) if gain > 0 else 0.0)
+        mechanical[offset:stop] = (piece * gain).astype(np.float32)
     result.add_issue("syllablewise_render",
                      f"{len(syllables)} syllables rendered separately at measured onsets; "
                      "each render applies a 30 ms fade, so boundaries dip more than in real speech")
+    # The composite fingerprint covers every syllable request; overwriting it with the last
+    # syllable's fingerprint (as this function used to) made two different utterances with the
+    # same final syllable indistinguishable.
+    result.request_fingerprints = fingerprints
     result.request_fingerprint = hashlib.sha256(
         "\n".join(fingerprints).encode("utf-8")).hexdigest()
     result.mechanical = mechanical
     result.mechanical_sha256 = _audio_sha256(mechanical)
-    result.request_fingerprint = rendered.request_fingerprint
     result.template = {"formant_scale": template.formant_scale,
                        "spectral_tilt": template.spectral_tilt,
                        "breathiness": template.breathiness,

@@ -1,8 +1,21 @@
-"""Frame-wise F0 tracking by normalised autocorrelation (NumPy only).
+"""Frame-wise F0 tracking by YIN (NumPy only).
 
 Used only to *build* paired data and diagnostics: VHE never sees F0 as an input. Frames
 too quiet or too aperiodic are marked unvoiced instead of being given an invented pitch;
 callers must decide what to do and report the ratio.
+
+The estimator is the cumulative-mean-normalised difference function (CMND) of de Cheveigne
+and Kawahara (2002): for lag tau,
+
+    d(tau)  = sum_{j<W} (x[j] - x[j+tau])^2 = e0 + e1(tau) - 2 r(tau)
+    d'(tau) = d(tau) * tau / sum_{k<=tau} d(k)
+
+r(tau) is the raw autocorrelation (one FFT), e0/e1 are prefix sums of x^2, and W is a fixed
+integration width so every lag averages over the same number of samples. A pure tone of
+period T gives d(kT) = 0 exactly, so d'(T) = 0 and the *shortest* lag with d' below the
+absolute threshold is the period. This removes two failure modes of the previous
+unbiased-autocorrelation estimate: half-period locking at low F0 (65-80 Hz read as ~900 Hz)
+and the shortest-strong-local-peak heuristic that caused it.
 """
 
 from __future__ import annotations
@@ -16,7 +29,7 @@ import numpy as np
 class F0Frame:
     time_s: float
     f0_hz: float  # 0.0 means unvoiced
-    voicing: float  # peak normalised autocorrelation, in [0, 1]
+    voicing: float  # 1 - CMND at the chosen lag, in [0, 1]
 
 
 @dataclass
@@ -57,57 +70,75 @@ class F0Track:
         }
 
 
+def _difference(x: np.ndarray, lag_min: int, lag_max: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(lags, d(tau), d'(tau)) for lag_min..lag_max."""
+    n = x.size
+    lags = np.arange(lag_min, lag_max + 1)
+    prefix = np.concatenate(([0.0], np.cumsum(x * x)))
+    # Variable integration window: lag tau averages over n - tau terms on both sides, which
+    # keeps e_head, e_tail and r(tau) mutually consistent (a fixed width would need a second
+    # FFT to restrict r(tau) to the same terms). The CMND normalisation is what makes the
+    # shrinking window harmless.
+    energy_head = prefix[n - lags]
+    energy_tail = prefix[n] - prefix[lags]
+    spectrum = np.fft.rfft(x, 1 << (2 * n - 1).bit_length())
+    corr = np.fft.irfft(spectrum * np.conj(spectrum), 1 << (2 * n - 1).bit_length())[:n]
+    diff = np.maximum(energy_head + energy_tail - 2.0 * corr[lags], 0.0)
+    running = np.cumsum(diff)
+    cmnd = diff * lags / np.maximum(running, 1e-12)
+    return lags, diff, cmnd
+
+
 def _estimate_frame(frame: np.ndarray, sample_rate: int, fmin_hz: float, fmax_hz: float,
                     threshold: float) -> tuple[float, float]:
     centered = frame - frame.mean()
-    energy = float(np.dot(centered, centered))
-    if energy <= 1e-12:
+    if float(np.dot(centered, centered)) <= 1e-12:
         return 0.0, 0.0
-    size = 1 << (2 * centered.size - 1).bit_length()
-    spectrum = np.fft.rfft(centered, size)
-    autocorr = np.fft.irfft(spectrum * np.conj(spectrum), size)[:centered.size]
-    if autocorr[0] <= 0:
-        return 0.0, 0.0
-    autocorr = autocorr / autocorr[0]
-    # Unbiased correction: the raw estimate decays with lag and biases towards short lags.
-    lags = np.arange(centered.size)
-    autocorr = autocorr * centered.size / (centered.size - lags)
-
     lag_min = max(2, int(np.floor(sample_rate / fmax_hz)))
-    lag_max = min(centered.size - 2, int(np.ceil(sample_rate / fmin_hz)))
-    if lag_max <= lag_min:
-        return 0.0, 0.0
-    window = autocorr[lag_min:lag_max + 1]
-    best_max = float(window.max())
-    if best_max <= 0.0:
-        return 0.0, 0.0
-    # Octave-down guard: the unbiased correction favours long lags, so a pure tone can win
-    # at 3T instead of T. Pick the SHORTEST lag that is a local maximum within 85% of the
-    # global peak; a true period always has a strong peak at its shortest multiple.
-    padded = np.concatenate(([-np.inf], window, [-np.inf]))
-    is_local = (padded[1:-1] >= padded[:-2]) & (padded[1:-1] >= padded[2:])
-    strong = is_local & (window >= 0.85 * best_max)
-    if bool(strong.any()):
-        best = int(np.argmax(strong)) + lag_min
+    lag_max = min(centered.size - 3, int(np.ceil(sample_rate / fmin_hz)))
+    if lag_max <= lag_min or centered.size - lag_max < 16:
+        return 0.0, 0.0  # too few samples left for even one period of the lowest F0
+    # The cumulative mean must start at lag 1, not at lag_min: normalising by a sum that
+    # already contains only large lags inflates CMND by an order of magnitude and hides the
+    # period of high voices (880 Hz at 24 kHz was read as 440 Hz for exactly this reason).
+    lags, diff, cmnd = _difference(centered, 1, lag_max)
+    offset = max(0, lag_min - 1)
+    search = cmnd[offset:]
+    # YIN absolute threshold: the first dip below it is the period; a deeper later dip is a
+    # multiple of the same period and must not win.
+    below = np.flatnonzero(search < 0.15)
+    if below.size:
+        best = int(below[0])
+        while best + 1 < search.size and search[best + 1] < search[best]:
+            best += 1
     else:
-        best = int(np.argmax(window)) + lag_min
-    peak = float(autocorr[best])
-    voicing = float(np.clip(peak, 0.0, 1.0))
-    if peak < threshold:
+        best = int(np.argmin(search))
+    best += offset
+    voicing = float(np.clip(1.0 - float(cmnd[best]), 0.0, 1.0))
+    if voicing < threshold:
         return 0.0, voicing
 
-    # Parabolic refinement around the peak (sub-sample lag).
-    left, center, right = autocorr[best - 1], autocorr[best], autocorr[best + 1]
-    denom = left - 2.0 * center + right
-    shift = 0.5 * (left - right) / denom if abs(denom) > 1e-12 else 0.0
-    lag = best + float(np.clip(shift, -0.5, 0.5))
+    # Parabolic refinement on d(tau) around the chosen lag (sub-sample period).
+    if 0 < best < diff.size - 1:
+        left, center, right = diff[best - 1], diff[best], diff[best + 1]
+        denom = left - 2.0 * center + right
+        shift = 0.5 * (left - right) / denom if abs(denom) > 1e-12 else 0.0
+        lag = float(lags[best]) + float(np.clip(shift, -0.5, 0.5))
+    else:
+        lag = float(lags[best])
     return float(sample_rate / lag), voicing
 
 
 def estimate_f0(audio: np.ndarray, sample_rate: int, *, fmin_hz: float = 65.0,
                 fmax_hz: float = 900.0, frame_ms: float = 40.0, hop_ms: float = 10.0,
-                voicing_threshold: float = 0.45) -> F0Track:
-    """Track F0 on a mono signal. Short signals yield a single (padded) frame."""
+                voicing_threshold: float = 0.45, silence_floor_db: float = -60.0,
+                absolute_floor: float = 1e-3) -> F0Track:
+    """Track F0 on a mono signal. Short signals yield a single (padded) frame.
+
+    A frame is gated to unvoiced when its RMS is below either silence_floor_db relative to
+    the loudest frame of the same signal, or absolute_floor (about -60 dBFS). Without a
+    relative gate any digital-silence residue counts as fully voiced.
+    """
     signal = np.asarray(audio, dtype=np.float64)
     if signal.ndim != 1:
         raise ValueError("estimate_f0 expects mono audio with shape [N]")
@@ -122,11 +153,18 @@ def estimate_f0(audio: np.ndarray, sample_rate: int, *, fmin_hz: float = 65.0,
         signal = np.pad(signal, (0, pad), mode="reflect")
 
     starts = list(range(0, signal.size - window + 1, hop))
+    frames = [signal[start:start + window] for start in starts]
+    levels = np.array([float(np.sqrt(np.mean(frame * frame))) for frame in frames])
+    gate = max(absolute_floor,
+               float(levels.max()) * 10.0 ** (silence_floor_db / 20.0)) if levels.size else 0.0
     track = F0Track(sample_rate=sample_rate, frame_s=window / sample_rate,
                     hop_s=hop / sample_rate, fmin_hz=fmin_hz, fmax_hz=fmax_hz)
-    for start in starts:
-        frame = signal[start:start + window]
-        f0, voicing = _estimate_frame(frame, sample_rate, fmin_hz, fmax_hz, voicing_threshold)
+    for start, frame, level in zip(starts, frames, levels):
+        if level < gate:
+            f0, voicing = 0.0, 0.0
+        else:
+            f0, voicing = _estimate_frame(frame, sample_rate, fmin_hz, fmax_hz,
+                                          voicing_threshold)
         track.frames.append(F0Frame(time_s=(start + window / 2.0) / sample_rate,
                                     f0_hz=f0, voicing=voicing))
     return track

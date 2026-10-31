@@ -23,7 +23,7 @@ class FormantProxySynth:
     """Deterministic source-filter proxy: [request] -> float32 [N] waveform."""
 
     name = "formant_proxy"
-    version = "0.1.0"
+    version = "0.2.0"
     supported_phonemes = supported_phonemes()
 
     def render(self, request: SynthesisRequest) -> SynthesisResult:
@@ -71,10 +71,14 @@ class FormantProxySynth:
 
         rng = np.random.default_rng(request.seed)
         signal += template.breathiness * rng.standard_normal(n_voiced)
-        fade = max(1, int(0.03 * sample_rate))
+        # The 30 ms fade must never be longer than half the voiced region: with fade > n//2 the
+        # trailing ramp overwrote the leading one (IndexError for n < fade, a full-scale
+        # click for fade <= n < 2*fade).
+        fade = min(max(1, int(0.03 * sample_rate)), n_voiced // 2)
         envelope = np.ones(n_voiced)
-        envelope[:fade] = np.linspace(0.0, 1.0, fade)
-        envelope[-fade:] = np.linspace(1.0, 0.0, fade)
+        if fade > 0:
+            envelope[:fade] = np.linspace(0.0, 1.0, fade)
+            envelope[-fade:] = np.linspace(1.0, 0.0, fade)
         signal *= envelope
         peak = float(np.max(np.abs(signal)))
         if peak <= 1e-10 or not np.isfinite(peak):

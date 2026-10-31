@@ -165,10 +165,17 @@ class PitchCurve:
                 raise ValueError(f"f0_hz must be in [{F0_MIN_HZ},{F0_MAX_HZ}] Hz")
 
     def sample(self, n_samples: int, sample_rate: int) -> np.ndarray:
-        """Return f0 in Hz for n_samples at sample_rate (linear interpolation, clamped)."""
+        """Return f0 in Hz for n_samples at sample_rate (log-domain interpolation, clamped).
+
+        Interpolating in Hz makes a rising glide spend most of its time in the top of the
+        range: 100 -> 400 Hz reaches 250 Hz at the midpoint, 386 cents above the geometric
+        mean a listener hears. Interpolating log2(f0) keeps the glide linear in pitch, and a
+        constant curve is bit-identical either way (so the byte baseline is unaffected).
+        """
         self.validate()
         times = np.arange(n_samples, dtype=np.float64) / float(sample_rate)
-        return np.interp(times, np.asarray(self.times_s), np.asarray(self.f0_hz))
+        octaves = np.log2(np.asarray(self.f0_hz, dtype=np.float64))
+        return np.power(2.0, np.interp(times, np.asarray(self.times_s), octaves))
 
     @classmethod
     def constant(cls, f0_hz: float, duration_s: float) -> "PitchCurve":
