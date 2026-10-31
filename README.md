@@ -24,13 +24,14 @@ Voice Template + Phonemes + MIDI/Expression
 - `src/vhe/audio.py`：16-bit PCM 读写与峰值归一；量化固定在 float32 下进行（字节级可复现）。
 - `src/vhe/data/`：数据侧（未接入真实数据）：AISHELL-3 适配器、manifest CLI、重采样/F0/能量分段、成对构造（`pairing.py`）。
   - `aishell3.py`：**AISHELL-3 适配器**。只读目录结构与 WAV 头，把每一条被拒文件记成显式 issue code（missing_wav / not_mono / empty_text / too_short …），按说话人切 dev 且不动官方 test，输出只含相对路径与 SHA256 的 JSONL manifest。
-  - `resample.py` / `f0.py` / `segment.py`：44.1 kHz → 契约采样率的多相 windowed-sinc 重采样（15 kHz 残留 -87 dB）、F0 自相关跟踪（100–400 Hz 合成信号误差 <1%）、能量谷音节分段（丢弃的短突发记 `segment_too_short`，静音记 `no_speech`）。
+  - `resample.py` / `f0.py` / `segment.py`：44.1 kHz → 契约采样率的多相 windowed-sinc 重采样（15 kHz 残留 -88 dB）、F0 CMND/YIN 跟踪（16/24/48 kHz × 65–880 Hz 合成信号误差 ≤0.01%，静音帧强制 unvoiced）、能量谷音节分段（先做样本级边界精修再合并，60 ms 停顿可分辨；丢弃的短突发记 `segment_too_short`，静音记 `no_speech`）。
 - `tests/test_synth.py` / `tests/test_synth_contract.py`：尺寸、确定性、参数差异、不支持音素报错、禁止覆盖；以及请求字段白名单、静音不改浊音样本、指纹追踪、**历史 WAV 基线的 SHA256 字节级回归**。
 - `src/vhe/backend.py`：CUDA/MPS/CPU 自动检测，设备指定失败时不偷偷回退。
-- `src/vhe/model.py`：可移植的残差 Conv1d **未训练原型**（初始化为恒等映射）。
+- `src/vhe/model.py`：`ResidualUNet`（v0.1 波形残差 U-Net，1,001,089 参数，实测感受野 1224 样本 ≈ 51.0 ms，输出层零初始化故初始严格恒等，**未训练**）与 `ResidualVHE` 小原型；`build_model()` 按名字构建。设计取舍见 **[docs/VHE_ARCHITECTURE_RESEARCH.md](docs/VHE_ARCHITECTURE_RESEARCH.md)**。
+- `src/vhe/losses.py`：多分辨率 STFT（谱收敛＋对数幅度）、自相关周期结构、能量轮廓（形状/电平分离）、残差惩罚；默认权重**未经标定**。定义、盲区与实测见 **[docs/LOSS_DESIGN.md](docs/LOSS_DESIGN.md)**。
 - `src/vhe/smoke.py`：合成张量的前/反向传播和优化器自检，**不是语音自然化训练**。
 - `src/vhe/checkpoint.py`：跨平台 `state_dict` 存取工具。
-- `docs/`：实验协议、数据授权、研究日志、文献、里程碑、合成器契约、平台验收规范。
+- `docs/`：实验协议、数据授权、研究日志、文献、里程碑、合成器契约、平台验收规范，以及 [架构研究](docs/VHE_ARCHITECTURE_RESEARCH.md)、[损失设计](docs/LOSS_DESIGN.md)、[训练策略](docs/TRAINING_STRATEGY.md)。
 - `agent/START_HERE.md`：交给本地 Agent 的可执行开发任务。
 - `tools/new_experiment.py`：创建只增不改的实验目录和模板记录。
 

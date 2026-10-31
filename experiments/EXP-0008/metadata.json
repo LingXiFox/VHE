@@ -1,0 +1,39 @@
+{
+  "experiment_id": "EXP-0008",
+  "title": "v0.1 model and loss suite: numerical validation before training",
+  "hypothesis": "The v0.1 residual U-Net plus the four-term loss suite are numerically sound before any real training: (1) at initialisation the edit is exactly zero and the model preserves [B,1,N] for arbitrary (also non-multiple-of-8) lengths; (2) the measured receptive field is at least 40 ms (~2.5 periods at 65 Hz) so pitch-synchronous micro-structure is observable; (3) every loss term reacts monotonically to the distortion it targets and is invariant to gain where it should be; (4) gradients reach every parameter without NaN on CPU and MPS in FP32; (5) MRSTFT+periodicity+envelope separate a distortion-free pair from a distorted one with a margin > 10x, which is the minimum needed for a training signal to exist.",
+  "created_utc": "2026-10-31T15:07:05.785336+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "b8df27d51cc1fff0e2d1aa5c4a723d95ee2519ec",
+    "status": "M src/vhe/model.py\n M tests/test_model.py\n?? src/vhe/losses.py\n?? tests/test_losses.py"
+  },
+  "seed": null,
+  "dataset_manifest_sha256": null,
+  "command": ".venv/bin/python experiments/EXP-0008/validate_model_losses.py --out experiments/EXP-0008/logs/validate.json",
+  "torch_version": "2.15.0",
+  "cuda_version": null,
+  "gpu": "apple-silicon MPS (no CUDA)",
+  "config_sha256": null,
+  "notes": "Completed. Numerical validation only; no training, no real audio, no listening test. See README for results and negative findings E1-E7.",
+  "probe_sha256": "40679d08eb8b9fae52bf7608b35c1b4c0ee623180841ea7b684804cd32c1b42e",
+  "runs": [
+    {
+      "label": "final",
+      "command": ".venv/bin/python experiments/EXP-0008/validate_model_losses.py --out experiments/EXP-0008/logs/validate.json",
+      "git_commit": "b8df27d51cc1fff0e2d1aa5c4a723d95ee2519ec",
+      "git_status": "dirty: model.py, tests/test_model.py modified; losses.py, tests/test_losses.py, docs/*.md, experiments/EXP-0008/ untracked",
+      "output": "experiments/EXP-0008/logs/validate.json",
+      "output_sha256": "065361ffa8f5abddf62f7b304e8d84237b75e5fe7ac96f58eb98280d8391838f",
+      "torch": "2.15.0",
+      "python": "3.14.6",
+      "device": "cpu + mps"
+    }
+  ],
+  "errata": [
+    "E1: gradient_flow() mutated the caller's model (no deepcopy) so loss_at_init was measured after one SGD step on the head; fixed and rerun, reported numbers come from the fixed version. The pre-fix validate.json was overwritten, not kept.",
+    "E2: pre-registered criterion 5 (10x ratio margin) is degenerate because the identity baseline is ~0; absolute margins used instead.",
+    "E7: title says four-term loss suite; the suite has six terms; title kept as filed."
+  ]
+}

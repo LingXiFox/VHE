@@ -1,7 +1,7 @@
 import pytest
 
 torch = pytest.importorskip("torch")
-from vhe.model import ResidualVHE
+from vhe.model import ResidualUNet, ResidualVHE, build_model
 from vhe.smoke import run_smoke
 
 
@@ -21,6 +21,51 @@ def test_prototype_validates_shape_and_type():
         model(torch.randn(1, 1, 16))
     with pytest.raises(TypeError, match="floating"):
         model(torch.ones(1, 1, 128, dtype=torch.int16))
+
+
+def test_unet_starts_as_identity_and_keeps_length():
+    model = ResidualUNet()
+    for length in (777, 1000, 24000, 24013):
+        x = torch.randn(2, 1, length, dtype=torch.float32)
+        y = model(x)
+        assert y.shape == x.shape
+        assert torch.equal(y, x)  # zero-initialised head: the edit is exactly 0 at start
+
+
+def test_unet_validates_shape_and_type():
+    model = ResidualUNet()
+    with pytest.raises(ValueError, match="mono"):
+        model(torch.randn(1, 2, 128))
+    with pytest.raises(ValueError, match="64"):
+        model(torch.randn(1, 1, 16))
+    with pytest.raises(TypeError, match="floating"):
+        model(torch.ones(1, 1, 128, dtype=torch.int16))
+
+
+def test_unet_learns_a_non_identity_edit_and_backprops():
+    # Seeded on purpose: the zero-initialised head only moves on the first step, so the loss
+    # curve of a handful of steps depends on the random init (EXP-0008 E3). Unseeded this
+    # test was order-dependent and flaked in the full suite.
+    torch.manual_seed(0)
+    model = build_model("unet", channels=8)
+    x = torch.randn(1, 1, 1024)
+    target = x * 0.5
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-2)
+    first = None
+    for _ in range(10):
+        optimizer.zero_grad(set_to_none=True)
+        loss = torch.mean((model(x) - target) ** 2)
+        loss.backward()
+        optimizer.step()
+        first = float(loss.detach()) if first is None else first
+        assert torch.isfinite(loss)
+    assert float(loss.detach()) < first
+    assert not torch.equal(model(x), x)
+
+
+def test_build_model_rejects_unknown_name():
+    with pytest.raises(ValueError, match="unknown model"):
+        build_model("transformer")
 
 
 def test_cpu_gradient_and_optimizer_smoke():

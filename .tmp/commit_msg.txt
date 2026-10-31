@@ -1,0 +1,31 @@
+feat(model,losses): add v0.1 residual U-Net and loss suite with numerical validation (EXP-0008)
+
+Model: ResidualUNet, [B,1,N] -> [B,1,N] with zero-initialised residual head so the
+initial mapping is exactly the identity (max|y-x| = 0.0). 1,001,089 parameters,
+measured receptive field 1224 samples = 51.0 ms. Reflect padding keeps arbitrary
+lengths (777/1000/24000/24013) intact; nearest upsample + conv instead of
+ConvTranspose1d to avoid checkerboard ringing.
+
+Losses: multi-resolution STFT (spectral convergence + log magnitude), autocorrelation
+periodicity profile, energy envelope split into shape/level, residual penalty.
+
+EXP-0008 findings (experiments/EXP-0008):
+- loss matrix over 8 distortions; CPU vs MPS edit difference 3.1e-06 in FP32
+- negative A: 8-bit quantisation moves the total loss by only 0.126 while the other
+  distortions move it by 1.6-2.4, so the suite barely punishes broadband quantisation
+  noise - the typical mechanical artefact. Needs a spectral-flatness / high-band term.
+- negative B: log_magnitude is 92% of the initial total (6.512 / 7.076); default
+  weights are uncalibrated and must be re-scaled before training.
+- negative C: zero-initialised head leaves upstream gradients at 0 on step 0; the
+  seeded 3-step learning test flaked in the full suite until it was seeded and
+  extended to 10 steps.
+- errata kept: the probe used to mutate the model it measured (now deepcopies), and
+  pre-registered criterion 5 (10x ratio margin) is degenerate because the identity
+  baseline is ~0.
+
+Docs: VHE_ARCHITECTURE_RESEARCH (7 model families compared, why residual U-Net,
+limitations), LOSS_DESIGN (definitions, blind spots, measured magnitudes, failure
+criteria), TRAINING_STRATEGY (data, pairing, splits, S0-S4 curriculum, stop rules).
+
+Tests: 100 passed, 1 skipped (CUDA real device) on macOS CPU; doctor/smoke on both
+cpu and mps. No training and no real audio in this commit.

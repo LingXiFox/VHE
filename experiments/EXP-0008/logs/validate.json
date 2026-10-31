@@ -1,0 +1,233 @@
+{
+  "experiment": "EXP-0008",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.6",
+  "torch": "2.15.0",
+  "numpy": "2.5.4",
+  "seed": 0,
+  "parameters": 1001089,
+  "identity_and_length": {
+    "777": {
+      "shape": [
+        1,
+        1,
+        777
+      ],
+      "max_abs_edit": 0.0
+    },
+    "1000": {
+      "shape": [
+        1,
+        1,
+        1000
+      ],
+      "max_abs_edit": 0.0
+    },
+    "24000": {
+      "shape": [
+        1,
+        1,
+        24000
+      ],
+      "max_abs_edit": 0.0
+    },
+    "24013": {
+      "shape": [
+        1,
+        1,
+        24013
+      ],
+      "max_abs_edit": 0.0
+    }
+  },
+  "receptive_field": {
+    "left_samples": -611,
+    "right_samples": 612,
+    "width_samples": 1224,
+    "width_ms": 51.0,
+    "periods_at_65hz": 3.31,
+    "periods_at_180hz": 9.18
+  },
+  "loss_matrix": {
+    "identity": {
+      "spectral_convergence": 0.0,
+      "log_magnitude": 0.0,
+      "periodicity": 0.0,
+      "envelope_shape": 0.0,
+      "envelope_level": 0.0,
+      "residual": 0.37677493691444397,
+      "total": 0.00037677495856769383
+    },
+    "noise_snr20": {
+      "spectral_convergence": 0.08015480637550354,
+      "log_magnitude": 1.3550435304641724,
+      "periodicity": 0.004503501113504171,
+      "envelope_shape": 0.2353079468011856,
+      "envelope_level": 0.12896215915679932,
+      "residual": 0.37872791290283203,
+      "total": 1.8043506145477295
+    },
+    "pitch_plus_2pct": {
+      "spectral_convergence": 0.40564489364624023,
+      "log_magnitude": 0.961762011051178,
+      "periodicity": 0.07268834114074707,
+      "envelope_shape": 0.15968015789985657,
+      "envelope_level": 0.013259053230285645,
+      "residual": 0.3405226767063141,
+      "total": 1.613374948501587
+    },
+    "shift_20ms": {
+      "spectral_convergence": 0.3938470184803009,
+      "log_magnitude": 0.9697265625,
+      "periodicity": 0.0629548728466034,
+      "envelope_shape": 0.27750879526138306,
+      "envelope_level": 2.384185791015625e-05,
+      "residual": 0.38484522700309753,
+      "total": 1.7044458389282227
+    },
+    "gain_2x": {
+      "spectral_convergence": 1.0,
+      "log_magnitude": 0.6746088862419128,
+      "periodicity": 9.474445533674825e-12,
+      "envelope_shape": 0.054273903369903564,
+      "envelope_level": 0.6648554801940918,
+      "residual": 0.9490975141525269,
+      "total": 2.3946874141693115
+    },
+    "drop_100ms": {
+      "spectral_convergence": 0.3190644085407257,
+      "log_magnitude": 0.5817983746528625,
+      "periodicity": 0.0330122672021389,
+      "envelope_shape": 0.7523437142372131,
+      "envelope_level": 0.4222559928894043,
+      "residual": 0.34929516911506653,
+      "total": 2.1088240146636963
+    },
+    "dull_3tap": {
+      "spectral_convergence": 0.11204773932695389,
+      "log_magnitude": 1.9931367635726929,
+      "periodicity": 0.011257246136665344,
+      "envelope_shape": 0.011832122690975666,
+      "envelope_level": 0.0267336368560791,
+      "residual": 0.36368969082832336,
+      "total": 2.1553711891174316
+    },
+    "bitcrush_8bit": {
+      "spectral_convergence": 0.0035736875142902136,
+      "log_magnitude": 0.12226500362157822,
+      "periodicity": 0.00014563945296686143,
+      "envelope_shape": 0.00027795531786978245,
+      "envelope_level": 9.322166442871094e-05,
+      "residual": 0.3767887353897095,
+      "total": 0.12673230469226837
+    }
+  },
+  "loss_at_init": {
+    "spectral_convergence": 0.4110250174999237,
+    "log_magnitude": 6.511730194091797,
+    "periodicity": 0.0676669329404831,
+    "envelope_shape": 0.051035065203905106,
+    "envelope_level": 0.034584641456604004,
+    "residual": 0.0,
+    "total": 7.0760416984558105,
+    "note": "model output is exactly the mechanical input here"
+  },
+  "gradient_flow": {
+    "at_init": {
+      "per_block_grad_abs_sum": {
+        "stem": 0.0,
+        "enc1": 0.0,
+        "down1": 0.0,
+        "enc2": 0.0,
+        "down2": 0.0,
+        "enc3": 0.0,
+        "down3": 0.0,
+        "mid": 0.0,
+        "up3": 0.0,
+        "dec3": 0.0,
+        "up2": 0.0,
+        "dec2": 0.0,
+        "up1": 0.0,
+        "dec1": 0.0,
+        "head": 61950.56396484
+      },
+      "parameters_without_grad": []
+    },
+    "after_one_head_step": {
+      "per_block_grad_abs_sum": {
+        "stem": 6763.06750488,
+        "enc1": 102731.88317872,
+        "down1": 61657.21069336,
+        "enc2": 118094.44042968,
+        "down2": 90824.41552734,
+        "enc3": 195337.72558593,
+        "down3": 99771.7421875,
+        "mid": 138434.06610108,
+        "up3": 79309.88623047,
+        "dec3": 219086.76293945,
+        "up2": 137795.30200195,
+        "dec2": 145499.13769532,
+        "up1": 112232.74780273,
+        "dec1": 95793.40423584,
+        "head": 305.74013877
+      },
+      "parameters_without_grad": []
+    },
+    "all_finite": true
+  },
+  "device_agreement": {
+    "cpu_edit_absmax": 1.1969178915023804,
+    "note": "weights randomised: at identity init every backend outputs an exact no-op",
+    "mps_available": true,
+    "cpu_vs_mps_edit_max_abs_diff": 3.0994415283203125e-06,
+    "mps_finite": true
+  },
+  "weights": {
+    "spectral_convergence": 1.0,
+    "log_magnitude": 1.0,
+    "periodicity": 1.0,
+    "envelope_shape": 1.0,
+    "envelope_level": 1.0,
+    "residual": 0.001
+  },
+  "fixture": {
+    "sample_rate": 24000,
+    "seconds": 1.0,
+    "f0_hz": 180.0,
+    "closures_ms": [
+      20,
+      70
+    ],
+    "note": "synthetic; not a real recording"
+  },
+  "margin_identity_vs_distortion": {
+    "noise_snr20": {
+      "absolute": 1.80397,
+      "ratio": 4788.9
+    },
+    "pitch_plus_2pct": {
+      "absolute": 1.613,
+      "ratio": 4282.1
+    },
+    "shift_20ms": {
+      "absolute": 1.70407,
+      "ratio": 4523.8
+    },
+    "gain_2x": {
+      "absolute": 2.39431,
+      "ratio": 6355.7
+    },
+    "drop_100ms": {
+      "absolute": 2.10845,
+      "ratio": 5597.0
+    },
+    "dull_3tap": {
+      "absolute": 2.15499,
+      "ratio": 5720.6
+    },
+    "bitcrush_8bit": {
+      "absolute": 0.12636,
+      "ratio": 336.4
+    }
+  }
+}
