@@ -74,6 +74,9 @@ def main() -> int:
     parser.add_argument("--splits", default="dev")
     parser.add_argument("--speakers", type=int, default=4)
     parser.add_argument("--per-speaker", type=int, default=5)
+    parser.add_argument("--per-speaker-ready", type=int, default=0,
+                        help="Keep walking the speaker's candidates until this many forced pairs "
+                             "are training-ready (0 = take the first --per-speaker as they come)")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--template", default="yang")
     args = parser.parse_args()
@@ -90,8 +93,13 @@ def main() -> int:
     template = PRESETS[args.template]
     out.mkdir(parents=True)
 
+    ready_per_speaker = {}
+    quota = args.per_speaker_ready or 0
     records, allocations = [], []
     for index, row in enumerate(picked, 1):
+        speaker = str(row.get("speaker"))
+        if quota and ready_per_speaker.get(speaker, 0) >= quota:
+            continue
         utt_id = str(row["utt_id"])
         wav_path = root / str(row["wav_path"])
         pinyins = [str(token) for token in row["pinyin"]]
@@ -139,8 +147,10 @@ def main() -> int:
             for allocation in dp.allocations:
                 allocations.append({"utt_id": utt_id, "arm": "dp", "phones": allocation})
         records.append(record)
-        print(f"[{index}/{len(picked)}] {utt_id} forced={forced.status} dp={dp.status}",
-              flush=True)
+        if record.get("forced_ready"):
+            ready_per_speaker[speaker] = ready_per_speaker.get(speaker, 0) + 1
+        print(f"[{index}/{len(picked)}] {utt_id} forced={forced.status} dp={dp.status} "
+              f"ready={record.get('forced_ready')}", flush=True)
 
     fields = ["utt_id", "speaker", "split", "syllables", "wav_path", "alignment_confidence",
               "forced_status", "dp_status", "forced_ready", "dp_ready", "forced_reasons",
@@ -153,7 +163,9 @@ def main() -> int:
     (out / "allocations.json").write_text(json.dumps(allocations, indent=1, ensure_ascii=False),
                                           encoding="utf-8")
     summary = {
-        "selected": len(picked), "renderable_only": True,
+        "candidates": len(picked), "selected": len(records),
+        "per_speaker_ready": quota, "ready_per_speaker": ready_per_speaker,
+        "renderable_only": True,
         "template": args.template, "model": str(args.model), "seed": args.seed,
         "rendered": sum(1 for r in records
                                                  if r.get("forced_status") == "ok"),

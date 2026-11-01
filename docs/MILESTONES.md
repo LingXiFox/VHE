@@ -84,7 +84,25 @@
 | 真实语料验证 | 完成（负面）：226 句 / 16 说话人训练，60 句未见说话人评估，能收敛、无非法跨度，但各音素类时长挤在 0.05–0.135 s（元音/塞音 1.43），与能量谷 DP 的 50 ms 一致率仅 30.7% | EXP-0021 |
 | 时长模型 | 已实现逐状态自环概率（Beta(2,2) 先验、0.05–0.98 clamp、未触及状态保留），默认关闭 | `src/vhe/data/hmm.py` |
 | 时长模型消融 | **负面**：重估后 vowel/stop 1.59 → 1.63（判据 ≥2.0 失败），地板比例 5.8% → 6.0%（判据 ≤5% 失败），置信度 0.7959 → 0.8004（勉强过），似然单调、DP 一致率 30.6% 不变；边界平均只移动 **1.07 ms**（中位 0.0、最大 40）而逐句 logprob 抬高 20 nats → 发射项主导解码，转移先验不是时长瓶颈 | EXP-0022 |
-| 接入配对管线 | **未做**：`build_pair` 仍用 `g2p.syllable_plan` 的音节内名义时长 | — |
-| 听音验收 | 仍未做（与 P1.5 相同的 20 对材料） | — |
+| 接入配对管线 | 后续已完成，见下节「P2 前置二」 | commit 1f91c94 |
+| 听音验收 | 仍未做（材料后来换成 24 对，见下节） | — |
 
 **结论**：对齐器在可分离合成信号上可复现已知边界，在真实语料上能收敛且不产生非法跨度。EXP-0021 曾把"各类时长挤在 0.05–0.135 s"归因于固定 0.5 转移概率，**EXP-0022 已证伪该因果**：固定 0.5 时模型隐含 60 ms，解码仍给出元音 115.7 ms / 塞音 72.7 ms；逐状态重估把似然抬高约 20 nats/句，边界只移动 1.07 ms。时长区分度不足（vowel/stop 1.63）的瓶颈在发射模型，需要显式时长模型或更大发射容量，而不是转移先验。vowel/stop 1.63 是否已接近真实仍无法判定——参照物能量谷 DP 未经人工验证，能判定它的只有听音验收。配对管线接入、CLI 与听音验收仍未完成；训练本身仍未开始。
+
+## P2 前置二：强制对齐接入配对 + 听音包（2026-11-01，WSL2/4090 + macOS）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 接入配对管线 | 完成：`build_pair(alignment="forced", phone_spans=...)`，音素序列必须与转写逐项一致，span 有序且在时长内，否则 `phone_sequence_mismatch`/`bad_phone_span` | `src/vhe/data/pairing.py`、`tests/test_data_pairing.py` |
+| 语料级对齐索引 | 完成：`vhe aligner-train` / `vhe align`，JSONL 索引带 meta、逐 span confidence、拒绝覆盖 | `src/vhe/data/align_index.py`、`tests/test_data_align_index.py` |
+| 只采样可渲染句 | 完成：`select_rows(renderable_only=True)` + `--include-blocked`；此前请求 320 行只拿到 21 句（299 条 `AlignmentError`） | commit 59ee6fa |
+| 对齐器 v3（4090） | 完成：60 说话人 x 40 句 = 1334 句 / 0.8837 h / 108 状态 / 4 轮 EM 单调（逐帧 −4.44 → −0.86），63.6 s | `derived/aishell3-aligner/v3/` |
+| flat-start 取整崩溃 | 已修：459 帧要装 463 个音素帧；块内独立 `round()` 累计上漂，改为累积取整并断言总和相等 | commit 9276325、`test_flat_start_splits_every_frame_when_rounding_would_overflow` |
+| **span 时间基双重偏移** | 已修（EXP-0023 最大负面发现）：`align()` 已返回文件时间基，两个消费者又加了一次 offset，害得音高窗口整体晚 0.2–0.6 s、末音节落进静音 | commit 57ed0ef、`test_align_reports_spans_in_file_time` |
+| 听音包 | 已生成：8 说话人 x 3 句 = 24 对 training-ready，`ab/<utt>.wav` = 真人 + 1.0 s 静音 + 机械，附 `sheet.md` | `derived/aishell3-listen/EXP-0023-run5/` |
+| dp 臂 readiness | 0/16 — 能量谷 DP 稳定出现 `segmentation_count_disagrees`/`syllable_plan_blocked`，不是回归 | EXP-0023 |
+| 语料级产率 | **56.7%**（60 句固定 dev 样本，34 ready）；26 个 blocked **全部且仅**因 `pitch_gap_interpolated` | EXP-0023 `logs/readiness_dev60.json` |
+| 间隙政策放宽 | **否决**：自校准显示 40 ms 桥接 p90 43.8 cents，但独立自相关验证失败（35–80% 非周期、误差顶到 ±1/2 八度边界），且 36% 被拒帧落在响音内；`max_pitch_gap_s` 保持 0.02 | EXP-0024 |
+| 听音验收 | **仍未完成**：24 对已就绪，等主人打分；P2 的听音门槛继续开放 | `sheet.md` |
+
+**结论**：强制对齐可作配对管线的音素时长来源（0 例序列不一致、置信度 ≥0.618），训练数据产率约 57%，瓶颈单一且已定量。听音未做，因此 P2 只能进行「基础设施 + 小规模训练」，「听感已被人工验收」仍不成立。

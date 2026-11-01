@@ -8,11 +8,11 @@ Replacing g2p nominal onset/nucleus durations with chain-HMM phone spans keeps t
   - 对照 A（`dp`）：能量谷 DP 给音节窗口，音节内部用 `g2p.syllable_plan` 的名义时长（声母固定名义值，韵母吃剩余）。
   - 实验 B（`forced`）：链式 HMM 强制对齐给出每个音素的 span，机械合成直接用这些实测时长。
 - 其余全部固定：同一批 wav、同一 `PRESETS["yang"]` 音色模板、同一 F0 跟踪器（viterbi）、同一增益匹配、同一 24 kHz 输出、同一 seed。
-- 数据：v4 manifest 的 **dev** 划分（对齐器只用 train 训练，说话人零重叠），4 个说话人 x 5 句 = 20 句，seed 42。
-- 交付物：每句三个 WAV（`real`/`mech_forced`/`mech_dp`）+ 一张逐句表 + 逐音节时长表。音频**不进 Git**，落在数据盘 `derived/aishell3-listen/EXP-0023/`。
+- 数据：v4 manifest 的 **dev** 划分（对齐器只用 train 训练，说话人零重叠），8 个说话人 x 3 个 training-ready 句 = 24 句（正式包 run5），seed 42。
+- 交付物：每句三个 WAV（`real`/`mech_forced`/`mech_dp`）+ 一张逐句表 + 逐音节时长表 + 听音表。音频**不进 Git**，落在数据盘 `derived/aishell3-listen/EXP-0023-run5/`。
 
 ## 完整复现命令 / 环境与哈希
-见 `metadata.json` 的 `command`。执行机：4090 WSL2（`ssh -p 2222 hands@10.0.0.190`），模型与索引都落在 `~/datasets/VHE-Datasets/derived/`。
+见 `metadata.json` 的 `command` 与 `commands`。执行机：4090 WSL2（`ssh -p 2222 hands@10.0.0.190`），模型 `derived/aishell3-aligner/v3/model.npz`（73 KB，sha256 见 metadata），只训练 train 划分 60 说话人 x 40 句 = 1334 句 / 0.8837 h。
 
 ## 预注册通过/失败条件
 主要判据是人工听音（本实验存在的理由就是它），客观指标只作记录、不作 gating：
@@ -24,11 +24,55 @@ Replacing g2p nominal onset/nucleus durations with chain-HMM phone spans keeps t
 
 失败判据同样预注册：只要出现 1 对音节数错误或漏字，本实验即判负，需要先修对齐/配对再谈听感。
 
-## 实际结果与主观听音
-未运行。
+## 实际结果
+
+### 数据构建（5 次运行，全部保留）
+| 运行 | 说话人 x 候选 | 每说话人配额 | candidates | selected | rendered | forced_ok | forced_ready | dp_ok | dp_ready | logmel forced / dp |
+|---|---|---|---|---|---|---|---|---|---|---|
+| run1 | 4 x 5 | 5 | 20 | 20 | 2 | 2 | 2 | — | — | 中断（见下） |
+| run2 | 4 x 5 | 5 | 20 | 20 | 8 | 8 | 2 | 10 | 0 | 7.27482 / 6.03388 |
+| run3 | 4 x 25 | 5 | 64 | 27 | 26 | 26 | 18 | 15 | 0 | 6.28423 / 5.98200 |
+| run4 | 5 x 30 | 4 | 77 | 37 | 34 | 34 | 16 | 15 | 0 | 6.02491 / 6.17024 |
+| **run5（正式）** | 8 x 20 | 3 | 146 | 29 | 29 | 29 | **24** | 16 | **0** | **5.58772 / 6.01663** |
+
+run5 的 8 个说话人各 3 句：SSB0145 / SSB0601 / SSB0822 / SSB1096 / SSB1585 / SSB1593 / SSB1806 / SSB1863。
+24 对 A/B 文件与评分表：`EXP-0023-run5/ab/<utt>.wav`（真人 + 1.0 s 静音 + 机械，24 kHz）与 `EXP-0023-run5/sheet.md`。文件名与顺序由 `make_listening_sheet.py` 按 utt_id 排序生成，可复现。
+
+### 解析出的关键 bug：span 时间基被加了两次（commit 57ed0ef）
+`PhoneAligner.align()` 返回的 span 已经是**文件时间基**（内部 `offset_s = lead * hop_s` 已折进 `start_s`）。两个消费者又各自加了一次 offset：
+
+- `src/vhe/data/align_index.py`（旧的 align_rows）
+- `experiments/EXP-0023/build_listening_package.py`（`spoke_spans`）
+
+后果：每个 span 晚 0.2–0.6 s，音高窗口整体落到下一个音节，末音节落进静音，于是 `insufficient_pitch_points`（error 级）几乎总出现在最后一个音节。**这才是 run1/run2 只有 2/20 ready 的真实原因**，与 F0 估计器本身无关（同期 F0 探针的次八度偏差被误判为主因，见 EXP-0024 的动机）。
+
+修复后同一批 20 句：ready 2/20 → 10/20，rejected 12 → 1（SSB07510300 `mostly_unvoiced`）。回归测试 `tests/test_data_aligner.py::test_align_reports_spans_in_file_time`（lead=0.20 时断言 `spans[0].start_s == offset_s`）与 `tests/test_data_align_index.py` 的 StubAligner 同步改为文件时间基。
+
+### 语料级就绪率（`probe_readiness.py`，`logs/readiness_dev60.json`）
+固定样本 12 个 dev 说话人 x 5 句（seed 42，renderable only），不做提前停止：
+
+- attempted 60、aligned 60、align_skips 0、**ready 34 = 56.7%**
+- 26 个 blocked 的 readiness reasons **全部且仅**为 `pitch_gap_interpolated`；其中 3 句同时有 `low_pitch_coverage`、16 句有 `pitch_edge_held`（后者不致命）
+- 对齐置信度 min 0.618、mean 0.854；v3 模型 0 例 `bad_phone_span`、0 例音素序列不一致
+
+含义：4333 条 renderable train 句按此产率约可产 2400 对；单一瓶颈是 F0 内部间隙政策（`max_pitch_gap_s = 0.02`），不是对齐。
+
+### 两臂对比（客观记录，不判成败）
+- `dp` 臂的 training_ready **始终为 0**：15–16 句里稳定出现 `segmentation_count_disagrees`（能量谷音节数对不上）与 `syllable_plan_blocked`，这是 EXP-0011 已知的 36 音素表覆盖问题，不是本轮新问题。
+- 平均 log-mel 距离：forced 5.59 vs dp 6.02（run5）。**这一项不能用来判优劣**：它衡量的是「机械 vs 真人」的整体谱差异，与音素边界是否准确并非单调关系（run3 里 dp 反而更低）。真正的判据是听音。
+
+### 人工听音
+**未完成。** 24 对已就绪，等待主人按 `sheet.md` 打分。本实验在此之前不算通过，P2 训练只能以「数据管线可用」为前提进行，不能宣称听感已验收。
 
 ## 失败、负面发现、错误日志
-TODO（即便未成功也必须记录）
+1. **run1 中断**：脚本两臂都写 `real.wav`，第二次触发 `FileExistsError: Refusing to overwrite`（`write_wav` 拒绝覆盖是刻意设计）。改为先写一次、后写跳过。残留的 `EXP-0023/`（2 句）保留不删。
+2. **v3 对齐器第一次训练崩溃**：`--speakers 60` 时 `AlignmentError: 459 frames cannot hold 463 phone frames`。机制是 flat start 里每个音素块独立 `round()`，块数多时累计向上漂移超过总帧数，旧代码把漂移全塞给最后一块并 `max(1, ...)` 截断。修复：改为累积取整（Bresenham），并断言 `sum(assigned) == frames`。崩溃运行目录 `derived/aishell3-aligner/v3-crash/`（空）保留。回归测试 `test_flat_start_splits_every_frame_when_rounding_would_overflow`。
+3. **时间基双重偏移**：见上，这是本实验最大的负面发现——它把 40% 的数据打成 rejected，且一开始被误归因给 F0 估计器。
+4. **dp 臂永远不 ready**：不是 bug，是 EXP-0011 已知的覆盖限制；记录在此以免下次再当成回归。
+5. **`probe_readiness` 初版把 `PitchTrack.voiced_f0` 当方法调用**（它是 property），报 `TypeError: 'tuple' object is not callable`。
 
 ## 结论 / 下次实验
-TODO
+- 强制对齐可以作为配对管线的音素时长来源：0 例序列不一致、0 例非法 span，置信度 ≥0.618；dp 臂在 readiness 上完败（0/16）。
+- 语料级产率 56.7%，瓶颈单一且已定位到 F0 内部间隙政策，交由 EXP-0024 定量。
+- 听音验收未完成，P2 的「听音」前置项**仍然开放**。
+- 下次：EXP-0024 用自校准 + 音素上下文两臂判断间隙政策能否放宽；若不放宽，则按 56.7% 产率直接进入 P2 训练基础设施。

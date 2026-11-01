@@ -6,15 +6,49 @@
   "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
   "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
   "git": {
-    "commit": "1f91c948ebc7aa1bc1ffb4742f36f8c2978353ff",
-    "status": ""
+    "commit": "57ed0ef1d6d7",
+    "status": "dirty at run time (build_listening_package.py, align_index.py fixes); committed as 59ee6fa, 9276325, 57ed0ef"
   },
-  "seed": null,
-  "dataset_manifest_sha256": null,
-  "command": null,
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": "python experiments/EXP-0023/build_listening_package.py --manifest .../derived/aishell3-scan/v4/manifest.jsonl --root .../AISHELL-3/extracted --model derived/aishell3-aligner/v3/model.npz --out derived/aishell3-listen/EXP-0023-run5 --speakers 8 --per-speaker 20 --per-speaker-ready 3 --template yang --seed 42",
   "torch_version": null,
   "cuda_version": null,
-  "gpu": null,
+  "gpu": "RTX 4090 Laptop 16376 MiB (WSL2) for the builder; alignment model trained there, analysis run on macOS",
   "config_sha256": null,
-  "notes": "Fill before running."
+  "notes": "Listening gate NOT done: 24 ready pairs in derived/aishell3-listen/EXP-0023-run5/ab plus sheet.md await the owner's scores. Readiness probe on a fixed dev sample: 34/60 = 56.7% ready, every blocked pair blocked by pitch_gap_interpolated only. Aligner model v3 sha256 d824935ea6d4e671d35f70f278cd51f3e01990e62ee81e1ebf4995516044c42a; readiness log sha256 94ff4ab56b9ca760c69eb532b09d53989012d9e2e4cd0a9cf5a6c2e44184439f.",
+  "extra": {
+    "runs": {
+      "run3": {
+        "candidates": 64,
+        "selected": 27,
+        "rendered": 26,
+        "forced_ready": 18,
+        "dp_ready": 0
+      },
+      "run4": {
+        "candidates": 77,
+        "selected": 37,
+        "rendered": 34,
+        "forced_ready": 16,
+        "dp_ready": 0
+      },
+      "run5": {
+        "candidates": 146,
+        "selected": 29,
+        "rendered": 29,
+        "forced_ready": 24,
+        "dp_ready": 0,
+        "logmel_forced_mean": 5.58772,
+        "logmel_dp_mean": 6.01663
+      }
+    },
+    "readiness_dev60": {
+      "attempted": 60,
+      "aligned": 60,
+      "ready": 34,
+      "ready_rate": 0.5667
+    },
+    "bug": "span time base offset added twice (align_index.py, build_listening_package.py), fixed in 57ed0ef"
+  }
 }

@@ -1,0 +1,1102 @@
+{
+ "probe": "readiness",
+ "model": "/tmp/exp0023/model_v3.npz",
+ "template": "yang",
+ "splits": "dev",
+ "speakers": 12,
+ "per_speaker": 5,
+ "seed": 42,
+ "requested": 60,
+ "attempted": 60,
+ "aligned": 60,
+ "align_skips": 0,
+ "skip_reasons": {},
+ "ready": 34,
+ "ready_rate_aligned": 0.5667,
+ "ready_rate_attempted": 0.5667,
+ "blocked": {
+  "count": 26,
+  "codes": {
+   "pitch_edge_held": 16,
+   "pitch_gap_interpolated": 26,
+   "resampled": 26,
+   "syllablewise_render": 26,
+   "low_pitch_coverage": 3
+  },
+  "reasons": {
+   "pitch_gap_interpolated": 26
+  }
+ },
+ "records": [
+  {
+   "utt_id": "SSB00090046",
+   "speaker": "SSB0009",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.786,
+   "syllables": 9,
+   "words": 9,
+   "max_gap_s": 0.04,
+   "min_coverage": 0.8438
+  },
+  {
+   "utt_id": "SSB00090128",
+   "speaker": "SSB0009",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8657,
+   "syllables": 7,
+   "words": 7,
+   "max_gap_s": 0.08,
+   "min_coverage": 0.5294
+  },
+  {
+   "utt_id": "SSB00090146",
+   "speaker": "SSB0009",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8145,
+   "syllables": 8,
+   "words": 8,
+   "max_gap_s": 0.02,
+   "min_coverage": 0.6667
+  },
+  {
+   "utt_id": "SSB00090344",
+   "speaker": "SSB0009",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.873,
+   "syllables": 8,
+   "words": 8,
+   "max_gap_s": 0.04,
+   "min_coverage": 0.7692
+  },
+  {
+   "utt_id": "SSB00090482",
+   "speaker": "SSB0009",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.7494,
+   "syllables": 8,
+   "words": 8,
+   "max_gap_s": 0.05,
+   "min_coverage": 0.6429
+  },
+  {
+   "utt_id": "SSB01450019",
+   "speaker": "SSB0145",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8686,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.05,
+   "min_coverage": 0.7059
+  },
+  {
+   "utt_id": "SSB01450116",
+   "speaker": "SSB0145",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8573,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.09,
+   "min_coverage": 0.4
+  },
+  {
+   "utt_id": "SSB01450190",
+   "speaker": "SSB0145",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8987,
+   "syllables": 4,
+   "words": 4,
+   "max_gap_s": 0.03,
+   "min_coverage": 0.8125
+  },
+  {
+   "utt_id": "SSB01450300",
+   "speaker": "SSB0145",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "low_pitch_coverage",
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8838,
+   "syllables": 13,
+   "words": 13,
+   "max_gap_s": 0.08,
+   "min_coverage": 0.1217
+  },
+  {
+   "utt_id": "SSB01450377",
+   "speaker": "SSB0145",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8926,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.04,
+   "min_coverage": 0.625
+  },
+  {
+   "utt_id": "SSB03390048",
+   "speaker": "SSB0339",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "low_pitch_coverage",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.7712,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.06,
+   "min_coverage": 0.3333
+  },
+  {
+   "utt_id": "SSB03390053",
+   "speaker": "SSB0339",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.7403,
+   "syllables": 9,
+   "words": 9,
+   "max_gap_s": 0.04,
+   "min_coverage": 0.7368
+  },
+  {
+   "utt_id": "SSB03390112",
+   "speaker": "SSB0339",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8862,
+   "syllables": 8,
+   "words": 8,
+   "max_gap_s": 0.08,
+   "min_coverage": 0.4545
+  },
+  {
+   "utt_id": "SSB03390211",
+   "speaker": "SSB0339",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8199,
+   "syllables": 7,
+   "words": 7,
+   "max_gap_s": 0.05,
+   "min_coverage": 0.65
+  },
+  {
+   "utt_id": "SSB03390482",
+   "speaker": "SSB0339",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.7844,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.04,
+   "min_coverage": 0.5
+  },
+  {
+   "utt_id": "SSB03950014",
+   "speaker": "SSB0395",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8754,
+   "syllables": 3,
+   "words": 3,
+   "max_gap_s": 0.08,
+   "min_coverage": 0.64
+  },
+  {
+   "utt_id": "SSB03950151",
+   "speaker": "SSB0395",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8689,
+   "syllables": 7,
+   "words": 7,
+   "max_gap_s": 0.05,
+   "min_coverage": 0.4154
+  },
+  {
+   "utt_id": "SSB03950357",
+   "speaker": "SSB0395",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8093,
+   "syllables": 4,
+   "words": 4,
+   "max_gap_s": 0.05,
+   "min_coverage": 0.4394
+  },
+  {
+   "utt_id": "SSB03950418",
+   "speaker": "SSB0395",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8413,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.03,
+   "min_coverage": 0.7222
+  },
+  {
+   "utt_id": "SSB03950436",
+   "speaker": "SSB0395",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8959,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.06,
+   "min_coverage": 0.3968
+  },
+  {
+   "utt_id": "SSB05440114",
+   "speaker": "SSB0544",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8421,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.01,
+   "min_coverage": 0.9091
+  },
+  {
+   "utt_id": "SSB05440115",
+   "speaker": "SSB0544",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9211,
+   "syllables": 2,
+   "words": 2,
+   "max_gap_s": 0.01,
+   "min_coverage": 0.9091
+  },
+  {
+   "utt_id": "SSB05440270",
+   "speaker": "SSB0544",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.7488,
+   "syllables": 11,
+   "words": 11,
+   "max_gap_s": 0.02,
+   "min_coverage": 0.5556
+  },
+  {
+   "utt_id": "SSB05440325",
+   "speaker": "SSB0544",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8944,
+   "syllables": 2,
+   "words": 2,
+   "max_gap_s": 0.01,
+   "min_coverage": 0.9091
+  },
+  {
+   "utt_id": "SSB05440357",
+   "speaker": "SSB0544",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8947,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.02,
+   "min_coverage": 0.625
+  },
+  {
+   "utt_id": "SSB06010120",
+   "speaker": "SSB0601",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9105,
+   "syllables": 4,
+   "words": 4,
+   "max_gap_s": 0.07,
+   "min_coverage": 0.7429
+  },
+  {
+   "utt_id": "SSB06010128",
+   "speaker": "SSB0601",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9293,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.01,
+   "min_coverage": 0.9286
+  },
+  {
+   "utt_id": "SSB06010307",
+   "speaker": "SSB0601",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8241,
+   "syllables": 11,
+   "words": 11,
+   "max_gap_s": 0.01,
+   "min_coverage": 0.8636
+  },
+  {
+   "utt_id": "SSB06010390",
+   "speaker": "SSB0601",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8331,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.0,
+   "min_coverage": 0.8947
+  },
+  {
+   "utt_id": "SSB06010395",
+   "speaker": "SSB0601",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9404,
+   "syllables": 2,
+   "words": 2,
+   "max_gap_s": 0.02,
+   "min_coverage": 0.7931
+  },
+  {
+   "utt_id": "SSB08220218",
+   "speaker": "SSB0822",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9416,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.07,
+   "min_coverage": 0.6957
+  },
+  {
+   "utt_id": "SSB08220295",
+   "speaker": "SSB0822",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8984,
+   "syllables": 7,
+   "words": 7,
+   "max_gap_s": 0.07,
+   "min_coverage": 0.5833
+  },
+  {
+   "utt_id": "SSB08220398",
+   "speaker": "SSB0822",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9338,
+   "syllables": 7,
+   "words": 7,
+   "max_gap_s": 0.07,
+   "min_coverage": 0.5909
+  },
+  {
+   "utt_id": "SSB08220441",
+   "speaker": "SSB0822",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.902,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.07,
+   "min_coverage": 0.4783
+  },
+  {
+   "utt_id": "SSB08220464",
+   "speaker": "SSB0822",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.5615,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.09,
+   "min_coverage": 0.5263
+  },
+  {
+   "utt_id": "SSB10960164",
+   "speaker": "SSB1096",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8848,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.09,
+   "min_coverage": 0.5806
+  },
+  {
+   "utt_id": "SSB10960194",
+   "speaker": "SSB1096",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8715,
+   "syllables": 7,
+   "words": 7,
+   "max_gap_s": 0.14,
+   "min_coverage": 0.4808
+  },
+  {
+   "utt_id": "SSB10960327",
+   "speaker": "SSB1096",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8821,
+   "syllables": 7,
+   "words": 7,
+   "max_gap_s": 0.02,
+   "min_coverage": 0.8667
+  },
+  {
+   "utt_id": "SSB10960442",
+   "speaker": "SSB1096",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8797,
+   "syllables": 10,
+   "words": 10,
+   "max_gap_s": 0.05,
+   "min_coverage": 0.7368
+  },
+  {
+   "utt_id": "SSB10960457",
+   "speaker": "SSB1096",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9191,
+   "syllables": 8,
+   "words": 8,
+   "max_gap_s": 0.04,
+   "min_coverage": 0.6585
+  },
+  {
+   "utt_id": "SSB13220035",
+   "speaker": "SSB1322",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.7879,
+   "syllables": 9,
+   "words": 9,
+   "max_gap_s": 0.08,
+   "min_coverage": 0.4688
+  },
+  {
+   "utt_id": "SSB13220179",
+   "speaker": "SSB1322",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8878,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.03,
+   "min_coverage": 0.7
+  },
+  {
+   "utt_id": "SSB13220187",
+   "speaker": "SSB1322",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.7187,
+   "syllables": 8,
+   "words": 8,
+   "max_gap_s": 0.04,
+   "min_coverage": 0.4706
+  },
+  {
+   "utt_id": "SSB13220262",
+   "speaker": "SSB1322",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8937,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.08,
+   "min_coverage": 0.7714
+  },
+  {
+   "utt_id": "SSB13220364",
+   "speaker": "SSB1322",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8007,
+   "syllables": 7,
+   "words": 7,
+   "max_gap_s": 0.09,
+   "min_coverage": 0.4118
+  },
+  {
+   "utt_id": "SSB18370118",
+   "speaker": "SSB1837",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.6705,
+   "syllables": 11,
+   "words": 11,
+   "max_gap_s": 0.08,
+   "min_coverage": 0.4407
+  },
+  {
+   "utt_id": "SSB18370185",
+   "speaker": "SSB1837",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "low_pitch_coverage",
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9223,
+   "syllables": 11,
+   "words": 11,
+   "max_gap_s": 0.22,
+   "min_coverage": 0.3263
+  },
+  {
+   "utt_id": "SSB18370251",
+   "speaker": "SSB1837",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.909,
+   "syllables": 11,
+   "words": 11,
+   "max_gap_s": 0.18,
+   "min_coverage": 0.3871
+  },
+  {
+   "utt_id": "SSB18370387",
+   "speaker": "SSB1837",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8943,
+   "syllables": 4,
+   "words": 4,
+   "max_gap_s": 0.07,
+   "min_coverage": 0.4839
+  },
+  {
+   "utt_id": "SSB18370437",
+   "speaker": "SSB1837",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.7595,
+   "syllables": 11,
+   "words": 11,
+   "max_gap_s": 0.08,
+   "min_coverage": 0.3654
+  },
+  {
+   "utt_id": "SSB18630103",
+   "speaker": "SSB1863",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8815,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.09,
+   "min_coverage": 0.5882
+  },
+  {
+   "utt_id": "SSB18630354",
+   "speaker": "SSB1863",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.887,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.04,
+   "min_coverage": 0.6429
+  },
+  {
+   "utt_id": "SSB18630365",
+   "speaker": "SSB1863",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "pitch_edge_held",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8785,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.03,
+   "min_coverage": 0.7222
+  },
+  {
+   "utt_id": "SSB18630449",
+   "speaker": "SSB1863",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8293,
+   "syllables": 6,
+   "words": 6,
+   "max_gap_s": 0.02,
+   "min_coverage": 0.8095
+  },
+  {
+   "utt_id": "SSB18630485",
+   "speaker": "SSB1863",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9456,
+   "syllables": 2,
+   "words": 2,
+   "max_gap_s": 0.01,
+   "min_coverage": 0.9167
+  },
+  {
+   "utt_id": "SSB18910039",
+   "speaker": "SSB1891",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.847,
+   "syllables": 8,
+   "words": 8,
+   "max_gap_s": 0.03,
+   "min_coverage": 0.5
+  },
+  {
+   "utt_id": "SSB18910198",
+   "speaker": "SSB1891",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.9079,
+   "syllables": 5,
+   "words": 5,
+   "max_gap_s": 0.03,
+   "min_coverage": 0.8571
+  },
+  {
+   "utt_id": "SSB18910214",
+   "speaker": "SSB1891",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.899,
+   "syllables": 3,
+   "words": 3,
+   "max_gap_s": 0.06,
+   "min_coverage": 0.625
+  },
+  {
+   "utt_id": "SSB18910230",
+   "speaker": "SSB1891",
+   "status": "ok",
+   "ready": false,
+   "reasons": [
+    "pitch_gap_interpolated"
+   ],
+   "issues": [
+    "pitch_edge_held",
+    "pitch_gap_interpolated",
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8994,
+   "syllables": 8,
+   "words": 8,
+   "max_gap_s": 0.06,
+   "min_coverage": 0.4444
+  },
+  {
+   "utt_id": "SSB18910388",
+   "speaker": "SSB1891",
+   "status": "ok",
+   "ready": true,
+   "reasons": [],
+   "issues": [
+    "resampled",
+    "syllablewise_render"
+   ],
+   "alignment_confidence": 0.8981,
+   "syllables": 3,
+   "words": 3,
+   "max_gap_s": 0.03,
+   "min_coverage": 0.84
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+  "experiment_id": "EXP-0024",
+  "title": "Can interior F0 gaps be bridged? Measuring the pitch_gap_interpolated policy",
+  "hypothesis": "Interior unvoiced runs that block training_ready are short enough that linear log-F0 bridging is faithful, so max_pitch_gap_s can be raised to a length justified by measured interpolation error.",
+  "created_utc": "2026-11-01T11:56:00Z",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "57ed0ef1d6d7",
+    "status": "dirty: probe written after the record; see README failure 3"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": "PYTHONPATH=src .venv/bin/python experiments/EXP-0024/probe_gap_policy.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --root /Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted --ready-log experiments/EXP-0023/logs/readiness_dev60.json --model /tmp/exp0023/model_v3.npz --out experiments/EXP-0024/logs/gap_policy_dev60.json",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Ordering violation recorded in README: the probe was written and run before this record existed. Arm B failed to provide an independent estimate, so no bridge length qualified and max_pitch_gap_s stays 0.02. Log sha256 2b32afc1b23f50533723b906b3dab43d17ce80ff5817bef69ae8a8b955b35a62."
+}
