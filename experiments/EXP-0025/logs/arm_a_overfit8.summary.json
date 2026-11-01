@@ -1,0 +1,19 @@
+{
+  "steps": 60,
+  "device": "cuda",
+  "pairs": 8,
+  "cache": "/home/hands/datasets/VHE-Datasets/derived/aishell3-pairs/p2-train40x10-v2",
+  "dev_cache": null,
+  "last": {
+    "step": 60,
+    "spectral_convergence": 0.8087295889854431,
+    "log_magnitude": 2.0022835731506348,
+    "periodicity": 0.22611571848392487,
+    "envelope_shape": 0.32059943675994873,
+    "envelope_level": 0.059205472469329834,
+    "residual": 3.868401108775288e-05,
+    "total": 3.416934013366699
+  },
+  "best_total": 3.4148294925689697,
+  "first_total": 3.740060806274414
+}

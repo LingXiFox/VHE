@@ -1,0 +1,51 @@
+{
+  "crop_s": 1.6,
+  "cuda": "12.8",
+  "device": "NVIDIA GeForce RTX 4090 Laptop GPU",
+  "device_total_memory_mib": 16375.5,
+  "overfit_pairs": 8,
+  "platform": "linux",
+  "python": "3.12.14",
+  "runs": [
+    {
+      "batch_size": 8,
+      "channels": 16,
+      "crop_s": 1.6,
+      "last_total": 3.743924617767334,
+      "max_memory_allocated_mb": 1347.40380859375,
+      "max_memory_reserved_mb": 1620.0,
+      "output": "/home/hands/datasets/VHE-Datasets/derived/aishell3-runs/EXP-0028/ch16_b8",
+      "pairs": 8,
+      "parameter_count": 251201,
+      "steps": 20,
+      "tag": "ch16_b8"
+    },
+    {
+      "batch_size": 8,
+      "channels": 32,
+      "crop_s": 1.6,
+      "last_total": 3.523449182510376,
+      "max_memory_allocated_mb": 2566.130859375,
+      "max_memory_reserved_mb": 2700.0,
+      "output": "/home/hands/datasets/VHE-Datasets/derived/aishell3-runs/EXP-0028/ch32_b8",
+      "pairs": 8,
+      "parameter_count": 1001089,
+      "steps": 20,
+      "tag": "ch32_b8"
+    },
+    {
+      "batch_size": 16,
+      "channels": 16,
+      "crop_s": 1.6,
+      "last_total": 3.6455576419830322,
+      "max_memory_allocated_mb": 2716.4111328125,
+      "max_memory_reserved_mb": 3106.0,
+      "output": "/home/hands/datasets/VHE-Datasets/derived/aishell3-runs/EXP-0028/ch16_b16",
+      "pairs": 8,
+      "parameter_count": 251201,
+      "steps": 20,
+      "tag": "ch16_b16"
+    }
+  ],
+  "torch": "2.11.0+cu128"
+}

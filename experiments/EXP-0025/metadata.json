@@ -9,12 +9,85 @@
     "commit": "cb9eaad2f309cc93685b3e13fd6417c5e78da033",
     "status": ""
   },
-  "seed": null,
-  "dataset_manifest_sha256": null,
-  "command": null,
-  "torch_version": null,
-  "cuda_version": null,
-  "gpu": null,
-  "config_sha256": null,
-  "notes": "Fill before running."
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": "cd ~/VHE && .venv/bin/python -m vhe train --cache ~/datasets/VHE-Datasets/derived/aishell3-pairs/p2-train40x10-v2 --output .../aishell3-runs/EXP-0025-overfit8 --overfit 8 --steps 60 --batch-size 8 --channels 16 --crop-s 1.6 --learning-rate 3e-4 --checkpoint-every 20 --log-every 5 --device cuda --seed 42 || same with --output .../EXP-0025-400 --dev-cache .../p2-dev12x5-v2 --steps 400 --batch-size 4 --eval-every 50 --checkpoint-every 100 --log-every 20",
+  "torch_version": "2.11.0+cu128",
+  "cuda_version": "12.8",
+  "gpu": "NVIDIA GeForce RTX 4090 Laptop GPU",
+  "config_sha256": "2ca62b1c3b188a846ea5f8673df95aff722117f35bc633a98774ed23a5a61354",
+  "notes": "Two arms. Arm A (overfit 8 pairs, 60 steps, lr 3e-4) failed its preregistered 0.6x criterion at 0.914x; arm B (400 steps, lr 3e-4, random crops, 217 pairs) lowered dev total 3.4554 -> 3.2451 over 4 evaluations. Three pipeline failures preceded the runs and are kept in README: missing backend (369/369 + 60/60 rejected, backend_inventory_insufficient), wrong backend name ('mandarin' vs 'mandarin_formant', KeyError), and missing --eval-batches CLI flag (argparse error). Failed caches derived/aishell3-pairs/p2-train40x10 and p2-dev12x5 are retained unmodified. GPU peak memory was not instrumented in these runs. No listening test.",
+  "command_provenance": "reconstructed from the effective TrainConfig stored in the run's checkpoint sidecar (checkpoints/step-XXXXXX.json); the remote shell did not persist history, so the literal argv is not recoverable",
+  "run_environment": {
+    "host": "ssh -p 2222 hands@10.0.0.190 (Windows 11 + WSL2, Ubuntu 26.04.1)",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "python": "3.12.14",
+    "torch": "2.11.0+cu128",
+    "cuda_runtime": "12.8",
+    "gpu": "NVIDIA GeForce RTX 4090 Laptop GPU",
+    "gpu_memory_mib": 16375,
+    "precision": "float32",
+    "cuda_available": true
+  },
+  "arms": {
+    "arm_a_overfit8": {
+      "config_sha256": "2ca62b1c3b188a846ea5f8673df95aff722117f35bc633a98774ed23a5a61354",
+      "data": {
+        "cache": "derived/aishell3-pairs/p2-train40x10-v2",
+        "pairs_used": 8,
+        "cache_written": 217,
+        "cache_requested": 369
+      },
+      "runtime_s": 5.19,
+      "first_total": 3.740060806274414,
+      "best_total": 3.4148294925689697,
+      "last_total": 3.416934013366699,
+      "criterion_1_overfit_le_0p6": "failed (0.914x)",
+      "log": "experiments/EXP-0025/logs/arm_a_overfit8.log.jsonl"
+    },
+    "arm_b_400": {
+      "config_sha256": "f87fe0b30ea0bf46b025900e9d5ed7cbeb9a0c46915ec9c5e15939d00777c77c",
+      "data": {
+        "cache": "derived/aishell3-pairs/p2-train40x10-v2",
+        "pairs_used": 217,
+        "dev_cache": "derived/aishell3-pairs/p2-dev12x5-v2",
+        "dev_pairs": 34
+      },
+      "runtime_s": 10.73,
+      "first_total": 4.087425231933594,
+      "best_total": 2.874420166015625,
+      "dev_total_series": [
+        [
+          100,
+          3.4554
+        ],
+        [
+          200,
+          3.3862
+        ],
+        [
+          300,
+          3.3125
+        ],
+        [
+          400,
+          3.2451
+        ]
+      ],
+      "criterion_2_dev_decrease": "passed (3.4554 -> 3.2451, -6.1%)",
+      "log": "experiments/EXP-0025/logs/arm_b_400.log.jsonl"
+    }
+  },
+  "cache_yield": {
+    "train": {
+      "requested": 369,
+      "written": 217,
+      "ratio": 0.588
+    },
+    "dev": {
+      "requested": 60,
+      "written": 34,
+      "ratio": 0.567
+    }
+  }
 }

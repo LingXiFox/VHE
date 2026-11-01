@@ -1,0 +1,49 @@
+{
+  "experiment_id": "EXP-0026",
+  "title": "Can the 16-channel VHE model overfit a fixed 8-pair batch with a proper step budget?",
+  "hypothesis": "EXP-0025 arm A only reached 0.913x the initial loss in 60 steps at lr 3e-4, which is too few updates to tell whether the model can fit at all. With lr 3e-3 and 600 steps on the same fixed batch of 8 cached pairs, the total humanization loss falls to at most 0.4x its first value with no NaN and unchanged output length.",
+  "created_utc": "2026-11-01T12:07:28.189765+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "11c001fdea1b18da239e62c1de108d60fa971894",
+    "status": "M experiments/EXP-0025/README.md"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": "cd ~/VHE && .venv/bin/python -m vhe train --cache ~/datasets/VHE-Datasets/derived/aishell3-pairs/p2-train40x10-v2 --output .../aishell3-runs/EXP-0026-overfit8 --overfit 8 --steps 600 --batch-size 8 --channels 16 --crop-s 1.6 --learning-rate 3e-3 --checkpoint-every 200 --log-every 25 --device cuda --seed 42",
+  "torch_version": "2.11.0+cu128",
+  "cuda_version": "12.8",
+  "gpu": "NVIDIA GeForce RTX 4090 Laptop GPU",
+  "config_sha256": "139fba1384eba944936c458bd18646ac9e4388fdc4f3286af5161f380136b066",
+  "notes": "lr 3e-3, 600 steps on the same fixed 8 pairs. Reached 0.530x of the first total, short of the preregistered 0.4x; all loss terms were still decreasing at step 600, so the budget, not capacity, was binding. log_magnitude remained 1.52 of total 1.98 (77%). GPU peak memory not recorded. No listening test.",
+  "command_provenance": "reconstructed from the effective TrainConfig stored in the run's checkpoint sidecar (checkpoints/step-XXXXXX.json); the remote shell did not persist history, so the literal argv is not recoverable",
+  "run_environment": {
+    "host": "ssh -p 2222 hands@10.0.0.190 (Windows 11 + WSL2, Ubuntu 26.04.1)",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "python": "3.12.14",
+    "torch": "2.11.0+cu128",
+    "cuda_runtime": "12.8",
+    "gpu": "NVIDIA GeForce RTX 4090 Laptop GPU",
+    "gpu_memory_mib": 16375,
+    "precision": "float32",
+    "cuda_available": true
+  },
+  "config_sha256_definition": "sha256 of json.dumps(config, sort_keys=True, separators=(',', ':'))",
+  "result": {
+    "runtime_s": 23.83,
+    "first_total": 3.740060806274414,
+    "last_total": 1.9805827140808105,
+    "ratio_of_first": 0.5296,
+    "best_total": 1.9540014266967773,
+    "best_ratio_of_first": 0.5224,
+    "warmup_spike": {
+      "step": 25,
+      "total": 5.08
+    },
+    "criterion_1_le_0p4": "failed (0.530x of first at step 600)",
+    "criterion_2_length_and_finite": "passed (38400 samples, no NaN/Inf)",
+    "criterion_3_under_5min": "passed (23.83 s)",
+    "log": "experiments/EXP-0026/logs/overfit8.log.jsonl"
+  }
+}

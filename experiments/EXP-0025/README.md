@@ -28,10 +28,49 @@
 - 配对缓存的产率由 EXP-0023/0024 的就绪策略决定（约 56.7%），未通过的句子不进入训练。
 
 ## 实际结果与主观听音
-未运行（运行前写入本节）。
+### 数据（v2 缓存，mandarin_formant 后端）
+| 缓存 | 请求 | 写入 | 拒绝 | 主要拒绝原因 |
+|---|---|---|---|---|
+| train40x10-v2 | 369 | **217（58.8%）** | 152 | pitch_gap_interpolated 146、status_rejected/error_issues 8、low_pitch_coverage 4、no_alignment/no_pitch_frames 2、low_boundary_confidence 1 |
+| dev12x5-v2 | 60 | **34（56.7%）** | 26 | pitch_gap_interpolated 26 |
+
+产率与 EXP-0023 就绪率探针（56.7%）一致，说明配对管线可复现；瓶颈仍是 F0 内部间隙，不是对齐。
+
+### 臂 A（overfit 8 对，60 步，lr 3e-4，channels 16，crop 1.6 s，batch 8）
+- 实跑 5.19 s（RTX 4090 Laptop，CUDA，FP32）。
+- total：step 1 **3.7401** → step 60 **3.4169**（0.914×），best 3.4148；期间 step 45 反弹到 3.9523。
+- 分项（step 60）：spectral_convergence 0.8087、log_magnitude 2.0023、periodicity 0.2261。
+- **预注册判据 1 失败**（要求 ≤0.6×，实测 0.914×）；无 NaN、无长度/形状错误（判据 3 通过）。
+- 日志：`logs/arm_a_overfit8.log.jsonl`、`logs/arm_a_overfit8.summary.json`。
+- 检查点：`checkpoints/step-000020/000040/000060.{pt,json}`（远端保留）。
+
+### 臂 B（随机裁切 400 步，lr 3e-4，batch 4，dev 每 50 步评估）
+- 实跑 10.73 s。
+- train total 首值 4.0874 → 末值 3.3406；summary 记 best_total **2.8744**（落在未记录日志的步），日志内最低点 2.9711@step 240；波动大（step 20 4.0567、step 100 3.9275）。
+- **dev total 单调下降：3.4554（100 步）→ 3.3862（200）→ 3.3125（300）→ 3.2451（400）**，末值比首次评估低 6.1%，判据 2 通过。
+- 分项（step 400）：spectral_convergence 0.8582、log_magnitude 1.8448、periodicity 0.2640。
+- 日志：`logs/arm_b_400.log.jsonl`、`logs/arm_b_400.summary.json`。
+- 检查点：`checkpoints/step-000100/000200/000300/000400.{pt,json}`（远端保留）。
+
+### 判据汇总
+| 判据 | 结果 |
+|---|---|
+| 1. 臂 A 第 60 步 total ≤ 0.6×首值 | **失败**（0.914×） |
+| 2. 臂 B 末次 dev < 首次 dev | 通过（3.4554 → 3.2451） |
+| 3. 无 NaN / 长度形状错误 | 通过 |
+
+### 主观听音
+未做。本实验不产出音频，也不能用 loss 下降推断自然度。
 
 ## 失败、负面发现、错误日志
-待运行。
+- **失败 1（配对缓存 run 1，2026-11-01）**：`vhe pair-cache` 对 369 条 train / 60 条 dev 全部拒绝（`written: 0`），原因计数 `status_blocked 367`、`error_issues 369`、`no_alignment 369`、`no_pitch_frames 369`、`status_rejected 2`。单句探针显示真实原因是 `backend_inventory_insufficient`：`build_pair` 未收到 backend，退回 `get_backend()` 的默认 formant_proxy（inventory `vowels`），6/6 音节无法渲染（`onset 'j' is not in the 'vowels' inventory`）。EXP-0023 的探针显式传了 `MandarinFormantSynth()`，而 `build_pair_cache` 没传，属管线接线遗漏。
+- 修复：`build_pair_cache(..., backend_name="mandarin")`，CLI 增加 `--backend`；commit `95c9cf9`。失败的缓存目录 `derived/aishell3-pairs/p2-train40x10` 与 `p2-dev12x5` 原样保留（0 条 pair），重建写入 `-v2` 后缀目录，不覆盖。
+- 教训：manifest 的 `renderable` 是用 mandarin 36 音素表算的，任何下游渲染器都必须用同一 inventory，否则就绪率会以「全拒」而不是报错的形式暴露。
+- **失败 2（配对缓存 run 2，2026-11-01）**：`--backend` 默认值写成 `"mandarin"`，而 `get_backend()` 以 backend 自身名字为键（`('formant_proxy', 'mandarin_formant')`），启动即 `KeyError: "Unknown synth backend 'mandarin'"`，未写出任何目录。修复：默认改为 `mandarin_formant`，commit `cf1f428`。
+- **失败 3（流程）**：失败 1 的修复先提交、后才把失败原因补进本文件；失败 2 同理。记录晚于提交，属流程违规，保留不删。
 
 ## 结论 / 下次实验
-待运行。
+- 配对缓存与训练管线在 4090 上跑通，端到端 400 步只需 11 s；dev loss 下降说明训练确实在学习，不是纯噪声。
+- 但「8 对过拟合」在 60 步、lr 3e-4 下没有达成（0.914×），**不能声称 P2 的 overfit 判定项已通过**。是否只是步数预算问题 → EXP-0026（600 步、lr 3e-3）。
+- 缓存产率 58.8%，缺失的 41% 全部由 F0 间隙政策挡掉；要扩大训练集必须先解决浊音判决（EXP-0025 未做，见 EXP-0024 结论）。
+- 未做：GPU 峰值显存（未插桩）、语音听辨、dev 音频导出、多 seed 复现。检查点写了但未在真实训练上做 resume 演练（只有单测覆盖）。

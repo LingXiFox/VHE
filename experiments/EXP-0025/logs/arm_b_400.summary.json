@@ -1,0 +1,28 @@
+{
+  "steps": 400,
+  "device": "cuda",
+  "pairs": 217,
+  "cache": "/home/hands/datasets/VHE-Datasets/derived/aishell3-pairs/p2-train40x10-v2",
+  "dev_cache": "/home/hands/datasets/VHE-Datasets/derived/aishell3-pairs/p2-dev12x5-v2",
+  "last": {
+    "step": 400,
+    "spectral_convergence": 0.858209490776062,
+    "log_magnitude": 1.8447521924972534,
+    "periodicity": 0.264026939868927,
+    "envelope_shape": 0.2856409549713135,
+    "envelope_level": 0.08796918392181396,
+    "residual": 0.00011943911522394046,
+    "total": 3.3405988216400146,
+    "dev": {
+      "spectral_convergence": 0.7639551162719727,
+      "log_magnitude": 1.7857636213302612,
+      "periodicity": 0.21364044770598412,
+      "envelope_shape": 0.3700540363788605,
+      "envelope_level": 0.11169415712356567,
+      "residual": 0.00015814195830898825,
+      "total": 3.2451075315475464
+    }
+  },
+  "best_total": 2.874420166015625,
+  "first_total": 4.087425231933594
+}
