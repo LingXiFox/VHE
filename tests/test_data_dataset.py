@@ -6,6 +6,8 @@ usable/issue bookkeeping, while tests/test_data_pairing.py keeps covering the re
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import numpy as np
 import pytest
 
@@ -117,7 +119,24 @@ def test_usable_requires_equal_lengths_and_no_error(monkeypatch) -> None:
     assert not PairSample(entry, missing).usable
 
 
-def test_summarize_counts_statuses_and_issue_codes() -> None:
+def test_quality_flags_are_surfaced_and_filterable(tmp_path, monkeypatch) -> None:
+    entries = [replace(make_entry(1), quality_flags=("prosody_conflict",)), make_entry(2)]
+    target = tmp_path / "flagged.jsonl"
+    write_corpus_manifest(target, _index(entries, tmp_path))
+    monkeypatch.setattr(dataset_module, "build_pair",
+                        lambda path, pinyins, **kwargs: FakeResult(path.stem))
+
+    view = CorpusPairs.from_manifest(target, root=tmp_path, split=None)
+    assert view[0].flagged and view[0].quality_flags == ("prosody_conflict",)
+    assert not view[1].flagged
+    assert view.inventory()["flagged_utterances"] == 1
+    assert "quality_flags" in view[0].summary()
+
+    filtered = CorpusPairs.from_manifest(target, root=tmp_path, split=None,
+                                         exclude_flagged=True)
+    assert [entry.utt_id for entry in filtered.entries] == ["SSB0000002"]
+    assert summarize([view[0], view[1]])["quality_flags"] == {"prosody_conflict": 1}
+
     entry = make_entry(1)
     samples = [PairSample(entry, FakeResult(entry.utt_id)),
                PairSample(entry, FakeResult(entry.utt_id, status="blocked",

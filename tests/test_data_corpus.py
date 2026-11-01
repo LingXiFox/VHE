@@ -10,6 +10,7 @@ scan reads headers, not samples.
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -17,8 +18,12 @@ import pytest
 
 from vhe.audio import write_wav
 from vhe.data.corpus import (
+    MANIFEST_VERSION,
     CorpusStats,
+    annotate_manifest,
+    apply_quality_flags,
     audit_prosody_labels,
+    coverage_report,
     parse_label_pinyin,
     rank_next_units,
     read_corpus_manifest,
@@ -160,7 +165,7 @@ def test_manifest_round_trip_and_refuses_overwrite(corpus_root: Path, tmp_path: 
     assert entries == index.entries
     assert meta["split_sizes"] == {"train": 2, "dev": 1, "test": 1}
     assert meta["utterances"] == 5
-    assert meta["version"] == 1
+    assert meta["version"] == MANIFEST_VERSION
     with pytest.raises(FileExistsError):
         write_corpus_manifest(target, index)
 
@@ -251,3 +256,94 @@ def test_scan_cli_checks_both_outputs_before_scanning(corpus_root: Path, tmp_pat
     assert "refusing to overwrite" in capsys.readouterr().err
     # A pre-existing report must not leave a half-written manifest behind.
     assert not manifest.exists()
+
+def test_audit_classifies_every_anomaly_with_line_and_raw_text(corpus_root: Path) -> None:
+    labels = "# header comment line\n" + LABELS + "SSB00050003|ma1 ma1\n" + \
+        "SSB99990001|da4 ma3|大马\n"
+    (corpus_root / "train" / "label_train-set.txt").write_text(labels, encoding="utf-8")
+    report = audit_prosody_labels(corpus_root)
+
+    assert (report["checked"], report["matched"], report["mismatched"]) == (3, 2, 1)
+    assert report["anomaly_counts"] == {"prosody_conflict": 1, "format_error": 1,
+                                        "missing_text": 1, "header_comment": 1}
+    assert [(item["kind"], item["utt_id"], item["line"]) for item in report["anomalies"]] == [
+        ("header_comment", None, 1), ("prosody_conflict", "SSB00050002", 3),
+        ("format_error", "SSB00050003", 5), ("missing_text", "SSB99990001", 6)]
+    # A line with no legal record keeps its raw text; nothing is dropped from the evidence.
+    assert report["anomalies"][3]["raw"] == "SSB99990001|da4 ma3|大马"
+    assert report["anomalies"][2]["detail"].startswith("expected 3 '|'-separated fields")
+    assert report["flags"] == {"SSB00050002": ("prosody_conflict",),
+                               "SSB00050003": ("label_format_error",),
+                               "SSB99990001": ("missing_content",)}
+
+
+def test_apply_quality_flags_does_not_mutate_or_duplicate(corpus_root: Path) -> None:
+    index = scan_corpus(corpus_root, split_sizes={"train": 2, "dev": 1, "test": 1})
+    flagged = apply_quality_flags(index.entries, {"SSB00050001": ("prosody_conflict",)})
+    assert index.entries[0].quality_flags == ()
+    by_id = {entry.utt_id: entry for entry in flagged}
+    assert by_id["SSB00050001"].quality_flags == ("prosody_conflict",)
+    again = apply_quality_flags(flagged, {"SSB00050001": ("prosody_conflict",)})
+    assert [entry.quality_flags for entry in again] == [entry.quality_flags
+                                                        for entry in flagged]
+
+
+def test_annotate_manifest_carries_flags_without_rescanning(corpus_root: Path,
+                                                            tmp_path: Path) -> None:
+    index = scan_corpus(corpus_root, split_sizes={"train": 2, "dev": 1, "test": 1})
+    plain = tmp_path / "v1.jsonl"
+    digest = write_corpus_manifest(plain, index)
+
+    summary = annotate_manifest(plain, tmp_path / "v2.jsonl", root=corpus_root)
+    entries, meta = read_corpus_manifest(tmp_path / "v2.jsonl")
+    assert summary["flagged_utterances"] == 1
+    assert summary["manifest_sha256"] != digest
+    assert meta["annotated_from_sha256"] == digest
+    assert meta["prosody_audit"]["mismatched"] == 1
+
+    by_id = {entry.utt_id: entry for entry in entries}
+    assert by_id["SSB00050002"].quality_flags == ("prosody_conflict",)
+    original = {entry.utt_id: entry for entry in index.entries}
+    for utt_id, entry in by_id.items():
+        assert replace(entry, quality_flags=()) == original[utt_id]
+    with pytest.raises(FileExistsError):
+        annotate_manifest(plain, tmp_path / "v2.jsonl", root=corpus_root)
+
+
+def test_annotate_and_coverage_cli_wire_the_manifest(corpus_root: Path, tmp_path: Path,
+                                                    capsys, monkeypatch) -> None:
+    from vhe.cli import main
+
+    plain, flagged = tmp_path / "v1.jsonl", tmp_path / "v2.jsonl"
+    monkeypatch.setattr("sys.argv", ["vhe", "scan", "--root", str(corpus_root),
+                                     "--manifest", str(plain), "--report",
+                                     str(tmp_path / "r.json"), "--split-sizes", "2/1/1"])
+    main()
+    capsys.readouterr()
+
+    monkeypatch.setattr("sys.argv", ["vhe", "annotate", "--manifest", str(plain),
+                                     "--output", str(flagged)])
+    main()
+    printed = json.loads(capsys.readouterr().out)
+    assert printed["flagged_utterances"] == 1
+
+    monkeypatch.setattr("sys.argv", ["vhe", "coverage", "--manifest", str(flagged),
+                                     "--output", str(tmp_path / "c.json"), "--top", "2"])
+    main()
+    printed = json.loads(capsys.readouterr().out)
+    assert printed["quality_flags"] == {"prosody_conflict": 1}
+    assert printed["utterances"] == 5
+
+
+def test_coverage_recompute_reads_no_audio(corpus_root: Path) -> None:
+    index = scan_corpus(corpus_root, split_sizes={"train": 2, "dev": 1, "test": 1})
+    for path in (corpus_root / "train" / "wav").rglob("*.wav"):
+        path.unlink()
+    report = coverage_report(index.entries, top_units=3)
+    assert report["stats"]["utterances"] == 5
+    assert report["stats"]["syllable_coverage"] == pytest.approx(
+        index.stats.syllable_coverage)
+    assert report["stats"]["utterance_coverage"] == pytest.approx(
+        index.stats.utterance_coverage)
+    assert report["next_units"][0]["unit"] == "final:iang"
+

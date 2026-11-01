@@ -49,3 +49,17 @@ python -m vhe scan --root ... --manifest .../v2/manifest.jsonl --report .../v2/r
 - 正字法解析层可用：0 失败、0 静默替换，缩写/ü/舌尖元音/儿化全部按规则还原。
 - 处理政策（写进 DATA_POLICY）：文本以 `content.txt` 为准；`label_train-set.txt` 只用于韵律交叉核验；两处冲突样本在配对时打 `prosody_conflict` 标记，绝不静默择一。
 - 下次：EXP-0015 扩 inventory（需要新增的正是 `apical_retroflex/dental`、`v`、`iou/uei/uen` 这些已能正确识别的单元），并补审计的未标注 ID 落盘。
+## 勘误（P1.4，追加于 2026-11-01，不修改上面的历史结论）
+
+上面「未解决」里写着"unlabelled 4 的具体 utt_id 未逐条落盘"。P1.4 补齐审计后，结论需要更正**一处事实**：那 4 条根本不是标注记录，而是 `label_train-set.txt` 开头第 1–4 行的 `#` 说明注释（音调标注规则与 `%`/`$` 停顿符说明）。原实现把"字段数 != 3"一律计入 `unlabelled`，是审计的分类缺陷，不是语料缺陷。
+
+- 新实现 `audit_prosody_labels` 把每条异常分为 `prosody_conflict` / `format_error` / `missing_text` / `header_comment`，逐条保留 `utt_id`（无合法 ID 时为 null）、文件、行号、**原始整行文本**和原因。
+- 重跑 `vhe audit` → `/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-audit/v2/prosody_audit.json`：
+  - checked 63262 / matched 63260 / mismatched 2（与 v1 相同）
+  - format_errors **0**、missing_text **0**、header_comments **4**（即原表第 1–4 行）
+  - flags：`SSB19560288` → `prosody_conflict`；`SSB15550353` → `prosody_conflict`
+- 因此"4 条未标注异常"这一说法作废，正确表述是"4 条文档注释 + 2 条声调冲突，0 条格式错误，0 条缺失对应文本"。
+- 冲突标记已进入数据链路：`vhe annotate` 从既有 manifest 复制出 v3（不重扫、不重解码 WAV），逐句写入 `quality_flags`；`CorpusPairs.from_manifest(exclude_flagged=True)` 是唯一会丢弃带标记句子的入口，且必须显式开启。
+- v3 manifest：`/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl`，sha256 `10539f61d015bc81dff88cb0ee5ba72b640ab703ee57373324f7c446a624c80f`，2 句带 `prosody_conflict`，其余字段与 v2 逐字段相同（有测试 `test_annotate_manifest_carries_flags_without_rescanning` 守着）。
+- 从 v3 复算覆盖率必须与 v2 完全一致，用来证明"只读 manifest 重算"可信：syllable 0.309544、utterance 0.002124（187/88035），见 `derived/aishell3-scan/v3/coverage_p14_baseline.json`。
+

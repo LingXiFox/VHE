@@ -21,7 +21,7 @@ and -- because it splits sentences, not speakers -- it is never used as the trai
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import hashlib
 import json
 from pathlib import Path
@@ -46,7 +46,8 @@ from .aishell3 import (
 from .g2p import SUPPORTED_FINALS, SUPPORTED_ONSETS
 from .mandarin import FINAL_SEGMENTS, PinyinError, Token, missing_units, split_token
 
-MANIFEST_VERSION = 1
+#: v2 adds per-utterance quality_flags (annotation conflicts); v1 manifests still load.
+MANIFEST_VERSION = 2
 
 
 @dataclass(frozen=True)
@@ -68,6 +69,8 @@ class CorpusEntry:
     n_samples: int
     duration_s: float
     renderable: bool
+    #: Annotation quality flags, e.g. 'prosody_conflict'. Empty for a clean utterance.
+    quality_flags: tuple[str, ...] = ()
 
     @property
     def segments(self) -> tuple[str, ...]:
@@ -88,7 +91,7 @@ class CorpusEntry:
             "finals": list(self.finals), "tones": list(self.tones),
             "erhua": list(self.erhua), "sample_rate": self.sample_rate,
             "n_samples": self.n_samples, "duration_s": round(self.duration_s, 6),
-            "renderable": self.renderable,
+            "renderable": self.renderable, "quality_flags": list(self.quality_flags),
         }
 
 
@@ -396,7 +399,8 @@ def scan_corpus(root: str | Path, *, split_sizes: dict[str, int] | None = None,
 # --------------------------------------------------------------------- manifest I/O
 
 
-def write_corpus_manifest(path: str | Path, index: CorpusIndex) -> str:
+def write_corpus_manifest(path: str | Path, index: CorpusIndex, *,
+                          extra_meta: dict | None = None) -> str:
     """Write the light manifest (meta line + one JSON line per utterance). Never overwrites."""
     target = Path(path)
     if target.exists():
@@ -407,6 +411,8 @@ def write_corpus_manifest(path: str | Path, index: CorpusIndex) -> str:
         meta = {"type": "meta", "version": MANIFEST_VERSION, "root": index.root,
                 "split_seed": index.split_seed, "split_sizes": dict(index.split_sizes),
                 "utterances": len(index.entries), "syllables": index.stats.syllables}
+        if extra_meta:
+            meta.update(extra_meta)
         for payload in [meta] + [entry.as_dict() for entry in index.entries]:
             line = json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n"
             digest.update(line.encode("utf-8"))
@@ -436,12 +442,105 @@ def read_corpus_manifest(path: str | Path) -> tuple[list[CorpusEntry], dict]:
                     finals=tuple(payload["finals"]), tones=tuple(payload["tones"]),
                     erhua=tuple(payload["erhua"]), sample_rate=payload["sample_rate"],
                     n_samples=payload["n_samples"], duration_s=payload["duration_s"],
-                    renderable=payload["renderable"]))
+                    renderable=payload["renderable"],
+                    quality_flags=tuple(payload.get("quality_flags", ()))))
             except (KeyError, TypeError) as exc:
                 raise ValueError(f"{target}:{line_no}: malformed manifest line: {exc}") from exc
     if not meta:
         raise ValueError(f"{target}: manifest has no meta record")
     return entries, meta
+
+
+# ------------------------------------------------------- re-scoring and annotation
+
+def stats_from_entries(entries: list[CorpusEntry]) -> CorpusStats:
+    """Recompute corpus statistics from manifest entries under the *current* inventory.
+
+    No audio is read: every unit needed to decide renderability is already in the entry, so
+    growing the phoneme inventory never requires a second pass over 26 GB of WAV headers.
+    """
+    stats = CorpusStats(speakers=len({entry.speaker for entry in entries}))
+    for entry in entries:
+        tokens: list[Token] = []
+        try:
+            tokens = [split_token(written) for written in entry.pinyin]
+        except PinyinError:
+            stats.issues["bad_pinyin"] += 1
+            continue
+        missing_per_syllable = [
+            missing_units(token.initial, token.final, SUPPORTED_ONSETS, SUPPORTED_FINALS,
+                          erhua=token.erhua)
+            for token in tokens]
+        for token, missing in zip(tokens, missing_per_syllable):
+            stats.add_syllable(token, missing)
+        stats.utterances += 1
+        stats.total_duration_s += entry.duration_s
+        if any(missing_per_syllable):
+            stats.blocked_utterances += 1
+        else:
+            stats.renderable_utterances += 1
+    return stats
+
+
+def coverage_report(entries: list[CorpusEntry], *, top_units: int = 12) -> dict:
+    """Coverage under the current inventory plus the ranking of the next units to add."""
+    stats = stats_from_entries(entries)
+    flagged = Counter(flag for entry in entries for flag in entry.quality_flags)
+    splits = Counter(entry.split for entry in entries)
+    return {
+        "version": MANIFEST_VERSION,
+        "stats": stats.as_dict(),
+        "utterances_per_split": dict(sorted(splits.items())),
+        "quality_flags": dict(sorted(flagged.items())),
+        "next_units": rank_next_units(stats, top=top_units),
+    }
+
+
+def apply_quality_flags(entries: list[CorpusEntry],
+                        flags: dict[str, tuple[str, ...] | list[str]]) -> list[CorpusEntry]:
+    """Return entries with per-utterance annotation flags merged in (input is not mutated)."""
+    merged: list[CorpusEntry] = []
+    for entry in entries:
+        extra = tuple(flags.get(entry.utt_id, ()))
+        if not extra:
+            merged.append(entry)
+            continue
+        merged.append(replace(entry, quality_flags=entry.quality_flags + tuple(
+            flag for flag in extra if flag not in entry.quality_flags)))
+    return merged
+
+
+def annotate_manifest(manifest: str | Path, output: str | Path, *,
+                      root: str | Path | None = None) -> dict:
+    """Write a new manifest that carries the prosody/annotation flags found by the audit.
+
+    The corpus is not rescanned: entries are streamed from an existing manifest and only the
+    flag field changes, so the speaker split and every measurement stay bit-identical.
+    """
+    source = Path(manifest)
+    target = Path(output)
+    if target.exists():
+        raise FileExistsError(f"refusing to overwrite an existing manifest: {target}")
+    entries, meta = read_corpus_manifest(source)
+    base = Path(root) if root is not None else Path(meta.get("root", "."))
+    if not base.is_dir():
+        raise FileNotFoundError(f"corpus root {base} does not exist; pass root= explicitly")
+    audit = audit_prosody_labels(base)
+    annotated = apply_quality_flags(entries, audit["flags"])
+    index = CorpusIndex(root=str(base), entries=annotated, split_seed=meta.get("split_seed"),
+                        split_sizes=meta.get("split_sizes", {}),
+                        stats=stats_from_entries(annotated))
+    extra = {
+        "annotated_from": source.name,
+        "annotated_from_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        "prosody_audit": {key: audit[key] for key in
+                          ("checked", "matched", "mismatched", "format_errors",
+                           "missing_text", "header_comments")},
+    }
+    digest = write_corpus_manifest(target, index, extra_meta=extra)
+    return {"output": str(target), "manifest_sha256": digest, "utterances": len(annotated),
+            "flagged_utterances": sum(1 for entry in annotated if entry.quality_flags),
+            "audit": extra["prosody_audit"]}
 
 
 # ---------------------------------------------------------------- annotation audit
@@ -452,6 +551,18 @@ def parse_label_pinyin(payload: str) -> tuple[str, ...]:
     return tuple(token for token in payload.split() if token not in ("%", "$"))
 
 
+#: Anomaly classes the audit distinguishes. None of them is repaired automatically.
+ANOMALY_KINDS = ("prosody_conflict", "format_error", "missing_text", "header_comment")
+
+
+def _anomaly(kind: str, *, utt_id: str | None, where: str, line_no: int, raw: str,
+             detail: str, **extra) -> dict:
+    record = {"kind": kind, "utt_id": utt_id, "file": where, "line": line_no,
+              "raw": raw.rstrip("\n"), "detail": detail}
+    record.update(extra)
+    return record
+
+
 def audit_prosody_labels(root: str | Path, *,
                          limit: int = 20) -> dict:
     """Cross-check train/label_train-set.txt against train/content.txt.
@@ -459,6 +570,17 @@ def audit_prosody_labels(root: str | Path, *,
     The label file is the only place where phrase-level pauses survive; it is used as a
     second reading of the same syllables. Disagreements are reported, never resolved
     silently: neither file is authoritative about a tone the other contradicts.
+
+    Every line that cannot be matched is classified, with its line number and its raw text
+    kept verbatim, because a record that vanishes from the count also vanishes from the
+    evidence. The classes are:
+
+    * `prosody_conflict` - the line parses and the utterance exists, but the two readings
+      disagree. The utterance is still usable audio; the disagreement is a flag.
+    * `format_error` - the line does not carry the three '|'-separated fields. Nothing can be
+      matched, so the raw line is the only record.
+    * `missing_text` - the line parses, but its utterance is absent from content.txt.
+    * `header_comment` - a documented '#' header line, not an annotation record at all.
     """
     root_path = Path(root)
     label_path = root_path / "train" / "label_train-set.txt"
@@ -476,25 +598,52 @@ def audit_prosody_labels(root: str | Path, *,
             if entry is not None:
                 content[entry.utt_id] = entry.pinyin
 
+    where = label_path.relative_to(root_path).as_posix()
     checked = 0
     matched = 0
     mismatches: list[dict] = []
-    unlabelled = 0
+    anomalies: list[dict] = []
+    flags: dict[str, list[str]] = {}
+    counts = {kind: 0 for kind in ANOMALY_KINDS}
     with label_path.open("r", encoding="utf-8", errors="replace") as handle:
         for line_no, line in enumerate(handle, start=1):
             stripped = line.strip()
             if not stripped:
                 continue
+            if stripped.startswith("#"):
+                counts["header_comment"] += 1
+                anomalies.append(_anomaly(
+                    "header_comment", utt_id=None, where=where, line_no=line_no, raw=line,
+                    detail="documented header line; carries no utterance id and no label"))
+                continue
             fields = stripped.split("|")
             if len(fields) != 3:
-                unlabelled += 1
+                counts["format_error"] += 1
+                leading = stripped.split("|", 1)[0].strip()
+                guess = leading[:-4] if leading.endswith(".wav") else leading
+                guess = guess or None
+                if guess:
+                    flags.setdefault(guess, []).append("label_format_error")
+                anomalies.append(_anomaly(
+                    "format_error", utt_id=guess, where=where, line_no=line_no, raw=line,
+                    detail=f"expected 3 '|'-separated fields, found {len(fields)}"))
                 continue
             utt_id = fields[0].strip()
             if utt_id.endswith(".wav"):
                 utt_id = utt_id[:-4]
+            if not utt_id:
+                counts["format_error"] += 1
+                anomalies.append(_anomaly(
+                    "format_error", utt_id=None, where=where, line_no=line_no, raw=line,
+                    detail="empty utterance id field"))
+                continue
             reference = content.get(utt_id)
             if reference is None:
-                unlabelled += 1
+                counts["missing_text"] += 1
+                flags.setdefault(utt_id, []).append("missing_content")
+                anomalies.append(_anomaly(
+                    "missing_text", utt_id=utt_id, where=where, line_no=line_no, raw=line,
+                    detail="no line for this utterance in train/content.txt"))
                 continue
             spoken = parse_label_pinyin(fields[1])
             checked += 1
@@ -510,9 +659,21 @@ def audit_prosody_labels(root: str | Path, *,
             mismatches.append({"utt_id": utt_id, "line": line_no,
                                "label": list(spoken), "content": list(reference),
                                "differences": differences[:4]})
+            counts["prosody_conflict"] += 1
+            flags.setdefault(utt_id, []).append("prosody_conflict")
+            anomalies.append(_anomaly(
+                "prosody_conflict", utt_id=utt_id, where=where, line_no=line_no, raw=line,
+                detail=f"{len(differences)} syllable position(s) disagree",
+                label=list(spoken), content=list(reference),
+                differences=differences[:4]))
 
-    return {"label_file": str(label_path.relative_to(root_path)),
+    return {"label_file": where,
             "checked": checked, "matched": matched,
-            "mismatched": len(mismatches), "unlabelled": unlabelled,
-            "mismatches": mismatches[:limit],
-            "mismatch_total": len(mismatches)}
+            "mismatched": len(mismatches),
+            "mismatches": mismatches[:limit], "mismatch_total": len(mismatches),
+            "anomaly_counts": dict(counts),
+            "anomalies": anomalies,
+            "flags": {utt: tuple(codes) for utt, codes in sorted(flags.items())},
+            "format_errors": counts["format_error"],
+            "missing_text": counts["missing_text"],
+            "header_comments": counts["header_comment"]}

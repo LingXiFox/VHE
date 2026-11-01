@@ -52,6 +52,15 @@ def main() -> None:
     audit = sub.add_parser("audit", help="Cross-check train/label_train-set.txt against train/content.txt")
     audit.add_argument("--root", required=True)
     audit.add_argument("--output", required=True, help="JSON audit path; refuses to overwrite")
+    annotate = sub.add_parser("annotate", help="Copy a light manifest with annotation flags merged in")
+    annotate.add_argument("--manifest", required=True, help="Existing JSONL manifest to read")
+    annotate.add_argument("--output", required=True, help="New JSONL manifest; refuses to overwrite")
+    annotate.add_argument("--root", default=None,
+                          help="Corpus root for the audit (default: the manifest meta root)")
+    coverage = sub.add_parser("coverage", help="Recompute coverage from a manifest under the current inventory")
+    coverage.add_argument("--manifest", required=True)
+    coverage.add_argument("--output", required=True, help="JSON coverage report; refuses to overwrite")
+    coverage.add_argument("--top", type=int, default=12)
     args = parser.parse_args()
     if args.command == "doctor":
         from .backend import inspect_runtime
@@ -133,8 +142,38 @@ def main() -> None:
         target.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
                           encoding="utf-8")
         print(json.dumps({key: report[key] for key in
-                          ("checked", "matched", "mismatched", "unlabelled")} |
-                         {"output": str(target)}, indent=2, ensure_ascii=False))
+                          ("checked", "matched", "mismatched", "format_errors",
+                           "missing_text", "header_comments")} |
+                         {"flagged_utterances": len(report["flags"]),
+                          "output": str(target)}, indent=2, ensure_ascii=False))
+    elif args.command == "annotate":
+        from .data.corpus import annotate_manifest
+        try:
+            summary = annotate_manifest(args.manifest, args.output, root=args.root)
+        except (FileNotFoundError, FileExistsError, ValueError, OSError) as exc:
+            parser.exit(2, f"Annotation flags not applied: {exc}\n")
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
+    elif args.command == "coverage":
+        from .data.corpus import coverage_report, read_corpus_manifest
+        target = Path(args.output)
+        if target.exists():
+            parser.exit(2, f"refusing to overwrite an existing report: {target}\n")
+        try:
+            entries, _meta = read_corpus_manifest(args.manifest)
+        except (FileNotFoundError, ValueError, OSError) as exc:
+            parser.exit(2, f"Coverage recompute failed: {exc}\n")
+        report = coverage_report(entries, top_units=args.top)
+        report["manifest"] = str(args.manifest)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+                          encoding="utf-8")
+        print(json.dumps({"output": str(target),
+                          "utterances": report["stats"]["utterances"],
+                          "syllables": report["stats"]["syllables"],
+                          "syllable_coverage": report["stats"]["syllable_coverage"],
+                          "utterance_coverage": report["stats"]["utterance_coverage"],
+                          "quality_flags": report["quality_flags"]},
+                         indent=2, ensure_ascii=False))
     elif args.command == "synth":
         phones = [s.strip() for s in args.phonemes.split(",")]
         audio = synthesize(phones, f0_hz=args.f0, duration_s=args.duration,
