@@ -37,11 +37,10 @@ from vhe.synth.mandarin import MandarinFormantSynth            # noqa: E402
 
 
 def spoke_spans(aligner: PhoneAligner, wav_path: Path, pinyins):
-    """Align one file and shift the spans into the file's own time base."""
+    """Align one file; align() already reports spans in the file's own time base."""
     audio, sample_rate = read_wav(wav_path)
     result = aligner.align(audio, sample_rate, pinyins)
-    offset = float(result.offset_s)
-    spans = [(span.phoneme, span.start_s + offset, span.end_s + offset,
+    spans = [(span.phoneme, span.start_s, span.end_s,
               float(span.confidence)) for span in result.spans]
     return spans, float(result.confidence)
 

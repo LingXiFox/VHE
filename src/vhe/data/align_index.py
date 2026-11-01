@@ -163,8 +163,11 @@ def align_rows(aligner: PhoneAligner, rows: Iterable[dict], root: Path, *,
                 on_skip(record)
             yield record
             continue
+        # PhoneAligner.align already returns file-time spans (offset_s is folded in); adding
+        # the gate offset again here shifted every span by 0.2-0.6 s on real AISHELL-3
+        # utterances and starved the trailing syllables of pitch frames in EXP-0023.
         offset = float(result.offset_s)
-        spans = tuple((span.phoneme, span.start_s + offset, span.end_s + offset,
+        spans = tuple((span.phoneme, span.start_s, span.end_s,
                        float(span.confidence)) for span in result.spans)
         yield AlignedUtterance(
             utt_id=utt_id, speaker=str(row.get("speaker")), split=str(row.get("split")),

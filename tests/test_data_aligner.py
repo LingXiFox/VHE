@@ -142,6 +142,24 @@ def test_spans_are_contiguous_and_cover_every_frame():
     assert len(result.boundary_s) == 2
 
 
+def test_align_reports_spans_in_file_time():
+    """align() folds the silence-gate offset into every span; consumers must not add it again.
+
+    EXP-0023 keyed pitch windows off these spans. Two consumers re-added offset_s, which pushed
+    every window 0.2-0.6 s late and starved the trailing syllables of voiced frames. This test
+    pins the contract at the source: the first span starts at the gate, not at 0.
+    """
+    items = [prepared(f"utt{index}", ("a", "i", "s"), 600 + index) for index in range(6)]
+    aligner, _report = train_aligner(items, iterations=2)
+    audio, _boundaries = synthetic(("a", "i", "s"), 611, lead=0.20)
+    result = aligner.align(audio, SAMPLE_RATE, ["a1", "i1", "sa1"])
+    assert result.offset_s == pytest.approx(0.20, abs=0.03)
+    assert [span.phoneme for span in result.spans] == ["a", "i", "s", "a"]
+    # File time: the first phone starts at the gate, i.e. offset_s is already inside the span.
+    assert result.spans[0].start_s == pytest.approx(result.offset_s, abs=0.03)
+    assert result.spans[-1].end_s <= audio.size / SAMPLE_RATE + 0.02
+
+
 def test_aligner_persistence_roundtrip_and_refusal_to_overwrite(tmp_path):
     items = [prepared(f"utt{index}", ("a", "i"), 400 + index) for index in range(5)]
     aligner, _report = train_aligner(items, iterations=2)

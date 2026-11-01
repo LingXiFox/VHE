@@ -1,8 +1,9 @@
 """Tests for the corpus alignment index.
 
 What these tests prove: the index separates meta from utterances, samples whole speakers
-deterministically, shifts aligner spans into file time, keeps skipped utterances as explicit
-records, and refuses to overwrite an existing index.
+deterministically, passes the aligner's file-time spans through unchanged (PhoneAligner.align
+already folds the silence-gate offset in), keeps skipped utterances as explicit records, and
+refuses to overwrite an existing index.
 
 What they do not prove: that the spans are correct speech boundaries. That is EXP-0021/0022
 plus the listening check, not a unit test. The aligner here is a stub, so nothing about the
@@ -48,7 +49,7 @@ def write_wav_row(root, row, sample_rate=16000, duration=0.4, seed=0):
 
 
 class StubAligner:
-    """Returns fixed spans and a fixed gate offset, so the time-base shift is testable."""
+    """Mimics PhoneAligner.align: spans are already in file time, offset_s is provenance only."""
 
     def __init__(self, offset_s=0.15):
         self.offset_s = offset_s
@@ -56,7 +57,7 @@ class StubAligner:
 
     def align(self, audio, sample_rate, pinyins):
         self.calls += 1
-        spans = (PhoneSpan("m", 0.2, 0.25, 5, 0.9), PhoneSpan("a", 0.25, 0.4, 15, 0.8))
+        spans = (PhoneSpan("m", 0.35, 0.40, 5, 0.9), PhoneSpan("a", 0.40, 0.55, 15, 0.8))
         return AlignmentResult(phones=("m", "a"), logprob=-3.5, frames=40, hop_s=0.01,
                                spans=spans, offset_s=self.offset_s, silence_frames=(3, 2))
 
@@ -130,7 +131,7 @@ def test_select_rows_counts_only_speakers_with_renderable_rows(tmp_path):
         select_rows(rows, splits=["train"], speakers=2, per_speaker=2, seed=7)
 
 
-def test_align_rows_shifts_spans_into_file_time_and_records_skips(tmp_path):
+def test_align_rows_passes_file_time_spans_through_and_records_skips(tmp_path):
     path, rows = make_manifest(tmp_path)
     meta, loaded = read_manifest(path)
     for index, row in enumerate(loaded):
@@ -143,7 +144,8 @@ def test_align_rows_shifts_spans_into_file_time_and_records_skips(tmp_path):
     assert len(skipped) == 1 and skipped[0]["type"] == "skipped"
     assert "FileNotFoundError" in skipped[0]["reason"]
     entry = aligned[0]
-    # File time = crop time + gate offset, so consumers never see the gate.
+    # align() already folded the gate offset in; the index must copy the spans verbatim. Adding
+    # offset_s again here is the EXP-0023 bug that pushed pitch windows into the next syllable.
     assert entry.spans[0][1] == pytest.approx(0.35)
     assert entry.spans[0][2] == pytest.approx(0.40)
     assert entry.offset_s == pytest.approx(0.15)
