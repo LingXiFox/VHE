@@ -13,8 +13,9 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from vhe.data.aligner import (AlignmentError, PreparedUtterance, _state_layout, crop_speech,
-                              duration_by_kind, pinyin_phones, silence_frame_edges, train_aligner)
+from vhe.data.aligner import (AlignmentError, PreparedUtterance, _flat_start_segmentation,
+                              _state_layout, crop_speech, duration_by_kind, pinyin_phones,
+                              silence_frame_edges, train_aligner)
 from vhe.data.features import SAMPLE_RATE, acoustic_features
 from vhe.data.aligner import PHONES
 from vhe.data.hmm import ChainHmm
@@ -173,6 +174,34 @@ def test_train_aligner_reports_skipped_utterances():
 def test_train_aligner_refuses_empty_input():
     with pytest.raises(ValueError):
         train_aligner([])
+
+
+def test_flat_start_splits_every_frame_when_rounding_would_overflow():
+    """Ratio 4.59 frames per phone used to raise '459 frames cannot hold 463 phone frames'.
+
+    Rounding each block on its own gives 5 frames to all 100 blocks (500 > 459), and handing
+    the drift to the last block clamps it at one frame, so the total still exceeds the frames.
+    A real 154-phone sentence over 459 frames crashed aligner training this way (EXP-0023).
+    """
+    frames, repeats = 459, 100
+    phones = tuple(PHONES[index % len(PHONES)] for index in range(repeats))
+    item = PreparedUtterance("long", np.zeros((frames, 39), dtype=np.float32), phones, (0, 0),
+                             4.59)
+    layout = _state_layout(PHONES, 3)
+    assignment = _flat_start_segmentation(item, layout, len(PHONES) * 3)
+    assert assignment.shape == (frames,)
+    assert assignment.min() >= 0 and assignment.max() < len(PHONES) * 3
+    # Every phone in the sequence keeps at least one frame; none is squeezed out.
+    for phone in set(phones):
+        offset, count = layout[phone]
+        assert np.isin(assignment, np.arange(offset, offset + count)).sum() >= 1
+
+
+def test_flat_start_refuses_fewer_frames_than_states():
+    phones = tuple(PHONES[index % len(PHONES)] for index in range(40))
+    item = PreparedUtterance("short", np.zeros((10, 39), dtype=np.float32), phones, (0, 0), 0.1)
+    with pytest.raises(AlignmentError, match="frames cannot"):
+        _flat_start_segmentation(item, _state_layout(PHONES, 3), len(PHONES) * 3)
 
 
 def synthetic_timed(phones, durations, seed, lead=0.15, tail=0.15):

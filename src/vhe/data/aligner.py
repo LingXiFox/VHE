@@ -211,12 +211,16 @@ def _flat_start_segmentation(item: PreparedUtterance, layout: dict[str, tuple[in
         raise AlignmentError("no states to fill")
     if frames < speech_states:
         raise AlignmentError(f"{frames} frames cannot hold {speech_states} states")
-    assigned = [max(1, int(round(frames * count / speech_states))) for _p, count in blocks]
-    drift = frames - sum(assigned)
-    if drift:
-        assigned[-1] = max(1, assigned[-1] + drift)
-    if sum(assigned) > frames:
-        raise AlignmentError(f"{frames} frames cannot hold {sum(assigned)} phone frames")
+    # Cumulative rounding (Bresenham), not per-block rounding: rounding each block on its own
+    # inflates the total whenever many blocks round up, and the old 'give the drift to the last
+    # block' patch then clamped it back to one frame, so 154 phones over 459 frames raised
+    # "459 frames cannot hold 463 phone frames" (EXP-0023, aligner v3 run).
+    edges = [int(round(frames * sum(count for _p, count in blocks[:index + 1]) / speech_states))
+             for index in range(len(blocks))]
+    assigned = [edges[0]] + [edges[i] - edges[i - 1] for i in range(1, len(edges))]
+    if sum(assigned) != frames or min(assigned) < 1:
+        raise AlignmentError(f"{frames} frames cannot be split across {len(blocks)} phones "
+                             f"({speech_states} states): {assigned}")
     per_frame = np.zeros(frames, dtype=np.int64)
     cursor = 0
     for (phone, count), frames_for_phone in zip(blocks, assigned):

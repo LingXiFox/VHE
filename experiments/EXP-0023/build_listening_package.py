@@ -154,7 +154,9 @@ def main() -> int:
     (out / "allocations.json").write_text(json.dumps(allocations, indent=1, ensure_ascii=False),
                                           encoding="utf-8")
     summary = {
-        "selected": len(picked), "rendered": sum(1 for r in records
+        "selected": len(picked), "renderable_only": True,
+        "template": args.template, "model": str(args.model), "seed": args.seed,
+        "rendered": sum(1 for r in records
                                                  if r.get("forced_status") == "ok"),
         "forced_ok": sum(1 for r in records if r.get("forced_status") == "ok"),
         "dp_ok": sum(1 for r in records if r.get("dp_status") == "ok"),
