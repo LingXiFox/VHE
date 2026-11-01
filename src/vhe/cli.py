@@ -94,15 +94,18 @@ def main() -> None:
     elif args.command == "scan":
         from .data import SPLIT_SEED, parse_split_sizes
         from .data.corpus import scan_corpus, write_corpus_manifest
+        target = Path(args.report)
         try:
+            # Check both outputs before the 36 s scan, otherwise a pre-existing report
+            # aborts the run after the manifest was already written.
+            for existing in (Path(args.manifest), target):
+                if existing.exists():
+                    raise FileExistsError(f"refusing to overwrite an existing file: {existing}")
             index = scan_corpus(args.root, split_sizes=parse_split_sizes(args.split_sizes),
                                 split_seed=SPLIT_SEED if args.seed is None else args.seed)
             digest = write_corpus_manifest(args.manifest, index)
             report = index.report(top_units=args.top)
             report["manifest_sha256"] = digest
-            target = Path(args.report)
-            if target.exists():
-                raise FileExistsError(f"refusing to overwrite an existing report: {target}")
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
                               encoding="utf-8")

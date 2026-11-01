@@ -217,3 +217,37 @@ def test_audit_prosody_labels_reports_the_tone_disagreement(corpus_root: Path) -
     mismatch = report["mismatches"][0]
     assert mismatch["utt_id"] == "SSB00050002"
     assert mismatch["differences"] == [{"index": 1, "label": "shan2", "content": "shan1"}]
+
+def test_scan_cli_writes_manifest_and_report(corpus_root: Path, tmp_path: Path,
+                                             capsys, monkeypatch) -> None:
+    from vhe.cli import main
+
+    manifest, report = tmp_path / "m.jsonl", tmp_path / "r.json"
+    monkeypatch.setattr("sys.argv", ["vhe", "scan", "--root", str(corpus_root),
+                                     "--manifest", str(manifest), "--report", str(report),
+                                     "--split-sizes", "2/1/1", "--top", "3"])
+    main()
+    printed = json.loads(capsys.readouterr().out)
+    assert printed["utterances"] == 5
+    assert printed["errors"] == 0
+    assert manifest.is_file() and report.is_file()
+    body = json.loads(report.read_text(encoding="utf-8"))
+    assert body["speakers_per_split"] == {"train": 2, "dev": 1, "test": 1}
+    assert 0.0 < body["stats"]["syllable_coverage"] < 1.0
+    assert 1 <= len(body["next_units"]) <= 3  # the fixture blocks exactly one final
+
+
+def test_scan_cli_checks_both_outputs_before_scanning(corpus_root: Path, tmp_path: Path,
+                                                      capsys, monkeypatch) -> None:
+    from vhe.cli import main
+
+    manifest, report = tmp_path / "m.jsonl", tmp_path / "r.json"
+    report.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr("sys.argv", ["vhe", "scan", "--root", str(corpus_root),
+                                     "--manifest", str(manifest), "--report", str(report)])
+    with pytest.raises(SystemExit) as excinfo:
+        main()
+    assert excinfo.value.code == 2
+    assert "refusing to overwrite" in capsys.readouterr().err
+    # A pre-existing report must not leave a half-written manifest behind.
+    assert not manifest.exists()
