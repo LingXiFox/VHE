@@ -102,6 +102,35 @@ def main() -> None:
     align.add_argument("--include-blocked", action="store_true",
                        help="also align utterances the inventory cannot spell (they skip)")
     align.add_argument("--seed", type=int, default=42)
+    pair_cache = sub.add_parser(
+        "pair-cache", help="Render aligned utterances into a training-ready pair cache")
+    pair_cache.add_argument("--index", required=True, help="JSONL span index from 'align'")
+    pair_cache.add_argument("--manifest", required=True, help="Light JSONL manifest (transcripts)")
+    pair_cache.add_argument("--root", required=True)
+    pair_cache.add_argument("--output", required=True, help="New pair cache directory")
+    pair_cache.add_argument("--splits", default="train")
+    pair_cache.add_argument("--template", default="yang")
+    pair_cache.add_argument("--sample-rate", type=int, default=24000)
+    pair_cache.add_argument("--limit", type=int, default=None)
+    pair_cache.add_argument("--seed", type=int, default=42)
+    train = sub.add_parser("train", help="Train VHE on a pair cache (P2 small-scale runs)")
+    train.add_argument("--cache", required=True, help="Pair cache built by 'pair-cache'")
+    train.add_argument("--dev-cache", default=None)
+    train.add_argument("--output", required=True,
+                       help="Run directory for logs and step-named checkpoints")
+    train.add_argument("--steps", type=int, default=200)
+    train.add_argument("--batch-size", type=int, default=4)
+    train.add_argument("--crop-s", type=float, default=1.6)
+    train.add_argument("--learning-rate", type=float, default=3e-4)
+    train.add_argument("--channels", type=int, default=16)
+    train.add_argument("--device", default="auto")
+    train.add_argument("--eval-every", type=int, default=50)
+    train.add_argument("--checkpoint-every", type=int, default=50)
+    train.add_argument("--log-every", type=int, default=10)
+    train.add_argument("--overfit", type=int, default=0,
+                       help="reuse one fixed batch of N pairs instead of random crops")
+    train.add_argument("--resume", default=None, help="step-named checkpoint to continue from")
+    train.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
     if args.command == "aligner-train":
         from .data.align_index import (build_training_items, read_manifest, resolve_root,
@@ -163,6 +192,35 @@ def main() -> None:
         print(json.dumps({"index": str(target), "selected": len(picked),
                           "aligned": len(records), "skipped": len(entries) - len(records),
                           "sha256": index_fingerprint(target)}, indent=2))
+    elif args.command == "pair-cache":
+        from .data.pair_cache import build_pair_cache
+
+        try:
+            meta = build_pair_cache(args.index, args.manifest, args.root, args.output,
+                                    template=args.template, sample_rate=args.sample_rate,
+                                    splits=args.splits.split(","), limit=args.limit,
+                                    seed=args.seed)
+        except FileExistsError as exc:
+            parser.exit(2, f"{exc}\n")
+        print(json.dumps({key: meta[key] for key in
+                          ("requested", "written", "rejected", "rejected_reasons")},
+                         indent=2, ensure_ascii=False))
+    elif args.command == "train":
+        from .train import TrainConfig, train_model
+
+        config = TrainConfig(cache=args.cache, dev_cache=args.dev_cache, output=args.output,
+                             steps=args.steps, batch_size=args.batch_size, crop_s=args.crop_s,
+                             learning_rate=args.learning_rate, channels=args.channels,
+                             device=args.device, eval_every=args.eval_every,
+                             checkpoint_every=args.checkpoint_every, log_every=args.log_every,
+                             overfit=args.overfit, seed=args.seed)
+        try:
+            summary = train_model(config, resume=args.resume, progress=True)
+        except (RuntimeError, ValueError, FileNotFoundError) as exc:
+            parser.exit(2, f"Training failed: {exc}\n")
+        print(json.dumps({key: summary[key] for key in
+                          ("steps", "device", "pairs", "first_total", "best_total")},
+                         indent=2, ensure_ascii=False))
     elif args.command == "doctor":
         from .backend import inspect_runtime
         report = inspect_runtime(args.device)
