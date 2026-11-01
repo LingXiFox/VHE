@@ -128,6 +128,7 @@ def main() -> None:
     train.add_argument("--channels", type=int, default=16)
     train.add_argument("--device", default="auto")
     train.add_argument("--eval-every", type=int, default=50)
+    train.add_argument("--eval-batches", type=int, default=4)
     train.add_argument("--checkpoint-every", type=int, default=50)
     train.add_argument("--log-every", type=int, default=10)
     train.add_argument("--overfit", type=int, default=0,
@@ -216,6 +217,7 @@ def main() -> None:
                              steps=args.steps, batch_size=args.batch_size, crop_s=args.crop_s,
                              learning_rate=args.learning_rate, channels=args.channels,
                              device=args.device, eval_every=args.eval_every,
+                             eval_batches=args.eval_batches,
                              checkpoint_every=args.checkpoint_every, log_every=args.log_every,
                              overfit=args.overfit, seed=args.seed)
         try:
