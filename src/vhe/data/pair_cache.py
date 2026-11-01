@@ -57,7 +57,7 @@ def build_pair_cache(index: str | Path, manifest: str | Path, root: str | Path,
                      output: str | Path, *, template: str = "yang",
                      sample_rate: int = 24000, splits: Sequence[str] = ("train",),
                      limit: Optional[int] = None, seed: int = 42,
-                     backend_name: str = "mandarin",
+                     backend_name: str = "mandarin_formant",
                      pair_builder: Optional[Callable] = None) -> dict:
     """Render pairs for every training-ready row and write an index beside them."""
     from ..synth import PRESETS, get_backend

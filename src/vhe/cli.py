@@ -110,8 +110,9 @@ def main() -> None:
     pair_cache.add_argument("--output", required=True, help="New pair cache directory")
     pair_cache.add_argument("--splits", default="train")
     pair_cache.add_argument("--template", default="yang")
-    pair_cache.add_argument("--backend", default="mandarin",
-                            help="synth backend; must match the manifest's renderable inventory")
+    pair_cache.add_argument("--backend", default="mandarin_formant",
+                            help="synth backend name (default mandarin_formant, whose inventory "
+                                 "matches the manifest's renderable flags)")
     pair_cache.add_argument("--sample-rate", type=int, default=24000)
     pair_cache.add_argument("--limit", type=int, default=None)
     pair_cache.add_argument("--seed", type=int, default=42)
