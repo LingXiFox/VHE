@@ -1,0 +1,20 @@
+{
+  "experiment_id": "EXP-0023",
+  "title": "Forced-alignment boundaries in the pairing pipeline and the listening package",
+  "hypothesis": "Replacing g2p nominal onset/nucleus durations with chain-HMM phone spans keeps the mechanical render aligned to the real utterance better than the energy-valley DP, and the resulting 20-pair package lets a human judge content and timing preservation.",
+  "created_utc": "2026-11-01T11:42:00.467893+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "1f91c948ebc7aa1bc1ffb4742f36f8c2978353ff",
+    "status": ""
+  },
+  "seed": null,
+  "dataset_manifest_sha256": null,
+  "command": null,
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Fill before running."
+}

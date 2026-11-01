@@ -91,6 +91,45 @@ def test_select_rows_refuses_a_speaker_count_above_the_manifest(tmp_path):
         select_rows(rows, splits=["train"], speakers=5)
 
 
+def test_select_rows_drops_unrenderable_rows_before_sampling(tmp_path):
+    """Sampling must happen inside the renderable pool, not before it.
+
+    EXP-0023 asked for 320 rows and got 21: the 36-unit inventory blocks most sentences,
+    so a per-speaker sample drawn from all rows wastes almost every slot.
+    """
+    path, _ = make_manifest(tmp_path)
+    _, rows = read_manifest(path)
+    blocked = {"s1_utt0", "s2_utt0", "s2_utt1"}
+    for row in rows:
+        row["renderable"] = row["utt_id"] not in blocked
+    picked = select_rows(rows, splits=["train"], speakers=2, per_speaker=3, seed=7)
+    assert [row["utt_id"] for row in picked if row["utt_id"] in blocked] == []
+    assert len(picked) == 3
+    # The blocked rows stay reachable for reproduction of the older experiments.
+    unfiltered = select_rows(rows, splits=["train"], speakers=2, per_speaker=3, seed=7,
+                             renderable_only=False)
+    assert len(unfiltered) == 6
+
+
+def test_select_rows_keeps_rows_from_manifests_without_the_renderable_column(tmp_path):
+    path, _ = make_manifest(tmp_path)
+    _, rows = read_manifest(path)
+    assert all("renderable" not in row for row in rows)
+    assert len(select_rows(rows, splits=["train"], speakers=2, per_speaker=3, seed=7)) == 6
+
+
+def test_select_rows_counts_only_speakers_with_renderable_rows(tmp_path):
+    """A speaker whose every utterance is blocked cannot be sampled at all."""
+    path, _ = make_manifest(tmp_path)
+    _, rows = read_manifest(path)
+    for row in rows:
+        row["renderable"] = row["speaker"] != "s2"
+    picked = select_rows(rows, splits=["train"], speakers=1, per_speaker=2, seed=7)
+    assert {row["speaker"] for row in picked} == {"s1"}
+    with pytest.raises(ValueError, match="with renderable utterances"):
+        select_rows(rows, splits=["train"], speakers=2, per_speaker=2, seed=7)
+
+
 def test_align_rows_shifts_spans_into_file_time_and_records_skips(tmp_path):
     path, rows = make_manifest(tmp_path)
     meta, loaded = read_manifest(path)

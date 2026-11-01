@@ -92,22 +92,31 @@ def resolve_root(meta: dict, root: Optional[str | Path]) -> Path:
 
 def select_rows(rows: Iterable[dict], *, splits: Sequence[str] = ("train",),
                 speakers: Optional[int] = None, per_speaker: int = 1,
-                seed: int = 42) -> list[dict]:
+                seed: int = 42, renderable_only: bool = True) -> list[dict]:
     """Pick rows deterministically: whole speakers, a fixed number of rows per speaker.
 
     Speakers are chosen, not utterances, so a training subset never mixes a speaker's
     utterances across arms of an ablation.
+
+    'renderable_only' drops utterances the current inventory cannot spell *before*
+    sampling, because a blocked utterance never reaches the aligner: sampling first
+    would silently shrink the subset (EXP-0023: 320 rows requested, 21 prepared, 93%
+    of the loss came from the five units the inventory lacks). Rows from manifests that
+    predate the 'renderable' column are kept.
     """
     wanted = set(splits)
     pool = [row for row in rows if row.get("split") in wanted]
+    if renderable_only:
+        pool = [row for row in pool if row.get("renderable", True)]
     by_speaker: dict[str, list[dict]] = {}
     for row in pool:
         by_speaker.setdefault(str(row.get("speaker")), []).append(row)
     names = sorted(by_speaker)
     if speakers is not None:
         if speakers > len(names):
-            raise ValueError(f"{speakers} speakers requested, manifest has {len(names)} in "
-                             f"splits {sorted(wanted)}")
+            hint = " with renderable utterances" if renderable_only else ""
+            raise ValueError(f"{speakers} speakers requested, manifest has {len(names)} "
+                             f"speaker(s){hint} in splits {sorted(wanted)}")
         rng = np.random.default_rng(seed)
         names = sorted(rng.choice(names, size=speakers, replace=False).tolist())
     picked: list[dict] = []

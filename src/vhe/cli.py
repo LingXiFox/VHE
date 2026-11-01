@@ -85,6 +85,8 @@ def main() -> None:
     aligner_train.add_argument("--frame-cap", type=int, default=2500)
     aligner_train.add_argument("--estimate-transitions", action="store_true",
                                help="re-estimate per-state stay probabilities (EXP-0022 ablation)")
+    aligner_train.add_argument("--include-blocked", action="store_true",
+                               help="also sample utterances the inventory cannot spell")
     aligner_train.add_argument("--seed", type=int, default=42)
     align = sub.add_parser(
         "align", help="Force-align utterances with a trained model and write a span index")
@@ -97,6 +99,8 @@ def main() -> None:
     align.add_argument("--per-speaker", type=int, default=1)
     align.add_argument("--limit", type=int, default=None,
                        help="cap utterances actually aligned (the index records skips)")
+    align.add_argument("--include-blocked", action="store_true",
+                       help="also align utterances the inventory cannot spell (they skip)")
     align.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
     if args.command == "aligner-train":
@@ -108,7 +112,7 @@ def main() -> None:
         root = resolve_root(meta, args.root)
         picked = select_rows(rows, splits=args.splits.split(","),
                              speakers=args.speakers, per_speaker=args.per_speaker,
-                             seed=args.seed)
+                             seed=args.seed, renderable_only=not args.include_blocked)
         skipped: list[dict] = []
         items = build_training_items(picked, root, on_skip=skipped.append)
         if not items:
@@ -120,7 +124,7 @@ def main() -> None:
         report.update({"manifest": str(args.manifest), "root": str(root),
                        "splits": args.splits.split(","), "speakers_requested": args.speakers,
                        "per_speaker": args.per_speaker, "rows_selected": len(picked),
-                       "skipped": skipped})
+                       "renderable_only": not args.include_blocked, "skipped": skipped})
         if Path(args.output_model).exists() or Path(args.output_report).exists():
             parser.exit(2, "refusing to overwrite an existing model or report\n")
         model.to_npz(args.output_model, meta={"trained_from": str(args.manifest),
@@ -139,7 +143,7 @@ def main() -> None:
         root = resolve_root(meta, args.root)
         picked = select_rows(rows, splits=args.splits.split(","),
                              speakers=args.speakers, per_speaker=args.per_speaker,
-                             seed=args.seed)
+                             seed=args.seed, renderable_only=not args.include_blocked)
         if args.limit is not None:
             picked = picked[:args.limit]
         aligner = PhoneAligner.from_npz(args.model)
@@ -154,7 +158,8 @@ def main() -> None:
         target = write_index(args.output, entries,
                              meta={"manifest": str(args.manifest), "root": str(root),
                                    "model": str(args.model), "splits": args.splits.split(","),
-                                   "seed": args.seed, "selected": len(picked)})
+                                   "seed": args.seed, "selected": len(picked),
+                                   "renderable_only": not args.include_blocked})
         print(json.dumps({"index": str(target), "selected": len(picked),
                           "aligned": len(records), "skipped": len(entries) - len(records),
                           "sha256": index_fingerprint(target)}, indent=2))
