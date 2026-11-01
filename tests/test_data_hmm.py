@@ -151,3 +151,138 @@ def test_kmeans_init_recovers_separated_clusters():
     assert weights.sum() == pytest.approx(1.0)
     assert np.allclose(np.sort(means[:, 0]), [-4.0, 4.0], atol=0.2)
     assert (variances > 0).all()
+
+
+def brute_force_transition_counts(state_ll, paths):
+    """Expected stay/advance counts under uniform 0.5 transitions, from enumerated paths."""
+    scores = np.array([path_logprob(state_ll, path) for path in paths])
+    weights = np.exp(scores - float(logsumexp(scores)))
+    n_states = state_ll.shape[1]
+    stays = np.zeros(n_states)
+    advances = np.zeros(n_states)
+    for weight, path in zip(weights, paths):
+        for here, following in zip(path, path[1:]):
+            if here == following:
+                stays[here] += weight
+            else:
+                advances[here] += weight
+    return stays, advances
+
+
+def test_transition_counts_match_path_enumeration():
+    hmm = make_hmm(seed=13)
+    frames = np.random.default_rng(14).normal(size=(5, 2))
+    state_ll = hmm.state_loglik(frames)
+    stays, advances = hmm.transition_counts(state_ll)
+    expected_stays, expected_advances = brute_force_transition_counts(
+        state_ll, enumerate_paths(5, 3))
+    assert np.allclose(stays, expected_stays, atol=1e-9)
+    assert np.allclose(advances, expected_advances, atol=1e-9)
+    # The chain ends in its last state, so it can never leave it.
+    assert advances[-1] == 0.0
+    assert stays.sum() + advances.sum() == pytest.approx(4.0)
+
+
+def test_transition_counts_reuse_given_alpha_beta():
+    hmm = make_hmm(seed=15)
+    state_ll = hmm.state_loglik(np.random.default_rng(16).normal(size=(7, 2)))
+    total, alpha, beta = hmm.forward_backward(state_ll)
+    cached = hmm.transition_counts(state_ll, alpha=alpha, beta=beta, total=total)
+    recomputed = hmm.transition_counts(state_ll)
+    assert np.allclose(cached[0], recomputed[0]) and np.allclose(cached[1], recomputed[1])
+
+
+def test_stay_probability_is_learned_per_state():
+    # Three well separated states, but the middle one only owns two frames: a scalar stay
+    # probability would have to pay for that with the same value everywhere.
+    rng = np.random.default_rng(17)
+    frames = np.concatenate([rng.normal(-4.0, 0.3, size=(30, 1)),
+                             rng.normal(0.0, 0.3, size=(2, 1)),
+                             rng.normal(4.0, 0.3, size=(30, 1))])
+    hmm = ChainHmm(means=np.array([[[-4.0]], [[0.0]], [[4.0]]]), variances=np.ones((3, 1, 1)),
+                   weights=np.ones((3, 1)))
+    for _ in range(3):
+        accumulator = HmmAccumulator(3, 1, 1)
+        accumulator.add(hmm, frames)
+        hmm = hmm.update(accumulator.weights_sum, accumulator.mean_sum, accumulator.var_sum,
+                         accumulator.occupancy_sum, accumulator.self_counts,
+                         accumulator.exit_counts)
+    stays = hmm.self_probabilities
+    assert stays.shape == (3,)
+    assert np.ptp(stays) > 0.2, stays
+    # Longer occupation -> higher stay probability; expected duration is 1/(1-stay).
+    assert stays[0] > stays[1] and stays[2] > stays[1]
+
+
+def test_transition_estimation_stays_monotone():
+    rng = np.random.default_rng(18)
+    frames = np.concatenate([rng.normal(shift, 0.6, size=(25, 2)) for shift in (-3.0, 0.0, 3.0)])
+    hmm = ChainHmm(means=np.array([[[-3.0, 0.0]], [[0.0, 0.0]], [[3.0, 0.0]]]),
+                   variances=np.ones((3, 1, 2)), weights=np.ones((3, 1)))
+    history = []
+    for _ in range(4):
+        accumulator = HmmAccumulator(3, 1, 2)
+        history.append(accumulator.add(hmm, frames))
+        hmm = hmm.update(accumulator.weights_sum, accumulator.mean_sum, accumulator.var_sum,
+                         accumulator.occupancy_sum, accumulator.self_counts,
+                         accumulator.exit_counts)
+    assert all(later >= earlier - 1e-6 for earlier, later in zip(history, history[1:]))
+
+
+def test_transition_update_leaves_untouched_states_alone():
+    hmm = ChainHmm(means=np.zeros((3, 1, 2)), variances=np.ones((3, 1, 2)),
+                   weights=np.ones((3, 1)), self_probability=np.array([0.5, 0.5, 0.9]))
+    updated = hmm.update(np.full((3, 1), 2.0), np.zeros((3, 1, 2)), np.full((3, 1, 2), 6.0),
+                         np.array([4.0, 4.0, 4.0]),
+                         self_counts=np.array([30.0, 10.0, 0.0]),
+                         exit_counts=np.array([10.0, 30.0, 0.0]))
+    stays = updated.self_probabilities
+    assert stays[0] == pytest.approx((30.0 + 2.0) / (40.0 + 4.0))
+    assert stays[1] == pytest.approx((10.0 + 2.0) / (40.0 + 4.0))
+    assert stays[2] == pytest.approx(0.9)  # never visited: previous value, not the prior
+
+
+def test_transition_update_clamps_extreme_counts():
+    hmm = ChainHmm(means=np.zeros((2, 1, 2)), variances=np.ones((2, 1, 2)),
+                   weights=np.ones((2, 1)))
+    updated = hmm.update(np.full((2, 1), 2.0), np.zeros((2, 1, 2)), np.full((2, 1, 2), 6.0),
+                         np.array([4.0, 4.0]),
+                         self_counts=np.array([1e6, 0.0]), exit_counts=np.array([0.0, 1e6]))
+    stays = updated.self_probabilities
+    assert stays[0] == pytest.approx(0.98) and stays[1] == pytest.approx(0.05)
+
+
+def test_subset_and_npz_keep_per_state_probability():
+    hmm = ChainHmm(means=np.zeros((3, 1, 2)), variances=np.ones((3, 1, 2)),
+                   weights=np.ones((3, 1)), self_probability=np.array([0.2, 0.5, 0.9]))
+    subset = hmm.subset([2, 0])
+    assert np.allclose(subset.self_probabilities, [0.9, 0.2])
+    restored = ChainHmm.from_npz(hmm.to_npz())
+    assert np.allclose(restored.self_probabilities, [0.2, 0.5, 0.9])
+
+
+def test_scalar_and_wrong_shape_stay_probability():
+    hmm = ChainHmm(means=np.zeros((3, 1, 2)), variances=np.ones((3, 1, 2)),
+                   weights=np.ones((3, 1)), self_probability=0.7)
+    assert np.allclose(hmm.self_probabilities, 0.7)
+    with pytest.raises(ValueError):
+        ChainHmm(means=np.zeros((3, 1, 2)), variances=np.ones((3, 1, 2)),
+                 weights=np.ones((3, 1)), self_probability=np.array([0.5, 0.5]))
+    with pytest.raises(ValueError):
+        ChainHmm(means=np.zeros((3, 1, 2)), variances=np.ones((3, 1, 2)),
+                 weights=np.ones((3, 1)), self_probability=np.array([0.5, 0.5, 1.0]))
+
+
+
+def test_accumulator_counts_chain_termination_as_exit():
+    hmm = make_hmm(seed=19)
+    frames = np.random.default_rng(20).normal(size=(12, 2))
+    state_ll = hmm.state_loglik(frames)
+    _stays, arcs = hmm.transition_counts(state_ll)
+    assert arcs[-1] == 0.0  # no arc leaves the last state: it ends the chain
+    accumulator = HmmAccumulator(3, 1, 2)
+    accumulator.add(hmm, frames)
+    assert accumulator.exit_counts[-1] >= 1.0  # the one termination event
+    total = accumulator.self_counts.sum() + accumulator.exit_counts.sum()
+    assert total == pytest.approx(12.0)
+

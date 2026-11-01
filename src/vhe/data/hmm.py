@@ -9,16 +9,20 @@ Why this topology: an aligner only needs state posteriors and a best path. Skip 
 optional-silence arcs add likelihood on read speech but also invent paths the transcript does
 not contain, and a wrong path here becomes a wrong *duration* in the mechanical render.
 
-Transition probabilities are fixed (stay 0.5 / advance 0.5): with 10 ms frames and 3-state
-phones this puts the expected phone duration near 60 ms, which is the right order for
-Mandarin, and re-estimating three million transition counts per speaker buys nothing at
-boundary level. Everything else (weights, means, variances) is learned by Baum-Welch.
+Transitions were originally fixed (stay 0.5 / advance 0.5) on the argument that 3-state phones
+then expect ~60 ms, "the right order for Mandarin", so re-estimating them buys nothing. EXP-0021
+falsified that: with fixed transitions every phoneme class collapsed into 0.05-0.135 s (vowel
+over stop 1.43) because the prior, not the data, set the duration. Stay probabilities can now be
+per state, and Baum-Welch re-estimates them from expected transition counts (EXP-0022).
+
+A scalar stay probability remains the default: it is the flat-start control the ablation needs
+and the value a chain falls back to when transitions are not being estimated.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 
@@ -26,6 +30,13 @@ LOG_TWO_PI = float(np.log(2.0 * np.pi))
 DEFAULT_VARIANCE_FLOOR = 1e-3
 DEFAULT_FLOOR_RATIO = 0.05
 DEFAULT_SELF_PROBABILITY = 0.5
+#: Beta(a, a) prior on each state's stay probability: a=2.0 pulls a barely visited state back to
+#: 0.5 instead of letting two frames of evidence decide the duration model for a whole phone.
+DEFAULT_TRANSITION_PRIOR = 2.0
+#: Clamp for the re-estimated stay probability (1 frame/state is the physical floor of this
+#: topology; 0.98 would make the chain unable to leave a state on the data it was trained on).
+MIN_SELF_PROBABILITY = 0.05
+MAX_SELF_PROBABILITY = 0.98
 
 
 def logsumexp(values: np.ndarray, axis: int = -1) -> np.ndarray:
@@ -106,7 +117,10 @@ class ChainHmm:
     means: np.ndarray        # [S, K, D]
     variances: np.ndarray    # [S, K, D]
     weights: np.ndarray      # [S, K]
-    self_probability: float = DEFAULT_SELF_PROBABILITY
+    #: Stay probability: one scalar for the whole chain or one value per state. Per-state values
+    #: are what make the chain a duration model at all - a scalar forces every phone to expect
+    #: 2 frames per state (60 ms for a 3-state phone) no matter what it sounds like.
+    self_probability: Union[float, np.ndarray] = DEFAULT_SELF_PROBABILITY
     variance_floor: float = DEFAULT_VARIANCE_FLOOR
     #: Per-dimension variance of the whole feature set. The M-step floors each dimension at
     #: `floor_ratio` of it, not at an absolute constant: on whitened features one dimension can
@@ -124,8 +138,17 @@ class ChainHmm:
             raise ValueError("means must have shape [S, K, D]")
         if self.variances.shape != self.means.shape or self.weights.shape != self.means.shape[:2]:
             raise ValueError("variances [S,K,D] and weights [S,K] must match means")
-        if not 0.0 < self.self_probability < 1.0:
-            raise ValueError("self_probability must be in (0, 1)")
+        if np.isscalar(self.self_probability):
+            if not 0.0 < float(self.self_probability) < 1.0:
+                raise ValueError("self_probability must be in (0, 1)")
+            self.self_probability = float(self.self_probability)
+        else:
+            stays = np.asarray(self.self_probability, dtype=np.float64)
+            if stays.shape != (self.means.shape[0],):
+                raise ValueError(f"self_probability must be a scalar or [{self.means.shape[0]}]")
+            if not ((stays > 0.0) & (stays < 1.0)).all():
+                raise ValueError("self_probability must be in (0, 1)")
+            self.self_probability = stays
         if self.global_variance is not None:
             self.global_variance = np.asarray(self.global_variance, dtype=np.float64)
             if self.global_variance.shape != (self.dim,):
@@ -145,11 +168,18 @@ class ChainHmm:
     def dim(self) -> int:
         return int(self.means.shape[2])
 
+    @property
+    def self_probabilities(self) -> np.ndarray:
+        """Stay probability per state, broadcast from a scalar if that is what was given."""
+        return np.broadcast_to(np.asarray(self.self_probability, dtype=np.float64),
+                               (self.n_states,))
+
     def transition_logs(self) -> tuple[np.ndarray, np.ndarray]:
-        log_self = np.full(self.n_states, np.log(self.self_probability))
-        log_next = np.full(self.n_states, np.log(1.0 - self.self_probability))
-        log_next[-1] = -np.inf  # the chain ends in its last state
-        return log_self, log_next
+        stays = self.self_probabilities
+        log_self = np.log(stays)
+        log_next = np.log1p(-stays)
+        log_next = np.where(np.arange(self.n_states) == self.n_states - 1, -np.inf, log_next)
+        return log_self, log_next  # the chain ends in its last state
 
     # ------------------------------------------------------------------ emissions
 
@@ -221,6 +251,38 @@ class ChainHmm:
             path[step - 1] = path[step] - int(back[step, path[step]])
         return float(delta[-1, -1]), path
 
+    def transition_counts(self, state_ll: np.ndarray, *, alpha: Optional[np.ndarray] = None,
+                          beta: Optional[np.ndarray] = None, total: Optional[float] = None
+                          ) -> tuple[np.ndarray, np.ndarray]:
+        """Expected stay and advance counts per state, [S] each.
+
+        xi_t(i, i) = alpha_t(i) * a_ii * p(x_{t+1} | i) * beta_{t+1}(i) / P(x) and likewise for
+        the advance arc i -> i+1, so the loop is over frames with all states vectorised. Reusing
+        the alpha/beta of an occupancy call keeps one forward-backward per utterance.
+
+        An arc is not one row of a single array: the advance arc i -> i+1 takes alpha from state
+        i at frame t, but its emission and beta from state i+1 at frame t+1. Using one shifted
+        row for all three terms credits the wrong source state and splits the transition mass
+        across the wrong arcs - the totals still sum to T-1, so only an exact count exposes it.
+
+        The last state never advances, so its exit rate is not observable from these arcs alone;
+        HmmAccumulator adds the one termination event that ends each chain (see add()).
+        """
+        if alpha is None or beta is None or total is None:
+            total, alpha, beta = self.forward_backward(state_ll)
+        log_self, log_next = self.transition_logs()
+        stays = np.zeros(self.n_states)
+        advances = np.zeros(self.n_states)
+        with np.errstate(under="ignore"):
+            for step in range(state_ll.shape[0] - 1):
+                base = alpha[step] + state_ll[step + 1] + beta[step + 1] - total
+                stays += np.exp(base + log_self)
+                # Arc i -> i+1: alpha from state i, emission and beta from state i+1.
+                advance_base = (alpha[step, :-1] + state_ll[step + 1, 1:]
+                                + beta[step + 1, 1:] - total)
+                advances[:-1] += np.exp(advance_base + log_next[:-1])
+        return stays, advances
+
     # ------------------------------------------------------------------ training
 
     def variance_floor_vector(self) -> np.ndarray:
@@ -237,13 +299,20 @@ class ChainHmm:
         """
         picked = np.asarray(list(indices), dtype=np.int64)
         return ChainHmm(means=self.means[picked], variances=self.variances[picked],
-                        weights=self.weights[picked], self_probability=self.self_probability,
+                        weights=self.weights[picked],
+                        self_probability=self.self_probabilities[picked].copy(),
                         variance_floor=self.variance_floor,
                         global_variance=self.global_variance, floor_ratio=self.floor_ratio)
 
     def update(self, weights_sum: np.ndarray, mean_sum: np.ndarray, var_sum: np.ndarray,
-               occupancy_sum: np.ndarray) -> "ChainHmm":
-        """One Baum-Welch M-step from sufficient statistics accumulated by HmmAccumulator."""
+               occupancy_sum: np.ndarray, self_counts: Optional[np.ndarray] = None,
+               exit_counts: Optional[np.ndarray] = None,
+               transition_prior: float = DEFAULT_TRANSITION_PRIOR) -> "ChainHmm":
+        """One Baum-Welch M-step from sufficient statistics accumulated by HmmAccumulator.
+
+        When expected transition counts are given the stay probabilities are re-estimated with a
+        Beta(prior, prior) smoothing; otherwise the current ones are carried over unchanged.
+        """
         safe_occ = np.maximum(occupancy_sum, 1e-8)[:, None]
         weights = np.maximum(weights_sum, 1e-8) / safe_occ
         weights /= weights.sum(axis=1, keepdims=True)
@@ -260,8 +329,18 @@ class ChainHmm:
         variances = np.where(seen[:, None, None], variances, self.variances)
         weights = np.where(seen_components, weights, self.weights)
         weights /= weights.sum(axis=1, keepdims=True)
+        stays: Union[float, np.ndarray] = self.self_probability
+        if self_counts is not None and exit_counts is not None:
+            numerator = np.asarray(self_counts) + transition_prior
+            denominator = np.asarray(self_counts) + np.asarray(exit_counts) + 2.0 * transition_prior
+            estimated = np.clip(numerator / denominator, MIN_SELF_PROBABILITY,
+                                MAX_SELF_PROBABILITY)
+            # A state the corpus never left or entered keeps its previous value: (0 + a) / (0 + 2a)
+            # would silently reset an untouched state to the prior instead of leaving it alone.
+            touched = (np.asarray(self_counts) + np.asarray(exit_counts)) > 1e-6
+            stays = np.where(touched, estimated, self.self_probabilities)
         return ChainHmm(means=means, variances=variances, weights=weights,
-                        self_probability=self.self_probability,
+                        self_probability=stays,
                         variance_floor=self.variance_floor,
                         global_variance=self.global_variance, floor_ratio=self.floor_ratio)
 
@@ -278,8 +357,9 @@ class ChainHmm:
 
     @classmethod
     def from_npz(cls, data) -> "ChainHmm":
+        stays = np.asarray(data["self_probability"], dtype=np.float64)
         return cls(means=data["means"], variances=data["variances"], weights=data["weights"],
-                   self_probability=float(data["self_probability"]),
+                   self_probability=float(stays) if stays.ndim == 0 else stays,
                    variance_floor=float(data["variance_floor"]),
                    global_variance=(np.asarray(data["global_variance"])
                                     if "global_variance" in data else None),
@@ -294,6 +374,8 @@ class HmmAccumulator:
         self.mean_sum = np.zeros((n_states, n_components, dim))
         self.var_sum = np.zeros((n_states, n_components, dim))
         self.occupancy_sum = np.zeros(n_states)
+        self.self_counts = np.zeros(n_states)
+        self.exit_counts = np.zeros(n_states)
         self.frames = 0
         self.loglik = 0.0
 
@@ -312,8 +394,14 @@ class HmmAccumulator:
             chain = hmm
         component_ll = chain.component_loglik(frames)
         state_ll = logsumexp(component_ll, axis=2)
-        total, gamma = chain.occupancy(state_ll)
-        gamma = np.exp(gamma)
+        # One forward-backward feeds both the occupancy and the transition counts.
+        total, alpha, beta = chain.forward_backward(state_ll)
+        gamma = np.exp(alpha + beta - total)
+        stays, advances = chain.transition_counts(state_ll, alpha=alpha, beta=beta, total=total)
+        # The chain ends in its last state, and ending is that state's one exit event. Without it
+        # a phone that finishes the utterance looks like it never leaves, its stay probability
+        # saturates, and its implied duration (1/(1-p) per state) becomes nonsense.
+        advances[-1] += 1.0
         # p(k | t, s) = w_k N(x|.) / sum_k w_k N(x|.)
         component_post = np.exp(component_ll - state_ll[:, :, None])
         weighted = gamma[:, :, None] * component_post
@@ -322,6 +410,8 @@ class HmmAccumulator:
             self.mean_sum += np.einsum("tsk,td->skd", weighted, frames)
             self.var_sum += np.einsum("tsk,td->skd", weighted, frames ** 2)
             self.occupancy_sum += gamma.sum(axis=0)
+            self.self_counts += stays
+            self.exit_counts += advances
         else:
             # np.add.at, not `+= indexed`: a phone may repeat inside one transcript
             # (e.g. 是是), which repeats its state ids and makes buffered fancy indexing drop
@@ -330,6 +420,8 @@ class HmmAccumulator:
             np.add.at(self.mean_sum, indices, np.einsum("tsk,td->skd", weighted, frames))
             np.add.at(self.var_sum, indices, np.einsum("tsk,td->skd", weighted, frames ** 2))
             np.add.at(self.occupancy_sum, indices, gamma.sum(axis=0))
+            np.add.at(self.self_counts, indices, stays)
+            np.add.at(self.exit_counts, indices, advances)
         self.frames += frames.shape[0]
         self.loglik += total
         return total

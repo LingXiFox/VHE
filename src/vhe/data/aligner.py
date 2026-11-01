@@ -31,7 +31,7 @@ from typing import Optional, Sequence
 import numpy as np
 
 from ..audio import read_wav
-from ..synth.phonology import MANDARIN_PHONEME_IDS
+from ..synth.phonology import MANDARIN_PHONEME_IDS, MANDARIN_PHONEMES
 from .features import HOP_S, SAMPLE_RATE, acoustic_features
 from .hmm import ChainHmm, HmmAccumulator, kmeans_init
 from .resample import resample
@@ -372,12 +372,41 @@ class PhoneAligner:
                    phones=tuple(meta["phones"]), meta=meta)
 
 
+def duration_by_kind(hmm: ChainHmm, phones: Sequence[str], states_per_phone: int,
+                     hop_s: float = 0.010) -> dict:
+    """Mean implied phone duration per phoneme kind, from the chain's stay probabilities.
+
+    A state that stays with probability p holds 1/(1-p) frames on average, so a phone of k states
+    lasts k/(1-p) frames. This is the quantity EXP-0021 showed to be flat across kinds under fixed
+    transitions; it is read off the model, not measured from an alignment, so it cannot be
+    confused with the durations the decoder actually produced.
+    """
+    layout = _state_layout(phones, states_per_phone)
+    totals: dict[str, list[float]] = {}
+    for phone, (offset, count) in layout.items():
+        stays = hmm.self_probabilities[offset:offset + count]
+        if (stays >= 1.0).any():
+            continue
+        frames = float(np.sum(1.0 / (1.0 - stays)))
+        kind = MANDARIN_PHONEMES[phone].kind if phone in MANDARIN_PHONEMES else "unknown"
+        totals.setdefault(kind, []).append(frames * hop_s)
+    return {kind: {"phones": len(values),
+                   "mean_duration_s": round(float(np.mean(values)), 4)}
+            for kind, values in sorted(totals.items())}
+
+
 def train_aligner(items: Sequence[PreparedUtterance], *, phones: Sequence[str] = PHONES,
                   states_per_phone: int = DEFAULT_STATES_PER_PHONE,
                   n_components: int = DEFAULT_COMPONENTS,
                   iterations: int = DEFAULT_ITERATIONS, seed: int = 42,
-                  frame_cap: int = DEFAULT_FRAME_CAP) -> tuple[PhoneAligner, dict]:
-    """Flat start plus Baum-Welch; returns the aligner and a per-iteration report."""
+                  frame_cap: int = DEFAULT_FRAME_CAP,
+                  estimate_transitions: bool = False) -> tuple[PhoneAligner, dict]:
+    """Flat start plus Baum-Welch; returns the aligner and a per-iteration report.
+
+    estimate_transitions=False fixes every stay probability at 0.5, which is the control arm of
+    EXP-0022 (and the behaviour EXP-0021 measured). True re-estimates one stay probability per
+    state from expected transition counts.
+    """
     if not items:
         raise ValueError("train_aligner needs at least one prepared utterance")
     usable: list[PreparedUtterance] = []
@@ -407,8 +436,13 @@ def train_aligner(items: Sequence[PreparedUtterance], *, phones: Sequence[str] =
                         "frames": accumulator.frames,
                         "loglik_per_frame": round(accumulator.loglik
                                                   / max(1, accumulator.frames), 5)})
-        hmm = hmm.update(accumulator.weights_sum, accumulator.mean_sum,
-                         accumulator.var_sum, accumulator.occupancy_sum)
+        if estimate_transitions:
+            hmm = hmm.update(accumulator.weights_sum, accumulator.mean_sum,
+                             accumulator.var_sum, accumulator.occupancy_sum,
+                             accumulator.self_counts, accumulator.exit_counts)
+        else:
+            hmm = hmm.update(accumulator.weights_sum, accumulator.mean_sum,
+                             accumulator.var_sum, accumulator.occupancy_sum)
         aligner = PhoneAligner(hmm=hmm, states_per_phone=states_per_phone,
                                phones=tuple(phones))
     report = {"utterances": len(items), "skipped": skipped, "states": hmm.n_states,
@@ -416,7 +450,8 @@ def train_aligner(items: Sequence[PreparedUtterance], *, phones: Sequence[str] =
               "states_per_phone": states_per_phone, "seed": seed,
               "frames": history[-1]["frames"] if history else 0,
               "hours": round(sum(item.duration_s for item in items) / 3600.0, 4),
-              "history": history,
+              "history": history, "estimate_transitions": bool(estimate_transitions),
+              "self_probability_by_kind": duration_by_kind(hmm, tuple(phones), states_per_phone),
               "monotone": all(second["loglik"] >= first["loglik"] - 1e-6
                               for first, second in zip(history, history[1:]))}
     return aligner, report

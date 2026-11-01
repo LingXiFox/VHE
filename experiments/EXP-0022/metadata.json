@@ -1,0 +1,21 @@
+{
+  "experiment_id": "EXP-0022",
+  "title": "Per-state transition re-estimation for the chain-HMM aligner",
+  "hypothesis": "Fixed 0.5 stay probabilities force every phoneme class to an expected 60 ms (3 states x 2 frames each), which EXP-0021 measured as a vowel/stop duration ratio of 1.43. Re-estimating one stay probability per state from expected transition counts should let decoded phone durations follow the corpus instead of the prior, without changing anything else.",
+  "created_utc": "2026-11-01T11:34:30.610898+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "f755272750f2a5b335e0598c78a2b1522aa86bbd",
+    "status": "M src/vhe/data/aligner.py\n M src/vhe/data/hmm.py\n M tests/test_data_aligner.py\n M tests/test_data_hmm.py"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": "PYTHONPATH=~/VHE/src .venv/bin/python experiments/EXP-0022/probe_corpus_aligner.py --manifest ~/datasets/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --root ~/datasets/VHE-Datasets/AISHELL-3/extracted --train-speakers 16 --eval-speakers 4 --per-speaker 20 --eval-utterances 40 --iterations 0 4 --seed 42 [--estimate-transitions] --out logs/corpus_aligner_4090_{control,estimated}.json",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Two arms, one variable: estimate_transitions. Control arm reproduces EXP-0021. Pass/fail criteria were written into README.md before the corpus run; the synthetic pilot and one structural fix (chain termination counted as an exit) are recorded there too.",
+  "dataset_root_remote": "/home/hands/datasets/VHE-Datasets/AISHELL-3/extracted"
+}

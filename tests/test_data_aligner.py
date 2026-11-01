@@ -14,8 +14,10 @@ import numpy as np
 import pytest
 
 from vhe.data.aligner import (AlignmentError, PreparedUtterance, _state_layout, crop_speech,
-                              pinyin_phones, silence_frame_edges, train_aligner)
+                              duration_by_kind, pinyin_phones, silence_frame_edges, train_aligner)
 from vhe.data.features import SAMPLE_RATE, acoustic_features
+from vhe.data.aligner import PHONES
+from vhe.data.hmm import ChainHmm
 
 BANDS = {"a": (400.0, 900.0), "i": (1800.0, 2600.0), "s": (4000.0, 6000.0),
          "sh": (2500.0, 3200.0), "t": (900.0, 1400.0), "n": (200.0, 350.0)}
@@ -171,3 +173,66 @@ def test_train_aligner_reports_skipped_utterances():
 def test_train_aligner_refuses_empty_input():
     with pytest.raises(ValueError):
         train_aligner([])
+
+
+def synthetic_timed(phones, durations, seed, lead=0.15, tail=0.15):
+    """Like synthetic(), but the caller fixes each phone's duration."""
+    rng = np.random.default_rng(seed)
+    parts = [np.zeros(int(lead * SAMPLE_RATE), dtype=np.float32)]
+    boundaries = []
+    cursor = lead
+    for phone, duration in zip(phones, durations):
+        parts.append(colour(phone, duration, rng))
+        boundaries.append((cursor, cursor + duration))
+        cursor += duration
+    parts.append(np.zeros(int(tail * SAMPLE_RATE), dtype=np.float32))
+    return np.concatenate(parts), boundaries
+
+
+def timed_corpus(count=12, long_s=0.30, short_s=0.06):
+    items = []
+    for index in range(count):
+        audio, _ = synthetic_timed(("a", "t"), (long_s, short_s), seed=100 + index)
+        cropped, (lead, _tail) = crop_speech(audio, SAMPLE_RATE)
+        items.append(PreparedUtterance(f"utt{index}", acoustic_features(cropped, SAMPLE_RATE),
+                                       ("a", "t"), (lead, 0), audio.size / SAMPLE_RATE,
+                                       lead * 0.01))
+    return items
+
+
+def test_estimated_transitions_agree_with_decoded_durations():
+    # Fixed 0.5 makes every kind last exactly 60 ms no matter what the decoder does, so the two
+    # numbers can only agree if the stays were re-estimated from this corpus. Note what this
+    # does *not* test: that the estimate is closer to the true 300 ms / 60 ms split. On this
+    # synthetic pair the emissions dominate the boundary (measured: ~215/157 ms either way).
+    items = timed_corpus()
+    fixed_aligner, fixed_report = train_aligner(items, iterations=3)
+    aligner, report = train_aligner(items, iterations=3, estimate_transitions=True)
+    assert fixed_report["estimate_transitions"] is False
+    assert report["estimate_transitions"] is True
+    fixed_kinds = fixed_report["self_probability_by_kind"]
+    assert fixed_kinds["vowel"]["mean_duration_s"] == pytest.approx(0.06)
+    assert fixed_kinds["stop"]["mean_duration_s"] == pytest.approx(0.06)
+    layout = _state_layout(PHONES, 3)
+    for phone in ("a", "t"):
+        offset, count = layout[phone]
+        stays = aligner.hmm.self_probabilities[offset:offset + count]
+        implied = float(np.sum(1.0 / (1.0 - stays))) * 0.01
+        decoded = [span.end_s - span.start_s
+                   for item in items
+                   for phoneme, span in zip(item.phones, aligner.align_phones(item.features,
+                                                                              item.phones).spans)
+                   if phoneme == phone]
+        assert implied == pytest.approx(float(np.mean(decoded)), rel=0.4)
+    assert np.allclose(fixed_aligner.hmm.self_probabilities[:3], 0.5)
+
+
+def test_duration_by_kind_reads_model_not_decoder():
+    hmm = ChainHmm(means=np.zeros((4, 1, 2)), variances=np.ones((4, 1, 2)),
+                   weights=np.ones((4, 1)), self_probability=np.array([0.9, 0.9, 0.5, 0.5]))
+    kinds = duration_by_kind(hmm, ("a", "a", "t", "t"), states_per_phone=2)
+    # 2 states at stay 0.9 -> 2/(0.1) = 20 frames = 0.20 s; at 0.5 -> 2/(0.5) = 4 frames.
+    assert kinds["vowel"]["mean_duration_s"] == pytest.approx(0.20)
+    assert kinds["stop"]["mean_duration_s"] == pytest.approx(0.04)
+    assert kinds["vowel"]["phones"] == 1
+
