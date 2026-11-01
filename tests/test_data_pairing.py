@@ -274,6 +274,83 @@ def test_build_pair_with_the_mandarin_backend_records_onset_nucleus_allocations(
     assert float(np.abs(result.mechanical[int(0.36 * rate):int(0.44 * rate)]).max()) < 1e-3
 
 
+SPAN_LAYOUT = (
+    # (phone, start, end) inside make_mandarin_utterance's 0.05 lead + 0.30 render + 0.10 gap
+    ("m", 0.050, 0.110, 0.95),
+    ("a", 0.110, 0.330, 0.92),
+    ("b", 0.450, 0.500, 0.90),
+    ("a", 0.500, 0.720, 0.88),
+    ("n", 0.850, 0.900, 0.94),
+    ("a", 0.900, 1.120, 0.91),
+)
+
+
+def test_forced_alignment_spans_replace_the_nominal_phone_plan(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "mandarin_forced.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), alignment="forced",
+                        phone_spans=SPAN_LAYOUT)
+    assert result.status == "ok", result.issues
+    assert result.alignment["method"] == "forced_alignment"
+    assert result.real.size == result.mechanical.size
+    # The plan is the aligner's spans, not g2p's nominal onset/nucleus split.
+    asserted = [entry["duration_s"] for allocation in result.allocations
+                for entry in allocation]
+    assert asserted == pytest.approx([0.06, 0.22, 0.05, 0.22, 0.05, 0.22], abs=1e-4)
+    boundaries = result.alignment["boundaries"]
+    assert [round(item["start_s"], 3) for item in boundaries] == [0.05, 0.45, 0.85]
+    assert [round(item["end_s"], 3) for item in boundaries] == [0.33, 0.72, 1.12]
+    # Per-syllable confidence is the weakest span in that syllable.
+    assert [item["confidence"] for item in boundaries] == [0.92, 0.88, 0.91]
+    assert "low_boundary_confidence" not in result.readiness["reasons"]
+    # The spans themselves are kept so a pair can be audited without re-aligning.
+    assert [item[0] for item in result.alignment["phones"]] == ["m", "a", "b", "a", "n", "a"]
+
+
+def test_forced_alignment_rejects_a_phone_sequence_that_disagrees_with_the_transcript(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "mandarin_forced_mismatch.wav"
+    make_mandarin_utterance(path)
+    spans = [("n",) + tuple(span[1:]) if index == 0 else span
+             for index, span in enumerate(SPAN_LAYOUT)]
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), alignment="forced",
+                        phone_spans=spans)
+    assert result.status == "rejected"
+    assert result.mechanical is None
+    codes = {issue["code"] for issue in result.issues}
+    assert "phone_sequence_mismatch" in codes
+
+
+def test_forced_alignment_rejects_overlapping_spans(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "mandarin_forced_overlap.wav"
+    make_mandarin_utterance(path)
+    spans = list(SPAN_LAYOUT)
+    spans[1] = ("a", 0.040, 0.330, 0.92)   # starts before 'm' has finished
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), alignment="forced",
+                        phone_spans=spans)
+    assert result.status == "rejected"
+    codes = {issue["code"] for issue in result.issues}
+    assert "bad_phone_span" in codes
+
+
+def test_forced_alignment_mode_requires_spans_and_excludes_manual_boundaries(tmp_path):
+    path = tmp_path / "unused.wav"
+    make_mandarin_utterance(path)
+    with pytest.raises(ValueError, match="requires phone_spans"):
+        build_pair(path, ["ma1"], template=PRESETS["yang"], alignment="forced")
+    with pytest.raises(ValueError, match="mutually exclusive"):
+        build_pair(path, ["ma1"], template=PRESETS["yang"], alignment="forced",
+                   phone_spans=[("m", 0.0, 0.05)], boundaries_s=[(0.0, 0.3)])
+
+
 def test_build_pair_blocks_a_mandarin_syllable_outside_the_inventory(tmp_path):
     from vhe.synth.mandarin import MandarinFormantSynth
 

@@ -45,7 +45,7 @@ PAIR_STATUS = ("ok", "blocked", "rejected")
 #: 'viterbi' is the EXP-0015 multi-candidate tracker; 'legacy' keeps the old YIN estimate
 #: available as an ablation. Neither may narrow fmax_hz to hide octave errors.
 PITCH_ESTIMATORS = ("viterbi", "legacy")
-ALIGNMENT_MODES = ("segments", "dp")
+ALIGNMENT_MODES = ("segments", "dp", "forced")
 #: Confidence below which a DP boundary is reported as unreliable (0.35 == 4.2 dB valley).
 DEFAULT_MIN_BOUNDARY_CONFIDENCE = 0.35
 #: An interior rejection gap longer than this is reported as interpolated, not smoothed over.
@@ -268,6 +268,71 @@ def _manual_windows(boundaries_s, count: int, duration_s: float
     return [(start, stop, None, None) for start, stop in pairs]
 
 
+def _span_windows(spans, syllables, duration_s: float, result: "PairResult"):
+    """Group forced-alignment phone spans into per-syllable windows and phone plans.
+
+    The aligner emits one (phone, start, end) triple per transcript phoneme in order.
+    Turning those into a pair is deliberately strict: a sequence that does not match the
+    transcript phone-for-phone is an aligner/transcript disagreement, not something to be
+    repaired by dropping or interpolating phones, so it fails the pair instead.
+    """
+    if any(len(span) not in (3, 4) for span in spans):
+        raise ValueError("phone spans must be (phone, start, end) or "
+                         "(phone, start, end, confidence) tuples")
+    expected = [phone for syllable in syllables for phone in syllable.phonemes]
+    names = [str(span[0]) for span in spans]
+    if len(spans) != len(expected):
+        result.add_issue("phone_sequence_mismatch",
+                         f"alignment has {len(spans)} spans for {len(expected)} transcript "
+                         f"phonemes", "error")
+        return None, None, {"method": "forced_alignment", "syllables": 0}
+    if names != expected:
+        first = next((index for index, (a, b) in enumerate(zip(names, expected)) if a != b),
+                     None)
+        result.add_issue("phone_sequence_mismatch",
+                         f"aligned phones differ from the transcript at index {first}: "
+                         f"{names[first]!r} vs {expected[first]!r}"
+                         if first is not None else "aligned phones differ from the transcript",
+                         "error")
+        return None, None, {"method": "forced_alignment", "syllables": 0}
+    spans = [(str(span[0]), float(span[1]), float(span[2]),
+              None if len(span) < 4 or span[3] is None else float(span[3])) for span in spans]
+    for index, (name, start, stop, _) in enumerate(spans):
+        if not (0.0 <= start < stop <= duration_s + 1e-6):
+            result.add_issue("bad_phone_span",
+                             f"span {index} {name!r} ({start:.3f}, {stop:.3f}) is outside "
+                             f"0..{duration_s:.3f}s", "error")
+            return None, None, {"method": "forced_alignment", "syllables": 0}
+        if index and start < spans[index - 1][2] - 1e-6:
+            result.add_issue("bad_phone_span",
+                             f"span {index} {name!r} starts at {start:.3f}s, before span "
+                             f"{index - 1} ends ({spans[index - 1][2]:.3f}s)", "error")
+            return None, None, {"method": "forced_alignment", "syllables": 0}
+
+    windows, plans, confidences = [], [], []
+    cursor = 0
+    for syllable in syllables:
+        count = len(syllable.phonemes)
+        block = spans[cursor:cursor + count]
+        cursor += count
+        start, stop = block[0][1], block[-1][2]
+        if stop - start < 0.02:
+            result.add_issue("bad_syllable_span",
+                             f"syllable {syllable.pinyin!r} spans {stop - start:.3f}s, "
+                             "below the 0.02s floor", "error")
+            return None, None, {"method": "forced_alignment", "syllables": 0}
+        block_confidences = [value for _, _, _, value in block if value is not None]
+        confidence = min(block_confidences) if block_confidences else None
+        windows.append((start, stop, None, confidence))
+        if confidence is not None:
+            confidences.append(confidence)
+        plans.append([(name, max(0.005, end - begin)) for name, begin, end, _ in block])
+    stats = _window_stats(windows, method="forced_alignment", confidences=confidences)
+    stats["source"] = "chain-HMM forced alignment (10 ms frames)"
+    stats["phones"] = [[name, round(begin, 4), round(end, 4)] for name, begin, end, _ in spans]
+    return windows, plans, stats
+
+
 def _window_stats(windows, *, method: str, confidences: list[float]) -> dict:
     durations = [stop - start for start, stop, _, _ in windows]
     return {
@@ -359,6 +424,10 @@ def _readiness(result: PairResult, *, min_boundary_confidence: float,
         if (alignment.get("low_confidence_boundaries") or 0) > 0 or minimum is None \
                 or minimum < min_boundary_confidence:
             reasons.append("low_boundary_confidence")
+    elif method == "forced_alignment":
+        minimum = alignment.get("min_confidence")
+        if minimum is None or minimum < min_boundary_confidence:
+            reasons.append("low_boundary_confidence")
     elif method == "energy_segments":
         reasons.append("no_boundary_confidence")
     elif method is None:
@@ -396,19 +465,29 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
                seed: int = 42, max_duration_s: float = 30.0,
                pitch_estimator: str = "viterbi", alignment: str = "segments",
                boundaries_s: Optional[Sequence[tuple[float, float]]] = None,
+               phone_spans: Optional[Sequence[tuple]] = None,
                min_boundary_confidence: float = DEFAULT_MIN_BOUNDARY_CONFIDENCE,
                max_pitch_gap_s: float = DEFAULT_MAX_PITCH_GAP_S) -> PairResult:
     """Analyse one real utterance and render its mechanical counterpart when possible.
 
     pitch_estimator: 'viterbi' (EXP-0015 multi-candidate tracker) or 'legacy' (old YIN).
     alignment: 'segments' keeps the original energy-segment count check; 'dp' places one
-        boundary per transcript syllable with the energy-valley dynamic program; passing
-        boundaries_s overrides both with operator-specified (start, end) seconds.
+        boundary per transcript syllable with the energy-valley dynamic program; 'forced'
+        takes phone_spans from the chain-HMM aligner; passing boundaries_s overrides all
+        three with operator-specified (start, end) seconds.
+    phone_spans: (phone, start, end[, confidence]) per transcript phoneme in order, in the
+        time base of the loaded audio. Only valid with alignment='forced'; the phone sequence
+        must match the transcript exactly, otherwise the pair is rejected rather than
+        repaired.
     """
+    if alignment == "forced" and phone_spans is None:
+        raise ValueError("alignment='forced' requires phone_spans")
+    if phone_spans is not None and boundaries_s is not None:
+        raise ValueError("phone_spans and boundaries_s are mutually exclusive")
     if pitch_estimator not in PITCH_ESTIMATORS:
         raise ValueError(f"unknown pitch estimator {pitch_estimator!r}; expected one of "
                          f"{', '.join(PITCH_ESTIMATORS)}")
-    if boundaries_s is None and alignment not in ALIGNMENT_MODES:
+    if boundaries_s is None and phone_spans is None and alignment not in ALIGNMENT_MODES:
         raise ValueError(f"unknown alignment {alignment!r}; expected one of "
                          f"{', '.join(ALIGNMENT_MODES)}")
     path = Path(wav_path)
@@ -441,32 +520,49 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
                          f"voiced frame ratio {track.voiced_ratio:.4f} < 0.3000", "error")
         return finish()
 
-    windows, alignment_stats = _resolve_windows(
-        audio, sample_rate, len(pinyins), track, alignment=alignment,
-        boundaries_s=boundaries_s, result=result)
-    result.alignment = alignment_stats
-    if windows is None:
-        return finish()
-
     synth = backend or get_backend()
     inventory = getattr(synth, "inventory", "vowels")
-    try:
-        syllables = [parse_syllable(token, inventory) for token in pinyins]
-    except ValueError as error:
-        result.add_issue("bad_pinyin", str(error), "error")
-        return finish()
-    result.syllables = [syllable.as_dict() for syllable in syllables]
-    blocked = [syllable for syllable in syllables if not syllable.phonemes]
-    if blocked:
-        unique = sorted({syllable.pinyin for syllable in blocked})
-        result.add_issue(
-            "backend_inventory_insufficient",
-            f"{len(blocked)}/{len(syllables)} syllables cannot be rendered by the backend "
-            f"inventory {inventory!r} ({', '.join(unique[:8])}); "
-            f"first reason: {blocked[0].reason}",
-            "error")
-        result.status = "blocked"
-        return finish()
+
+    def parse_all():
+        try:
+            parsed = [parse_syllable(token, inventory) for token in pinyins]
+        except ValueError as error:
+            result.add_issue("bad_pinyin", str(error), "error")
+            return None
+        result.syllables = [syllable.as_dict() for syllable in parsed]
+        blocked = [syllable for syllable in parsed if not syllable.phonemes]
+        if blocked:
+            unique = sorted({syllable.pinyin for syllable in blocked})
+            result.add_issue(
+                "backend_inventory_insufficient",
+                f"{len(blocked)}/{len(parsed)} syllables cannot be rendered by the backend "
+                f"inventory {inventory!r} ({', '.join(unique[:8])}); "
+                f"first reason: {blocked[0].reason}",
+                "error")
+            result.status = "blocked"
+            return None
+        return parsed
+
+    plans = None
+    if alignment == "forced" and phone_spans is not None:
+        syllables = parse_all()
+        if syllables is None:
+            return finish()
+        windows, plans, alignment_stats = _span_windows(
+            phone_spans, syllables, audio.size / sample_rate, result)
+        result.alignment = alignment_stats
+        if windows is None:
+            return finish()
+    else:
+        windows, alignment_stats = _resolve_windows(
+            audio, sample_rate, len(pinyins), track, alignment=alignment,
+            boundaries_s=boundaries_s, result=result)
+        result.alignment = alignment_stats
+        if windows is None:
+            return finish()
+        syllables = parse_all()
+        if syllables is None:
+            return finish()
 
     # One request per syllable, placed at the onset measured from the real utterance.
     # A single concatenated request cannot express the pauses between syllables
@@ -478,8 +574,11 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
     for index, (syllable, window) in enumerate(zip(syllables, windows)):
         start_s, end_s, dip_db, confidence = window
         duration = max(0.01, float(end_s - start_s))
-        plan, plan_reason = syllable_plan(syllable.initial, syllable.final, duration,
-                                          inventory, erhua=syllable.erhua)
+        if plans is not None:
+            plan, plan_reason = plans[index], None
+        else:
+            plan, plan_reason = syllable_plan(syllable.initial, syllable.final, duration,
+                                              inventory, erhua=syllable.erhua)
         if plan_reason is not None:
             result.add_issue("syllable_plan_blocked",
                              f"syllable {index} {syllable.pinyin!r}: {plan_reason}", "error")
