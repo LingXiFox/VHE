@@ -1,0 +1,24 @@
+{
+  "experiment_id": "EXP-0019",
+  "title": "Template identity matching versus the real speaker envelope",
+  "hypothesis": "Choosing between the two original presets by median F0 is not a timbre decision: the LTAS distance between the presets is small compared with the distance from either preset to a real AISHELL speaker, so identity preservation must be defined against the mechanical input envelope, not against the real recording.",
+  "created_utc": "2026-11-01T06:41:51.417421+00:00",
+  "completed_utc": "2026-11-01T06:46:00+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "5b9beb4b33006ad96af5628d51510996ea31e584",
+    "status": "dirty at run time: parse_syllable fix, per-boundary evidence, align.py, new tests and EXP-0017/0018 records uncommitted"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": [
+    "python experiments/EXP-0019/probe_identity.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --pairs-report experiments/EXP-0018/logs/pair_report_v3.json --out experiments/EXP-0019/logs/identity_report_v1.json --grid",
+    "python experiments/EXP-0019/probe_identity.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --pairs-report experiments/EXP-0018/logs/pair_report_v3.json --out experiments/EXP-0019/logs/identity_report_v2.json --grid"
+  ],
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Analysis only: no training, no template fitting, no new pairs. Reads the 16 usable pairs of EXP-0018 v3. Metric: level-normalised log-mel LTAS (24 bands, 100-7000 Hz), dB RMS. Result: the F0 heuristic matches the closer preset on 10/16 = 0.625 of pairs (operational claim supported), but median d(preset,preset)=6.03 dB versus median d(real,best preset)=6.92 dB, gap/separation 1.01 (pre-registered quantitative claim NOT supported). Five low-F0 speakers are closer to 'yang', i.e. F0 does not predict timbre. The 1-D formant-scale fit is not identifiable (7/16 pinned at the 1.30 edge, median 1.175). v1 (0.75-1.20 grid) kept as a failed artefact. Numeric pass/fail thresholds were written after the run and are labelled descriptive in the README."
+}

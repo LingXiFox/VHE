@@ -41,3 +41,15 @@
 - 扩表后的覆盖率一律用 `stats_from_entries(manifest 条目)` 重算，**不重解码任何 WAV、不重建索引**：统计只依赖文本与音素表，重扫 26 GB 只会引入新的失败面。
 - 每个批次写新的 `coverage_stage{N}.json` 与 `phonemes_stage{N}*.json`，**不覆盖旧报告**；被判定为度量缺陷的版本（如 `phonemes_stage2_v3.json`）原样保留，结论以 README 指定的定稿版为准。
 - 覆盖率上升**不等于**听感改善，也不能用来宣称通过 P1 验收：整句覆盖率是音节级的乘积式限制，任何听感结论都需要人工听音记录。
+
+## 可渲染性、manifest 版本与配对预览（2026-11-01，P1.5）
+
+- manifest 版本 **3** 起带 `inventory` 指纹（`size/onsets/finals/sha256`，当前 sha256 `af1e736115c9c377c8d4b735a081ccf47eccc5fe71f496d952eae778a611c7bd`）。音素表一变，旧 manifest 里的 `renderable` 就会过期，**不得继续按旧标记统计**。
+- 处理方式：`python -m vhe refresh --manifest <旧> --output <新>` 按当前库存重判并写新文件（拒绝覆盖），meta 里记 `refreshed_from.sha256`。当前基线：
+  - `derived/aishell3-scan/v4/manifest.jsonl`，sha256 `1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31`，88035 句，renderable **5314**（stale 修好 5127、反向失效 0）；
+  - v3（`10539f61…`）、v2（`651bbbac…`）、v1（`9ed0cc56…`，有缺陷的首次扫描）**全部保留**，不覆盖、不删除。
+- 加载一律用 `CorpusPairs.from_manifest(..., revalidate=True)`，它会在内存里重判并记 `staleness`，不写盘、不改原 manifest。
+- **已记录的数据缺陷（EXP-0018 v2）**：`parse_syllable` 曾把底层韵母当正字法写法查表，导致 5314 句里有 **3160 句（59%）** 实际渲染失败。修复后 0 阻塞，并且 `missing_units` 与 `parse_syllable` 在 1920 个 distinct token 上 0 不一致（有回归测试）。**"manifest 说可渲染"与"合成器真能渲染"必须由这类交叉测试保证，不能只信单一字段。**
+- 配对预览的落盘位置：`derived/aishell3-pairs/{v1_blocked_proxy_backend,v2}/`（数据集同盘，不进 Git）。v1 是后端选错的失败产物，保留作证据。
+- 预览的定位：`training_ready=false` 的配对（当前 20 条里 20 条）只能标 `preview_only`，**不得进入训练集**；连续语流上的能量分段不等于音素级强制对齐，结论见 EXP-0018。
+- 音色/模板：`yang`/`yin` 都是**合成原创模板**，不来自任何真人。禁止按目标说话人的 F0 或频谱拟合模板（EXP-0019 已证明 F0 不携带音色信息，且拟合目标就等于身份替换）。

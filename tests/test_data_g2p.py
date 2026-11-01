@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import pytest
 
-from vhe.data.g2p import (NUCLEUS_MIN_S, ONSET_MIN_S, nominal_onset_s, syllable_phonemes,
-                          syllable_plan)
+from vhe.data.g2p import (NUCLEUS_MIN_S, ONSET_MIN_S, SUPPORTED_FINALS, SUPPORTED_ONSETS,
+                          nominal_onset_s, syllable_phonemes, syllable_plan)
 from vhe.data.pairing import parse_syllable
 from vhe.synth import MANDARIN_PHONEMES
 
@@ -135,3 +135,24 @@ def test_parse_syllable_reports_the_planning_result():
 def test_bad_pinyin_tokens_are_rejected(token):
     with pytest.raises(ValueError):
         parse_syllable(token)
+
+
+@pytest.mark.parametrize("token", [
+    "a1", "yi1", "wu1", "yu2", "he1", "ai4", "bei4", "ao4", "gou4", "ban1", "bang1",
+    "bian1", "bing1", "liu2", "duo1", "dong1", "gen1", "zhi1", "guang3", "xiang1",
+    "yue4", "nv3", "zher4", "chun1", "er2", "shua1", "jiong3", "cuei4",
+])
+def test_the_coverage_predicate_and_the_synthesiser_agree_on_every_token(token):
+    """The manifest's 'renderable' flag and build_pair must never disagree.
+
+    Coverage asks missing_units() about the *underlying* final; synthesis goes through the
+    written spelling. They once disagreed for 59% of the "renderable" corpus, so this
+    invariant is checked on both sides for the same token.
+    """
+    from vhe.data.mandarin import missing_units, split_token
+
+    token_parts = split_token(token)
+    missing = missing_units(token_parts.initial, token_parts.final, SUPPORTED_ONSETS,
+                            SUPPORTED_FINALS, erhua=token_parts.erhua)
+    syllable = parse_syllable(token, "mandarin")
+    assert (len(missing) == 0) == bool(syllable.phonemes), (missing, syllable.reason)

@@ -45,9 +45,11 @@ from .aishell3 import (
 )
 from .g2p import SUPPORTED_FINALS, SUPPORTED_ONSETS
 from .mandarin import FINAL_SEGMENTS, PinyinError, Token, missing_units, split_token
+from ..synth.contract import INVENTORIES
 
-#: v2 adds per-utterance quality_flags (annotation conflicts); v1 manifests still load.
-MANIFEST_VERSION = 2
+#: v2 adds per-utterance quality_flags (annotation conflicts); v3 adds the inventory
+#: fingerprint in the meta record and re-scores 'renderable'. Older manifests still load.
+MANIFEST_VERSION = 3
 
 
 @dataclass(frozen=True)
@@ -399,6 +401,73 @@ def scan_corpus(root: str | Path, *, split_sizes: dict[str, int] | None = None,
 # --------------------------------------------------------------------- manifest I/O
 
 
+def inventory_fingerprint() -> dict:
+    """Identity of the phoneme inventory that decides renderability *right now*.
+
+    A manifest stores the fingerprint it was scored under; comparing it with this function
+    tells the loader whether the stored 'renderable' booleans are still trustworthy.
+    """
+    payload = {"size": len(INVENTORIES["mandarin"]),
+               "onsets": sorted(SUPPORTED_ONSETS), "finals": sorted(SUPPORTED_FINALS)}
+    blob = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return {**payload, "sha256": hashlib.sha256(blob).hexdigest()}
+
+
+def entry_renderable(entry: CorpusEntry) -> bool:
+    """Re-decide renderability of one entry under the current inventory (no audio read)."""
+    for written in entry.pinyin:
+        token = split_token(written)
+        if missing_units(token.initial, token.final, SUPPORTED_ONSETS, SUPPORTED_FINALS,
+                         erhua=token.erhua):
+            return False
+    return True
+
+
+def refresh_renderable(entries: list[CorpusEntry]
+                       ) -> tuple[list[CorpusEntry], dict]:
+    """Re-score every entry's 'renderable' flag under the current inventory.
+
+    The flag is a scan-time boolean, so it goes stale as soon as the phoneme inventory
+    grows (EXP-0016 added ten units and made thousands of utterances renderable without
+    touching the manifest). Returns new entries plus a summary of what changed.
+    """
+    refreshed: list[CorpusEntry] = []
+    stale = newly = lost = unscorable = 0
+    examples: list[dict] = []
+    for entry in entries:
+        try:
+            current = entry_renderable(entry)
+        except PinyinError:
+            unscorable += 1
+            refreshed.append(replace(entry, renderable=False))
+            continue
+        if current != entry.renderable:
+            stale += 1
+            if current:
+                newly += 1
+            else:
+                lost += 1
+            if len(examples) < 5:
+                examples.append({"utt_id": entry.utt_id, "was": entry.renderable,
+                                 "now": current})
+            refreshed.append(replace(entry, renderable=current))
+        else:
+            refreshed.append(entry)
+    summary = {"inventory": inventory_fingerprint(), "checked": len(entries),
+               "stale": stale, "newly_renderable": newly,
+               "no_longer_renderable": lost, "unscorable": unscorable,
+               "examples": examples}
+    return refreshed, summary
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def write_corpus_manifest(path: str | Path, index: CorpusIndex, *,
                           extra_meta: dict | None = None) -> str:
     """Write the light manifest (meta line + one JSON line per utterance). Never overwrites."""
@@ -410,7 +479,8 @@ def write_corpus_manifest(path: str | Path, index: CorpusIndex, *,
     with target.open("w", encoding="utf-8", newline="\n") as handle:
         meta = {"type": "meta", "version": MANIFEST_VERSION, "root": index.root,
                 "split_seed": index.split_seed, "split_sizes": dict(index.split_sizes),
-                "utterances": len(index.entries), "syllables": index.stats.syllables}
+                "utterances": len(index.entries), "syllables": index.stats.syllables,
+                "inventory": inventory_fingerprint()}
         if extra_meta:
             meta.update(extra_meta)
         for payload in [meta] + [entry.as_dict() for entry in index.entries]:
@@ -541,6 +611,39 @@ def annotate_manifest(manifest: str | Path, output: str | Path, *,
     return {"output": str(target), "manifest_sha256": digest, "utterances": len(annotated),
             "flagged_utterances": sum(1 for entry in annotated if entry.quality_flags),
             "audit": extra["prosody_audit"]}
+
+
+def refresh_manifest(manifest: str | Path, output: str | Path, *,
+                     root: str | Path | None = None) -> dict:
+    """Write a new manifest whose renderable flags match the current inventory.
+
+    The corpus is not rescanned: 'renderable' is a pure function of the stored pinyin, so
+    the caller gets a manifest whose flags agree with the coverage report of the same
+    inventory. Audio is never opened, so the speaker split and every measurement survive.
+    """
+    source = Path(manifest)
+    target = Path(output)
+    if target.exists():
+        raise FileExistsError(f"refusing to overwrite an existing manifest: {target}")
+    entries, meta = read_corpus_manifest(source)
+    refreshed, summary = refresh_renderable(entries)
+    index = CorpusIndex(root=str(root) if root is not None else meta.get("root", ""),
+                        entries=refreshed, split_seed=meta.get("split_seed", SPLIT_SEED),
+                        split_sizes=meta.get("split_sizes", {}),
+                        stats=stats_from_entries(refreshed))
+    extra = {"refreshed_from": {"manifest": source.name, "version": meta.get("version"),
+                                "inventory": meta.get("inventory"),
+                                "sha256": _sha256_file(source)},
+             "refresh": {key: value for key, value in summary.items() if key != "examples"},
+             "refresh_examples": summary["examples"]}
+    digest = write_corpus_manifest(target, index, extra_meta=extra)
+    return {"output": str(target), "manifest_sha256": digest,
+            "utterances": len(refreshed), "stale": summary["stale"],
+            "newly_renderable": summary["newly_renderable"],
+            "no_longer_renderable": summary["no_longer_renderable"],
+            "unscorable": summary["unscorable"],
+            "renderable_utterances": sum(1 for entry in refreshed if entry.renderable),
+            "inventory": summary["inventory"]}
 
 
 # ---------------------------------------------------------------- annotation audit

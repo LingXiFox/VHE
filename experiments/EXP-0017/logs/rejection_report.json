@@ -1,0 +1,469 @@
+{
+  "experiment": "EXP-0017",
+  "manifest": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl",
+  "utterances": 12,
+  "frames": 2052,
+  "reason_totals": {
+    "continuity_gated": 24,
+    "low_confidence": 24,
+    "no_candidate": 281,
+    "octave_ambiguous": 69,
+    "ok": 1077,
+    "silence": 577
+  },
+  "no_candidate_frames": 281,
+  "labels": {
+    "ambiguous": 59,
+    "aperiodic": 2,
+    "suspected_miss": 220
+  },
+  "labels_between_voiced": {
+    "ambiguous": 2,
+    "suspected_miss": 2
+  },
+  "previous_frame_reason": {
+    "continuity_gated": 13,
+    "edge": 3,
+    "low_confidence": 5,
+    "no_candidate": 224,
+    "octave_ambiguous": 3,
+    "ok": 22,
+    "silence": 11
+  },
+  "min_cmnd_buckets": {
+    "<=0.60": 49,
+    "<=0.70": 33,
+    "<=0.85": 40,
+    ">0.85": 159
+  },
+  "suspected_miss_examples": [
+    {
+      "utt_id": "SSB09970003",
+      "flatness": 0.0982,
+      "hps_f0_hz": 93.5,
+      "hps_z": 2.315,
+      "cepstrum_f0_hz": 260.9,
+      "cepstrum_prominence": 5.23,
+      "time_s": 1.125,
+      "level_db": -16.6,
+      "min_cmnd": 0.595,
+      "previous": "low_confidence",
+      "next": "no_candidate",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB09970003",
+      "flatness": 0.1012,
+      "hps_f0_hz": 100.0,
+      "hps_z": 2.185,
+      "cepstrum_f0_hz": 157.9,
+      "cepstrum_prominence": 4.2,
+      "time_s": 1.135,
+      "level_db": -12.9,
+      "min_cmnd": 0.562,
+      "previous": "no_candidate",
+      "next": "continuity_gated",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB09970003",
+      "flatness": 0.1621,
+      "hps_f0_hz": 133.5,
+      "hps_z": 2.086,
+      "cepstrum_f0_hz": 127.7,
+      "cepstrum_prominence": 4.4,
+      "time_s": 1.155,
+      "level_db": -10.3,
+      "min_cmnd": 0.577,
+      "previous": "continuity_gated",
+      "next": "no_candidate",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB09970003",
+      "flatness": 0.1987,
+      "hps_f0_hz": 113.5,
+      "hps_z": 2.193,
+      "cepstrum_f0_hz": 115.4,
+      "cepstrum_prominence": 3.74,
+      "time_s": 1.165,
+      "level_db": -10.1,
+      "min_cmnd": 0.59,
+      "previous": "no_candidate",
+      "next": "no_candidate",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB09970003",
+      "flatness": 0.1122,
+      "hps_f0_hz": 391.5,
+      "hps_z": 2.087,
+      "cepstrum_f0_hz": 181.8,
+      "cepstrum_prominence": 5.54,
+      "time_s": 1.175,
+      "level_db": -9.8,
+      "min_cmnd": 0.586,
+      "previous": "no_candidate",
+      "next": "continuity_gated",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB09970003",
+      "flatness": 0.1462,
+      "hps_f0_hz": 400.0,
+      "hps_z": 2.614,
+      "cepstrum_f0_hz": 228.6,
+      "cepstrum_prominence": 5.56,
+      "time_s": 1.195,
+      "level_db": -11.2,
+      "min_cmnd": 0.567,
+      "previous": "continuity_gated",
+      "next": "no_candidate",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB12740001",
+      "flatness": 0.0468,
+      "hps_f0_hz": 133.5,
+      "hps_z": 2.038,
+      "cepstrum_f0_hz": 140.4,
+      "cepstrum_prominence": 7.59,
+      "time_s": 0.755,
+      "level_db": -19.6,
+      "min_cmnd": 0.587,
+      "previous": "ok",
+      "next": "continuity_gated",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB12740001",
+      "flatness": 0.1878,
+      "hps_f0_hz": 220.0,
+      "hps_z": 2.091,
+      "cepstrum_f0_hz": 224.3,
+      "cepstrum_prominence": 5.67,
+      "time_s": 0.805,
+      "level_db": -21.0,
+      "min_cmnd": 0.588,
+      "previous": "ok",
+      "next": "ok",
+      "between_voiced": true,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB12740001",
+      "flatness": 0.1279,
+      "hps_f0_hz": 191.5,
+      "hps_z": 2.089,
+      "cepstrum_f0_hz": 124.4,
+      "cepstrum_prominence": 5.15,
+      "time_s": 1.925,
+      "level_db": -19.1,
+      "min_cmnd": 0.572,
+      "previous": "ok",
+      "next": "low_confidence",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB13280001",
+      "flatness": 0.1013,
+      "hps_f0_hz": 83.5,
+      "hps_z": 2.047,
+      "cepstrum_f0_hz": 161.1,
+      "cepstrum_prominence": 4.86,
+      "time_s": 0.715,
+      "level_db": -21.0,
+      "min_cmnd": 0.764,
+      "previous": "octave_ambiguous",
+      "next": "ok",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB14520002",
+      "flatness": 0.116,
+      "hps_f0_hz": 66.5,
+      "hps_z": 3.139,
+      "cepstrum_f0_hz": 369.2,
+      "cepstrum_prominence": 5.16,
+      "time_s": 0.015,
+      "level_db": -13.6,
+      "min_cmnd": 2.291,
+      "previous": null,
+      "next": "no_candidate",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    },
+    {
+      "utt_id": "SSB14520002",
+      "flatness": 0.1522,
+      "hps_f0_hz": 73.5,
+      "hps_z": 2.803,
+      "cepstrum_f0_hz": 167.8,
+      "cepstrum_prominence": 4.82,
+      "time_s": 0.025,
+      "level_db": -11.5,
+      "min_cmnd": 1.679,
+      "previous": "no_candidate",
+      "next": "no_candidate",
+      "between_voiced": false,
+      "label": "suspected_miss"
+    }
+  ],
+  "special_case": {
+    "utt_id": "SSB04350040",
+    "speaker": "SSB0435",
+    "frames": 134,
+    "new_median_f0_hz": 250.0,
+    "legacy_median_f0_hz": 280.3,
+    "median_abs_offset_cents": 5.4,
+    "examples": [
+      {
+        "time_s": 0.955,
+        "new_f0_hz": 130.1,
+        "legacy_f0_hz": 106.7,
+        "harmonic_peaks_hz": [
+          33.3,
+          133.3,
+          233.3,
+          400.0,
+          466.7,
+          766.7,
+          833.3,
+          933.3,
+          1166.7,
+          1266.7
+        ],
+        "flatness": 0.0052,
+        "hps_f0_hz": 93.5,
+        "hps_z": 1.939,
+        "cepstrum_f0_hz": 139.5,
+        "cepstrum_prominence": 5.03
+      }
+    ]
+  },
+  "per_utterance": [
+    {
+      "utt_id": "SSB09970003",
+      "speaker": "SSB0997",
+      "frames": 210,
+      "reasons": {
+        "ok": 93,
+        "silence": 80,
+        "no_candidate": 12,
+        "low_confidence": 6,
+        "octave_ambiguous": 11,
+        "continuity_gated": 8
+      },
+      "no_candidate": 12,
+      "labels": {
+        "ambiguous": 5,
+        "aperiodic": 1,
+        "suspected_miss": 6
+      }
+    },
+    {
+      "utt_id": "SSB12740001",
+      "speaker": "SSB1274",
+      "frames": 237,
+      "reasons": {
+        "ok": 147,
+        "silence": 75,
+        "no_candidate": 4,
+        "low_confidence": 1,
+        "octave_ambiguous": 9,
+        "continuity_gated": 1
+      },
+      "no_candidate": 4,
+      "labels": {
+        "ambiguous": 1,
+        "suspected_miss": 3
+      }
+    },
+    {
+      "utt_id": "SSB13280001",
+      "speaker": "SSB1328",
+      "frames": 228,
+      "reasons": {
+        "ok": 141,
+        "silence": 69,
+        "no_candidate": 11,
+        "low_confidence": 0,
+        "octave_ambiguous": 6,
+        "continuity_gated": 1
+      },
+      "no_candidate": 11,
+      "labels": {
+        "ambiguous": 10,
+        "suspected_miss": 1
+      }
+    },
+    {
+      "utt_id": "SSB14520002",
+      "speaker": "SSB1452",
+      "frames": 154,
+      "reasons": {
+        "ok": 76,
+        "silence": 4,
+        "no_candidate": 64,
+        "low_confidence": 1,
+        "octave_ambiguous": 6,
+        "continuity_gated": 3
+      },
+      "no_candidate": 64,
+      "labels": {
+        "ambiguous": 14,
+        "suspected_miss": 50
+      }
+    },
+    {
+      "utt_id": "SSB00180248",
+      "speaker": "SSB0018",
+      "frames": 132,
+      "reasons": {
+        "ok": 92,
+        "silence": 13,
+        "no_candidate": 23,
+        "low_confidence": 3,
+        "octave_ambiguous": 0,
+        "continuity_gated": 1
+      },
+      "no_candidate": 23,
+      "labels": {
+        "ambiguous": 5,
+        "suspected_miss": 18
+      }
+    },
+    {
+      "utt_id": "SSB02880036",
+      "speaker": "SSB0288",
+      "frames": 143,
+      "reasons": {
+        "ok": 55,
+        "silence": 22,
+        "no_candidate": 60,
+        "low_confidence": 2,
+        "octave_ambiguous": 4,
+        "continuity_gated": 0
+      },
+      "no_candidate": 60,
+      "labels": {
+        "ambiguous": 3,
+        "suspected_miss": 57
+      }
+    },
+    {
+      "utt_id": "SSB02990037",
+      "speaker": "SSB0299",
+      "frames": 157,
+      "reasons": {
+        "ok": 81,
+        "silence": 37,
+        "no_candidate": 39,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "no_candidate": 39,
+      "labels": {
+        "ambiguous": 6,
+        "suspected_miss": 33
+      }
+    },
+    {
+      "utt_id": "SSB04350040",
+      "speaker": "SSB0435",
+      "frames": 134,
+      "reasons": {
+        "ok": 56,
+        "silence": 73,
+        "no_candidate": 3,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 2
+      },
+      "no_candidate": 3,
+      "labels": {
+        "ambiguous": 1,
+        "suspected_miss": 2
+      }
+    },
+    {
+      "utt_id": "SSB07100231",
+      "speaker": "SSB0710",
+      "frames": 149,
+      "reasons": {
+        "ok": 71,
+        "silence": 70,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 8,
+        "continuity_gated": 0
+      },
+      "no_candidate": 0,
+      "labels": {}
+    },
+    {
+      "utt_id": "SSB07580064",
+      "speaker": "SSB0758",
+      "frames": 146,
+      "reasons": {
+        "ok": 72,
+        "silence": 39,
+        "no_candidate": 26,
+        "low_confidence": 0,
+        "octave_ambiguous": 9,
+        "continuity_gated": 0
+      },
+      "no_candidate": 26,
+      "labels": {
+        "ambiguous": 9,
+        "aperiodic": 1,
+        "suspected_miss": 16
+      }
+    },
+    {
+      "utt_id": "SSB09130001",
+      "speaker": "SSB0913",
+      "frames": 134,
+      "reasons": {
+        "ok": 62,
+        "silence": 62,
+        "no_candidate": 2,
+        "low_confidence": 1,
+        "octave_ambiguous": 6,
+        "continuity_gated": 1
+      },
+      "no_candidate": 2,
+      "labels": {
+        "ambiguous": 2
+      }
+    },
+    {
+      "utt_id": "SSB10080006",
+      "speaker": "SSB1008",
+      "frames": 228,
+      "reasons": {
+        "ok": 131,
+        "silence": 33,
+        "no_candidate": 37,
+        "low_confidence": 10,
+        "octave_ambiguous": 10,
+        "continuity_gated": 7
+      },
+      "no_candidate": 37,
+      "labels": {
+        "ambiguous": 3,
+        "suspected_miss": 34
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "experiment_id": "EXP-0017",
+  "title": "F0 rejection audit: unvoiced frames versus missed voicing",
+  "hypothesis": "Most frames rejected as no_candidate are aperiodic (fricatives, closures, breath) or too weak to carry a period; a minority sit inside voiced spans and show harmonic-comb evidence, and those are a candidate-model miss rather than a threshold problem. Loosening the CMND gate is therefore not the fix, and any change must be justified by comb/cepstrum evidence per frame.",
+  "created_utc": "2026-11-01T06:33:04.843832+00:00",
+  "completed_utc": "2026-11-01T06:46:00+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "5b9beb4b33006ad96af5628d51510996ea31e584",
+    "status": "M src/vhe/cli.py\n M src/vhe/data/__init__.py\n M src/vhe/data/corpus.py\n M src/vhe/data/dataset.py\n M src/vhe/data/pairing.py\n M src/vhe/data/segment.py\n M tests/test_data_corpus.py\n M tests/test_data_dataset.py\n M tests/test_data_pairing.py\n?? src/vhe/data/align.py\n?? tests/test_data_align.py"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": [
+    ".venv/bin/python experiments/EXP-0017/probe_rejections.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --output experiments/EXP-0017/logs/rejection_report_v1.json",
+    ".venv/bin/python experiments/EXP-0017/probe_rejections.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --output experiments/EXP-0017/logs/rejection_report_v2.json",
+    ".venv/bin/python experiments/EXP-0017/probe_rejections.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --output experiments/EXP-0017/logs/rejection_report_v3.json"
+  ],
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Diagnostic only: track_pitch thresholds untouched (CMND gate 0.55, fmax 900 Hz), no frame interpolated. 2052 frames / 12 utterances / 12 speakers from the AISHELL-3 test split. 281 no_candidate frames decompose into 174 aperiodic, 103 boundary_or_weak and 4 suspected_miss; zero suspected_miss frames sit between two accepted frames. SSB04350040 (250.0 vs 280.3 Hz) is explained by a minority of legacy octave/sub-octave jumps: median per-frame offset 5.4 cents but 18.2% of frames differ by more than 50 cents, and independent HPS/cepstrum estimates agree with the viterbi tracker on those frames. v1 (uncalibrated fixed thresholds) is preserved as a counter-example. No listening test.",
+  "erratum": "completed_utc was earlier recorded as 2026-11-01T06:58:00+00:00, which was ahead of the wall clock at the time of writing; corrected to the time the record was written. Results and the command list are unchanged."
+}

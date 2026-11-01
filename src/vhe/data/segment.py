@@ -69,6 +69,20 @@ def _frame_rms(signal: np.ndarray, window: int, hop: int) -> np.ndarray:
     return np.sqrt(np.mean(frames * frames, axis=1))
 
 
+def frame_rms(signal: np.ndarray, sample_rate: int, *, frame_ms: float = 25.0,
+              hop_ms: float = 10.0) -> tuple[np.ndarray, float]:
+    """Frame RMS plus the hop in seconds.
+
+    Public because the syllable aligner needs the same frame grid as the energy segmenter:
+    two different grids would make a boundary measured in one place land somewhere else in
+    the other.
+    """
+    signal = np.asarray(signal, dtype=np.float64)
+    window = max(16, int(round(sample_rate * frame_ms / 1000.0)))
+    hop = max(1, int(round(sample_rate * hop_ms / 1000.0)))
+    return _frame_rms(signal, window, hop), hop / sample_rate
+
+
 def _runs(mask: np.ndarray) -> list[tuple[int, int]]:
     runs: list[tuple[int, int]] = []
     start = None

@@ -1,0 +1,390 @@
+{
+  "experiment": "EXP-0017",
+  "manifest": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl",
+  "utterances": 12,
+  "frames": 2052,
+  "reason_totals": {
+    "continuity_gated": 24,
+    "low_confidence": 24,
+    "no_candidate": 281,
+    "octave_ambiguous": 69,
+    "ok": 1077,
+    "silence": 577
+  },
+  "no_candidate_frames": 281,
+  "calibration_on_ok_frames": {
+    "hps_z": {
+      "p10": 1.596,
+      "p25": 1.862,
+      "p50": 2.22,
+      "p75": 2.817,
+      "p90": 3.343
+    },
+    "cepstrum_prominence": {
+      "p10": 5.21,
+      "p25": 7.6,
+      "p50": 14.23,
+      "p75": 22.28,
+      "p90": 29.822
+    },
+    "flatness": {
+      "p10": 0.001,
+      "p25": 0.002,
+      "p50": 0.006,
+      "p75": 0.016,
+      "p90": 0.038
+    },
+    "level_db": {
+      "p10": -19.34,
+      "p25": -11.2,
+      "p50": -6.1,
+      "p75": -3.4,
+      "p90": -1.7
+    },
+    "min_cmnd": {
+      "p10": 0.008,
+      "p25": 0.018,
+      "p50": 0.067,
+      "p75": 0.183,
+      "p90": 0.352
+    }
+  },
+  "labels": {
+    "aperiodic": 174,
+    "boundary_or_weak": 103,
+    "suspected_miss": 4
+  },
+  "labels_inside_a_run_of_two_or_more": {
+    "aperiodic": 156,
+    "boundary_or_weak": 100,
+    "suspected_miss": 3
+  },
+  "labels_between_two_ok_frames": {
+    "aperiodic": 4
+  },
+  "min_cmnd_buckets": {
+    "<=0.60": 49,
+    "<=0.70": 33,
+    "<=0.85": 40,
+    ">0.85": 159
+  },
+  "level_buckets": {
+    ">-20dB": 92,
+    ">-30dB": 110,
+    ">-45dB": 79
+  },
+  "suspected_miss_examples": [
+    {
+      "utt_id": "SSB00180248",
+      "flatness": 0.0084,
+      "hps_f0_hz": 73.5,
+      "hps_z": 2.661,
+      "cepstrum_f0_hz": 205.1,
+      "cepstrum_prominence": 7.74,
+      "time_s": 0.055,
+      "level_db": -29.1,
+      "min_cmnd": 1.09,
+      "reason": "no_candidate",
+      "f0_hz": 0.0,
+      "run_length": 5,
+      "run_after": 18,
+      "label": "suspected_miss",
+      "previous": "no_candidate",
+      "next": "no_candidate"
+    },
+    {
+      "utt_id": "SSB02880036",
+      "flatness": 0.0126,
+      "hps_f0_hz": 65.0,
+      "hps_z": 3.135,
+      "cepstrum_f0_hz": 400.0,
+      "cepstrum_prominence": 7.63,
+      "time_s": 0.195,
+      "level_db": -29.2,
+      "min_cmnd": 2.394,
+      "reason": "no_candidate",
+      "f0_hz": 0.0,
+      "run_length": 9,
+      "run_after": 29,
+      "label": "suspected_miss",
+      "previous": "no_candidate",
+      "next": "no_candidate"
+    },
+    {
+      "utt_id": "SSB04350040",
+      "flatness": 0.0067,
+      "hps_f0_hz": 100.0,
+      "hps_z": 2.225,
+      "cepstrum_f0_hz": 352.9,
+      "cepstrum_prominence": 7.84,
+      "time_s": 0.975,
+      "level_db": -28.3,
+      "min_cmnd": 0.593,
+      "reason": "no_candidate",
+      "f0_hz": 0.0,
+      "run_length": 1,
+      "run_after": 3,
+      "label": "suspected_miss",
+      "previous": "ok",
+      "next": "no_candidate"
+    }
+  ],
+  "special_case": {
+    "utt_id": "SSB04350040",
+    "speaker": "SSB0435",
+    "frames": 134,
+    "new_median_f0_hz": 250.0,
+    "legacy_median_f0_hz": 280.3,
+    "median_abs_offset_cents": 5.4,
+    "share_frames_above_50_cents": 0.182,
+    "examples": [
+      {
+        "time_s": 0.425,
+        "new_f0_hz": 325.0,
+        "legacy_f0_hz": 314.7,
+        "harmonic_peaks_hz": [
+          333.3
+        ],
+        "flatness": 0.0018,
+        "hps_f0_hz": 87.0,
+        "hps_z": 2.262,
+        "cepstrum_f0_hz": 369.2,
+        "cepstrum_prominence": 4.51
+      },
+      {
+        "time_s": 0.675,
+        "new_f0_hz": 214.2,
+        "legacy_f0_hz": 318.2,
+        "harmonic_peaks_hz": [
+          233.3,
+          300.0,
+          433.3,
+          633.3
+        ],
+        "flatness": 0.0018,
+        "hps_f0_hz": 213.5,
+        "hps_z": 1.943,
+        "cepstrum_f0_hz": 210.5,
+        "cepstrum_prominence": 9.63
+      },
+      {
+        "time_s": 0.685,
+        "new_f0_hz": 209.1,
+        "legacy_f0_hz": 417.7,
+        "harmonic_peaks_hz": [
+          200.0,
+          433.3,
+          633.3
+        ],
+        "flatness": 0.0031,
+        "hps_f0_hz": 206.5,
+        "hps_z": 1.75,
+        "cepstrum_f0_hz": 200.0,
+        "cepstrum_prominence": 11.2
+      }
+    ]
+  },
+  "per_utterance": [
+    {
+      "utt_id": "SSB09970003",
+      "speaker": "SSB0997",
+      "frames": 210,
+      "reasons": {
+        "ok": 93,
+        "silence": 80,
+        "no_candidate": 12,
+        "low_confidence": 6,
+        "octave_ambiguous": 11,
+        "continuity_gated": 8
+      },
+      "labels": {
+        "aperiodic": 11,
+        "boundary_or_weak": 1
+      }
+    },
+    {
+      "utt_id": "SSB12740001",
+      "speaker": "SSB1274",
+      "frames": 237,
+      "reasons": {
+        "ok": 147,
+        "silence": 75,
+        "no_candidate": 4,
+        "low_confidence": 1,
+        "octave_ambiguous": 9,
+        "continuity_gated": 1
+      },
+      "labels": {
+        "aperiodic": 4
+      }
+    },
+    {
+      "utt_id": "SSB13280001",
+      "speaker": "SSB1328",
+      "frames": 228,
+      "reasons": {
+        "ok": 141,
+        "silence": 69,
+        "no_candidate": 11,
+        "low_confidence": 0,
+        "octave_ambiguous": 6,
+        "continuity_gated": 1
+      },
+      "labels": {
+        "aperiodic": 11
+      }
+    },
+    {
+      "utt_id": "SSB14520002",
+      "speaker": "SSB1452",
+      "frames": 154,
+      "reasons": {
+        "ok": 76,
+        "silence": 4,
+        "no_candidate": 64,
+        "low_confidence": 1,
+        "octave_ambiguous": 6,
+        "continuity_gated": 3
+      },
+      "labels": {
+        "aperiodic": 49,
+        "boundary_or_weak": 15
+      }
+    },
+    {
+      "utt_id": "SSB00180248",
+      "speaker": "SSB0018",
+      "frames": 132,
+      "reasons": {
+        "ok": 92,
+        "silence": 13,
+        "no_candidate": 23,
+        "low_confidence": 3,
+        "octave_ambiguous": 0,
+        "continuity_gated": 1
+      },
+      "labels": {
+        "aperiodic": 10,
+        "boundary_or_weak": 12,
+        "suspected_miss": 1
+      }
+    },
+    {
+      "utt_id": "SSB02880036",
+      "speaker": "SSB0288",
+      "frames": 143,
+      "reasons": {
+        "ok": 55,
+        "silence": 22,
+        "no_candidate": 60,
+        "low_confidence": 2,
+        "octave_ambiguous": 4,
+        "continuity_gated": 0
+      },
+      "labels": {
+        "aperiodic": 33,
+        "boundary_or_weak": 26,
+        "suspected_miss": 1
+      }
+    },
+    {
+      "utt_id": "SSB02990037",
+      "speaker": "SSB0299",
+      "frames": 157,
+      "reasons": {
+        "ok": 81,
+        "silence": 37,
+        "no_candidate": 39,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "labels": {
+        "aperiodic": 23,
+        "boundary_or_weak": 16
+      }
+    },
+    {
+      "utt_id": "SSB04350040",
+      "speaker": "SSB0435",
+      "frames": 134,
+      "reasons": {
+        "ok": 56,
+        "silence": 73,
+        "no_candidate": 3,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 2
+      },
+      "labels": {
+        "boundary_or_weak": 2,
+        "suspected_miss": 1
+      }
+    },
+    {
+      "utt_id": "SSB07100231",
+      "speaker": "SSB0710",
+      "frames": 149,
+      "reasons": {
+        "ok": 71,
+        "silence": 70,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 8,
+        "continuity_gated": 0
+      },
+      "labels": {}
+    },
+    {
+      "utt_id": "SSB07580064",
+      "speaker": "SSB0758",
+      "frames": 146,
+      "reasons": {
+        "ok": 72,
+        "silence": 39,
+        "no_candidate": 26,
+        "low_confidence": 0,
+        "octave_ambiguous": 9,
+        "continuity_gated": 0
+      },
+      "labels": {
+        "aperiodic": 19,
+        "boundary_or_weak": 7
+      }
+    },
+    {
+      "utt_id": "SSB09130001",
+      "speaker": "SSB0913",
+      "frames": 134,
+      "reasons": {
+        "ok": 62,
+        "silence": 62,
+        "no_candidate": 2,
+        "low_confidence": 1,
+        "octave_ambiguous": 6,
+        "continuity_gated": 1
+      },
+      "labels": {
+        "aperiodic": 1,
+        "suspected_miss": 1
+      }
+    },
+    {
+      "utt_id": "SSB10080006",
+      "speaker": "SSB1008",
+      "frames": 228,
+      "reasons": {
+        "ok": 131,
+        "silence": 33,
+        "no_candidate": 37,
+        "low_confidence": 10,
+        "octave_ambiguous": 10,
+        "continuity_gated": 7
+      },
+      "labels": {
+        "aperiodic": 13,
+        "boundary_or_weak": 24
+      }
+    }
+  ]
+}

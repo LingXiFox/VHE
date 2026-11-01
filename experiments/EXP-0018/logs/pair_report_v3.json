@@ -1,0 +1,3946 @@
+{
+  "experiment": "EXP-0018",
+  "manifest": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl",
+  "manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "out_root": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2",
+  "requested": 20,
+  "built": 20,
+  "seed": 42,
+  "selection": {
+    "finals_covered": [
+      "a",
+      "ai",
+      "an",
+      "ang",
+      "ao",
+      "apical_retroflex",
+      "e",
+      "ei",
+      "en",
+      "i",
+      "ian",
+      "ing",
+      "iou",
+      "ong",
+      "ou",
+      "u",
+      "uo"
+    ],
+    "onsets_covered": [
+      "",
+      "b",
+      "c",
+      "d",
+      "f",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "p",
+      "q",
+      "s",
+      "sh",
+      "t",
+      "w",
+      "x",
+      "y",
+      "z",
+      "zh"
+    ],
+    "speakers": 20,
+    "genders": {
+      "male": 3,
+      "female": 17
+    },
+    "pitch_estimator": "viterbi",
+    "alignment": "dp",
+    "split": "dev+test only"
+  },
+  "status_counts": {
+    "blocked": 3,
+    "ok": 16,
+    "rejected": 1
+  },
+  "training_ready": 0,
+  "training_ready_ids": [],
+  "readiness_reasons": {
+    "error_issues": 4,
+    "low_boundary_confidence": 1,
+    "no_alignment": 1,
+    "no_pitch_frames": 1,
+    "pitch_gap_interpolated": 1,
+    "segmentation_count_disagrees": 19,
+    "status_blocked": 3,
+    "status_rejected": 1
+  },
+  "boundary_confidence": {
+    "count": 38,
+    "median": 1.0,
+    "min": 0.214,
+    "below_0_35": 1
+  },
+  "pitch_coverage": {
+    "windows": 50,
+    "median": 0.892,
+    "below_0_5": 1,
+    "zero": 0
+  },
+  "median_f0_hz": {
+    "sample_01": 137.6,
+    "sample_02": 246.3,
+    "sample_03": 249.8,
+    "sample_04": 271.2,
+    "sample_05": 248.7,
+    "sample_06": 269.0,
+    "sample_07": 239.2,
+    "sample_08": 133.7,
+    "sample_09": 185.3,
+    "sample_10": 125.3,
+    "sample_11": 183.9,
+    "sample_12": 283.6,
+    "sample_13": 197.6,
+    "sample_14": 270.0,
+    "sample_15": 199.5,
+    "sample_16": 206.8,
+    "sample_17": 223.3,
+    "sample_18": 225.4,
+    "sample_19": 248.1,
+    "sample_20": 223.3
+  },
+  "gains_db_range": [
+    -26.02,
+    -6.09
+  ],
+  "samples": [
+    {
+      "sample_id": "sample_01",
+      "utt_id": "SSB03160415",
+      "speaker": "SSB0316",
+      "gender": "male",
+      "split": "dev",
+      "duration_s": 1.61,
+      "pinyin": [
+        "wo3",
+        "zai4",
+        "na4",
+        "de5",
+        "shi2",
+        "hou4"
+      ],
+      "text": "我在那的时候",
+      "onsets": [
+        "w",
+        "z",
+        "n",
+        "d",
+        "sh",
+        "h"
+      ],
+      "finals": [
+        "uo",
+        "ai",
+        "a",
+        "e",
+        "apical_retroflex",
+        "ou"
+      ],
+      "tones": [
+        3,
+        4,
+        4,
+        5,
+        2,
+        4
+      ],
+      "template": "yin",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 137.6,
+      "status": "blocked",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "status_blocked",
+          "error_issues",
+          "low_boundary_confidence",
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 6 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_plan_blocked",
+          "detail": "syllable 3 'de5': syllable of 80 ms cannot hold onset 'd' + nucleus 'e'",
+          "severity": "error"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 6,
+        "mean_confidence": 0.722,
+        "min_confidence": 0.214,
+        "low_confidence_boundaries": 1,
+        "mean_duration_s": 0.143,
+        "min_duration_s": 0.08,
+        "max_duration_s": 0.18,
+        "dips_db": [
+          null,
+          15.48,
+          2.57,
+          9.66,
+          9.11,
+          9.99
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.26,
+          "end_s": 0.44,
+          "duration_s": 0.18,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.44,
+          "end_s": 0.59,
+          "duration_s": 0.15,
+          "dip_db": 15.48,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 0.59,
+          "end_s": 0.76,
+          "duration_s": 0.17,
+          "dip_db": 2.57,
+          "confidence": 0.214
+        },
+        {
+          "start_s": 0.76,
+          "end_s": 0.84,
+          "duration_s": 0.08,
+          "dip_db": 9.66,
+          "confidence": 0.805
+        },
+        {
+          "start_s": 0.84,
+          "end_s": 0.97,
+          "duration_s": 0.13,
+          "dip_db": 9.11,
+          "confidence": 0.759
+        },
+        {
+          "start_s": 0.97,
+          "end_s": 1.12,
+          "duration_s": 0.15,
+          "dip_db": 9.99,
+          "confidence": 0.832
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 18,
+            "voiced_frames": 16,
+            "coverage": 0.8889,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 15,
+            "voiced_frames": 13,
+            "coverage": 0.8667,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 15.48,
+            "confidence": 1.0
+          },
+          {
+            "index": 2,
+            "frames": 17,
+            "voiced_frames": 17,
+            "coverage": 1.0,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 2.57,
+            "confidence": 0.214
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 159,
+        "voiced_frames": 93,
+        "voiced_ratio": 0.5849,
+        "rejected_frames": 66,
+        "rejection_rate": 0.4151,
+        "reasons": {
+          "ok": 93,
+          "silence": 57,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 5,
+          "continuity_gated": 2
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 81.87,
+        "p95_f0_hz": 189.95,
+        "median_abs_step_cents": 22.6
+      },
+      "gains_db": [
+        -9.917,
+        -12.137,
+        -11.183
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "uo",
+            "duration_s": 0.18
+          }
+        ],
+        [
+          {
+            "phoneme": "z",
+            "duration_s": 0.077
+          },
+          {
+            "phoneme": "ai",
+            "duration_s": 0.073
+          }
+        ],
+        [
+          {
+            "phoneme": "n",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "a",
+            "duration_s": 0.11
+          }
+        ]
+      ],
+      "real_sha256": "9d82d2a5de65e1250e8232bf2a0368eb3d54a9000fb0527b7891bbaf1c04e05a",
+      "mechanical_sha256": null
+    },
+    {
+      "sample_id": "sample_02",
+      "utt_id": "SSB10080285",
+      "speaker": "SSB1008",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 2.063,
+      "pinyin": [
+        "you3",
+        "qian2",
+        "zhen1",
+        "xing4",
+        "fu2"
+      ],
+      "text": "有钱真幸福",
+      "onsets": [
+        "y",
+        "q",
+        "zh",
+        "x",
+        "f"
+      ],
+      "finals": [
+        "iou",
+        "ian",
+        "en",
+        "ing",
+        "u"
+      ],
+      "tones": [
+        3,
+        2,
+        1,
+        4,
+        2
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 246.3,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 5 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "5 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 5,
+        "mean_confidence": 0.965,
+        "min_confidence": 0.927,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.254,
+        "min_duration_s": 0.23,
+        "max_duration_s": 0.29,
+        "dips_db": [
+          null,
+          11.2,
+          11.13,
+          12.28,
+          23.01
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.32,
+          "end_s": 0.61,
+          "duration_s": 0.29,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.61,
+          "end_s": 0.86,
+          "duration_s": 0.25,
+          "dip_db": 11.2,
+          "confidence": 0.933
+        },
+        {
+          "start_s": 0.86,
+          "end_s": 1.09,
+          "duration_s": 0.23,
+          "dip_db": 11.13,
+          "confidence": 0.927
+        },
+        {
+          "start_s": 1.09,
+          "end_s": 1.33,
+          "duration_s": 0.24,
+          "dip_db": 12.28,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 1.33,
+          "end_s": 1.59,
+          "duration_s": 0.26,
+          "dip_db": 23.01,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 29,
+            "voiced_frames": 24,
+            "coverage": 0.8276,
+            "interior_gaps": 3,
+            "longest_gap_s": 0.02,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 25,
+            "voiced_frames": 24,
+            "coverage": 0.96,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 11.2,
+            "confidence": 0.933
+          },
+          {
+            "index": 2,
+            "frames": 23,
+            "voiced_frames": 20,
+            "coverage": 0.8696,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.005,
+            "tail_s": 0.025,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 11.13,
+            "confidence": 0.927
+          },
+          {
+            "index": 3,
+            "frames": 24,
+            "voiced_frames": 21,
+            "coverage": 0.875,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 12.28,
+            "confidence": 1.0
+          },
+          {
+            "index": 4,
+            "frames": 26,
+            "voiced_frames": 22,
+            "coverage": 0.8462,
+            "interior_gaps": 3,
+            "longest_gap_s": 0.02,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 23.01,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 204,
+        "voiced_frames": 120,
+        "voiced_ratio": 0.5882,
+        "rejected_frames": 84,
+        "rejection_rate": 0.4118,
+        "reasons": {
+          "ok": 120,
+          "silence": 62,
+          "no_candidate": 4,
+          "low_confidence": 0,
+          "octave_ambiguous": 14,
+          "continuity_gated": 4
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 169.2,
+        "p95_f0_hz": 345.05,
+        "median_abs_step_cents": 20.15
+      },
+      "gains_db": [
+        -6.649,
+        -6.092,
+        -6.473,
+        -6.576,
+        -15.494
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "iou",
+            "duration_s": 0.29
+          }
+        ],
+        [
+          {
+            "phoneme": "q",
+            "duration_s": 0.112
+          },
+          {
+            "phoneme": "ian",
+            "duration_s": 0.138
+          }
+        ],
+        [
+          {
+            "phoneme": "zh",
+            "duration_s": 0.077
+          },
+          {
+            "phoneme": "en",
+            "duration_s": 0.153
+          }
+        ],
+        [
+          {
+            "phoneme": "x",
+            "duration_s": 0.08
+          },
+          {
+            "phoneme": "ing",
+            "duration_s": 0.16
+          }
+        ],
+        [
+          {
+            "phoneme": "f",
+            "duration_s": 0.08
+          },
+          {
+            "phoneme": "u",
+            "duration_s": 0.18
+          }
+        ]
+      ],
+      "real_sha256": "21ce89a92f6b7f97a8746889f04d66d6db43c55de614c03dd4862250cb217339",
+      "mechanical_sha256": "f0d03aded2d2a9219fc5b6c1b6a6203f2a85a953bbfcbce4aaf4b88a4c76373c",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_02/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_02/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_02/diagnostics.png",
+      "image_sha256": "994424ce2c563e3100c48d64062a27d27522029138c2dc39bc03570b065e7331"
+    },
+    {
+      "sample_id": "sample_03",
+      "utt_id": "SSB00180288",
+      "speaker": "SSB0018",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 1.672,
+      "pinyin": [
+        "wo3",
+        "jiu4",
+        "bang1",
+        "ni3",
+        "tao2",
+        "ming4"
+      ],
+      "text": "我就帮你逃命",
+      "onsets": [
+        "w",
+        "j",
+        "b",
+        "n",
+        "t",
+        "m"
+      ],
+      "finals": [
+        "uo",
+        "iou",
+        "ang",
+        "i",
+        "ao",
+        "ing"
+      ],
+      "tones": [
+        3,
+        4,
+        1,
+        3,
+        2,
+        4
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 249.8,
+      "status": "blocked",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "status_blocked",
+          "error_issues",
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 6 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_plan_blocked",
+          "detail": "syllable 4 'tao2': syllable of 80 ms cannot hold onset 't' + nucleus 'au'",
+          "severity": "error"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 6,
+        "mean_confidence": 0.795,
+        "min_confidence": 0.456,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.213,
+        "min_duration_s": 0.08,
+        "max_duration_s": 0.41,
+        "dips_db": [
+          null,
+          15.48,
+          6.21,
+          19.8,
+          25.74,
+          5.48
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.11,
+          "end_s": 0.26,
+          "duration_s": 0.15,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.26,
+          "end_s": 0.34,
+          "duration_s": 0.08,
+          "dip_db": 15.48,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 0.34,
+          "end_s": 0.5,
+          "duration_s": 0.16,
+          "dip_db": 6.21,
+          "confidence": 0.517
+        },
+        {
+          "start_s": 0.5,
+          "end_s": 0.91,
+          "duration_s": 0.41,
+          "dip_db": 19.8,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 0.91,
+          "end_s": 0.99,
+          "duration_s": 0.08,
+          "dip_db": 25.74,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 0.99,
+          "end_s": 1.39,
+          "duration_s": 0.4,
+          "dip_db": 5.48,
+          "confidence": 0.456
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 15,
+            "voiced_frames": 15,
+            "coverage": 1.0,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 8,
+            "voiced_frames": 6,
+            "coverage": 0.75,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 15.48,
+            "confidence": 1.0
+          },
+          {
+            "index": 2,
+            "frames": 16,
+            "voiced_frames": 13,
+            "coverage": 0.8125,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.02,
+            "lead_s": 0.005,
+            "tail_s": 0.015,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 6.21,
+            "confidence": 0.517
+          },
+          {
+            "index": 3,
+            "frames": 41,
+            "voiced_frames": 39,
+            "coverage": 0.9512,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 19.8,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 165,
+        "voiced_frames": 122,
+        "voiced_ratio": 0.7394,
+        "rejected_frames": 43,
+        "rejection_rate": 0.2606,
+        "reasons": {
+          "ok": 122,
+          "silence": 11,
+          "no_candidate": 21,
+          "low_confidence": 3,
+          "octave_ambiguous": 7,
+          "continuity_gated": 1
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 202.85,
+        "p95_f0_hz": 344.23,
+        "median_abs_step_cents": 17.12
+      },
+      "gains_db": [
+        -10.91,
+        -10.346,
+        -6.294,
+        -8.389
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "uo",
+            "duration_s": 0.15
+          }
+        ],
+        [
+          {
+            "phoneme": "j",
+            "duration_s": 0.02
+          },
+          {
+            "phoneme": "iou",
+            "duration_s": 0.06
+          }
+        ],
+        [
+          {
+            "phoneme": "b",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "ang",
+            "duration_s": 0.104
+          }
+        ],
+        [
+          {
+            "phoneme": "n",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "i",
+            "duration_s": 0.35
+          }
+        ]
+      ],
+      "real_sha256": "860b716317eaf23aebcc768446b61e684fd8526a83c38ce548910370758095af",
+      "mechanical_sha256": null
+    },
+    {
+      "sample_id": "sample_04",
+      "utt_id": "SSB04350385",
+      "speaker": "SSB0435",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 2.3,
+      "pinyin": [
+        "su1",
+        "san1",
+        "de5",
+        "lian4",
+        "wu3",
+        "gong1"
+      ],
+      "text": "苏仨的练武功",
+      "onsets": [
+        "s",
+        "s",
+        "d",
+        "l",
+        "w",
+        "g"
+      ],
+      "finals": [
+        "u",
+        "an",
+        "e",
+        "ian",
+        "u",
+        "ong"
+      ],
+      "tones": [
+        1,
+        1,
+        5,
+        4,
+        3,
+        1
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 271.2,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 6 syllables, energy segmentation found 2",
+          "severity": "warning"
+        },
+        {
+          "code": "low_pitch_coverage",
+          "detail": "syllable 4: 2/8 frames voiced (25%)",
+          "severity": "warning"
+        },
+        {
+          "code": "pitch_edge_held",
+          "detail": "syllable 4: first voiced frame 25 ms after / last 45 ms before the window edge; the synthesizer holds the edge value",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "6 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 6,
+        "mean_confidence": 0.912,
+        "min_confidence": 0.636,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.245,
+        "min_duration_s": 0.08,
+        "max_duration_s": 0.51,
+        "dips_db": [
+          null,
+          18.05,
+          11.11,
+          7.63,
+          26.83,
+          21.54
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.41,
+          "end_s": 0.63,
+          "duration_s": 0.22,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.63,
+          "end_s": 1.14,
+          "duration_s": 0.51,
+          "dip_db": 18.05,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 1.14,
+          "end_s": 1.37,
+          "duration_s": 0.23,
+          "dip_db": 11.11,
+          "confidence": 0.926
+        },
+        {
+          "start_s": 1.37,
+          "end_s": 1.55,
+          "duration_s": 0.18,
+          "dip_db": 7.63,
+          "confidence": 0.636
+        },
+        {
+          "start_s": 1.55,
+          "end_s": 1.63,
+          "duration_s": 0.08,
+          "dip_db": 26.83,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 1.63,
+          "end_s": 1.88,
+          "duration_s": 0.25,
+          "dip_db": 21.54,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 22,
+            "voiced_frames": 21,
+            "coverage": 0.9545,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 51,
+            "voiced_frames": 45,
+            "coverage": 0.8824,
+            "interior_gaps": 2,
+            "longest_gap_s": 0.02,
+            "lead_s": 0.015,
+            "tail_s": 0.025,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 18.05,
+            "confidence": 1.0
+          },
+          {
+            "index": 2,
+            "frames": 23,
+            "voiced_frames": 23,
+            "coverage": 1.0,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 11.11,
+            "confidence": 0.926
+          },
+          {
+            "index": 3,
+            "frames": 18,
+            "voiced_frames": 17,
+            "coverage": 0.9444,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 7.63,
+            "confidence": 0.636
+          },
+          {
+            "index": 4,
+            "frames": 8,
+            "voiced_frames": 2,
+            "coverage": 0.25,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.025,
+            "tail_s": 0.045,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 26.83,
+            "confidence": 1.0
+          },
+          {
+            "index": 5,
+            "frames": 25,
+            "voiced_frames": 23,
+            "coverage": 0.92,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 21.54,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 228,
+        "voiced_frames": 135,
+        "voiced_ratio": 0.5921,
+        "rejected_frames": 93,
+        "rejection_rate": 0.4079,
+        "reasons": {
+          "ok": 135,
+          "silence": 80,
+          "no_candidate": 1,
+          "low_confidence": 0,
+          "octave_ambiguous": 9,
+          "continuity_gated": 3
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 118.39,
+        "p95_f0_hz": 391.48,
+        "median_abs_step_cents": 19.58
+      },
+      "gains_db": [
+        -23.435,
+        -20.156,
+        -20.62,
+        -18.424,
+        -26.021,
+        -21.549
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "s",
+            "duration_s": 0.08
+          },
+          {
+            "phoneme": "u",
+            "duration_s": 0.14
+          }
+        ],
+        [
+          {
+            "phoneme": "s",
+            "duration_s": 0.08
+          },
+          {
+            "phoneme": "an",
+            "duration_s": 0.43
+          }
+        ],
+        [
+          {
+            "phoneme": "d",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "e",
+            "duration_s": 0.174
+          }
+        ],
+        [
+          {
+            "phoneme": "l",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "ian",
+            "duration_s": 0.12
+          }
+        ],
+        [
+          {
+            "phoneme": "u",
+            "duration_s": 0.08
+          }
+        ],
+        [
+          {
+            "phoneme": "g",
+            "duration_s": 0.058
+          },
+          {
+            "phoneme": "ong",
+            "duration_s": 0.192
+          }
+        ]
+      ],
+      "real_sha256": "e97fcfba35d04413341733ec10ab4517b537fd83b64f8e1cdc90175aad23ad46",
+      "mechanical_sha256": "8c7d5cc99c6a6b4f425f8da770855dd0a5424a1a1e796610abd20fe74800bfd1",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_04/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_04/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_04/diagnostics.png",
+      "image_sha256": "b4f00a1dc70b3d79271cd1d9bf3cb6d9205dcb6ebe614c1944d2a8406d12a7d4"
+    },
+    {
+      "sample_id": "sample_05",
+      "utt_id": "SSB11380340",
+      "speaker": "SSB1138",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 1.06,
+      "pinyin": [
+        "bei1",
+        "ai1"
+      ],
+      "text": "悲哀",
+      "onsets": [
+        "b",
+        ""
+      ],
+      "finals": [
+        "ei",
+        "ai"
+      ],
+      "tones": [
+        1,
+        1
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 248.7,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.27,
+        "min_duration_s": 0.22,
+        "max_duration_s": 0.32,
+        "dips_db": [
+          null,
+          20.32
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.29,
+          "end_s": 0.51,
+          "duration_s": 0.22,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.51,
+          "end_s": 0.83,
+          "duration_s": 0.32,
+          "dip_db": 20.32,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 22,
+            "voiced_frames": 20,
+            "coverage": 0.9091,
+            "interior_gaps": 2,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 32,
+            "voiced_frames": 26,
+            "coverage": 0.8125,
+            "interior_gaps": 3,
+            "longest_gap_s": 0.03,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 20.32,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 104,
+        "voiced_frames": 53,
+        "voiced_ratio": 0.5096,
+        "rejected_frames": 51,
+        "rejection_rate": 0.4904,
+        "reasons": {
+          "ok": 53,
+          "silence": 43,
+          "no_candidate": 0,
+          "low_confidence": 1,
+          "octave_ambiguous": 6,
+          "continuity_gated": 1
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 236.95,
+        "p95_f0_hz": 269.35,
+        "median_abs_step_cents": 7.22
+      },
+      "gains_db": [
+        -18.686,
+        -20.726
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "b",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "ei",
+            "duration_s": 0.164
+          }
+        ],
+        [
+          {
+            "phoneme": "ai",
+            "duration_s": 0.32
+          }
+        ]
+      ],
+      "real_sha256": "2b791636d4b9911d76dd82b96d68c10920fb253bf28e6d47fb81769f3fd3379e",
+      "mechanical_sha256": "f962e223330db9c2f373ee4ea99a6a86788a3bb15ae7d216dc5bd8aa65fbc8e9",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_05/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_05/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_05/diagnostics.png",
+      "image_sha256": "3aa82e346ff23a0bd3f776b36efec81d6598475f14fbea8efc072ff412d452a2"
+    },
+    {
+      "sample_id": "sample_06",
+      "utt_id": "SSB09130026",
+      "speaker": "SSB0913",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 1.29,
+      "pinyin": [
+        "ku4",
+        "pai4"
+      ],
+      "text": "酷派",
+      "onsets": [
+        "k",
+        "p"
+      ],
+      "finals": [
+        "u",
+        "ai"
+      ],
+      "tones": [
+        4,
+        4
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 269.0,
+      "status": "rejected",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "status_rejected",
+          "error_issues",
+          "no_alignment",
+          "no_pitch_frames"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "mostly_unvoiced",
+          "detail": "voiced frame ratio 0.30 < 0.30",
+          "severity": "error"
+        }
+      ],
+      "alignment": {},
+      "boundaries": [],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": []
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 127,
+        "voiced_frames": 38,
+        "voiced_ratio": 0.2992,
+        "rejected_frames": 89,
+        "rejection_rate": 0.7008,
+        "reasons": {
+          "ok": 38,
+          "silence": 73,
+          "no_candidate": 1,
+          "low_confidence": 3,
+          "octave_ambiguous": 12,
+          "continuity_gated": 0
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 212.19,
+        "p95_f0_hz": 311.99,
+        "median_abs_step_cents": 26.35
+      },
+      "gains_db": [],
+      "allocations": [],
+      "real_sha256": "079a576588a13961b47771045eb56292a2280b631d2b7cc088b7d6c363a34825",
+      "mechanical_sha256": null
+    },
+    {
+      "sample_id": "sample_07",
+      "utt_id": "SSB14520481",
+      "speaker": "SSB1452",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 1.461,
+      "pinyin": [
+        "gong1",
+        "gong4",
+        "ce4",
+        "suo3"
+      ],
+      "text": "公共厕所",
+      "onsets": [
+        "g",
+        "g",
+        "c",
+        "s"
+      ],
+      "finals": [
+        "ong",
+        "ong",
+        "e",
+        "uo"
+      ],
+      "tones": [
+        1,
+        4,
+        4,
+        3
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 239.2,
+      "status": "blocked",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "status_blocked",
+          "error_issues",
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 4 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_plan_blocked",
+          "detail": "syllable 2 'ce4': syllable of 80 ms cannot hold onset 'c' + nucleus 'e'",
+          "severity": "error"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 4,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.198,
+        "min_duration_s": 0.08,
+        "max_duration_s": 0.42,
+        "dips_db": [
+          null,
+          16.78,
+          13.77,
+          13.85
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.32,
+          "end_s": 0.74,
+          "duration_s": 0.42,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.74,
+          "end_s": 0.93,
+          "duration_s": 0.19,
+          "dip_db": 16.78,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 0.93,
+          "end_s": 1.01,
+          "duration_s": 0.08,
+          "dip_db": 13.77,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 1.01,
+          "end_s": 1.11,
+          "duration_s": 0.1,
+          "dip_db": 13.85,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 42,
+            "voiced_frames": 39,
+            "coverage": 0.9286,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.02,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 19,
+            "voiced_frames": 17,
+            "coverage": 0.8947,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 16.78,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 144,
+        "voiced_frames": 69,
+        "voiced_ratio": 0.4792,
+        "rejected_frames": 75,
+        "rejection_rate": 0.5208,
+        "reasons": {
+          "ok": 69,
+          "silence": 31,
+          "no_candidate": 35,
+          "low_confidence": 2,
+          "octave_ambiguous": 3,
+          "continuity_gated": 4
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 146.35,
+        "p95_f0_hz": 277.33,
+        "median_abs_step_cents": 20.06
+      },
+      "gains_db": [
+        -13.34,
+        -13.431
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "g",
+            "duration_s": 0.058
+          },
+          {
+            "phoneme": "ong",
+            "duration_s": 0.362
+          }
+        ],
+        [
+          {
+            "phoneme": "g",
+            "duration_s": 0.058
+          },
+          {
+            "phoneme": "ong",
+            "duration_s": 0.132
+          }
+        ]
+      ],
+      "real_sha256": "3f4dc67d2bd4efe116399b0ae2e75239e1f7412d4503949b5374a5986b4398c7",
+      "mechanical_sha256": null
+    },
+    {
+      "sample_id": "sample_08",
+      "utt_id": "SSB05440115",
+      "speaker": "SSB0544",
+      "gender": "male",
+      "split": "dev",
+      "duration_s": 1.135,
+      "pinyin": [
+        "jing4",
+        "hai3"
+      ],
+      "text": "静海",
+      "onsets": [
+        "j",
+        "h"
+      ],
+      "finals": [
+        "ing",
+        "ai"
+      ],
+      "tones": [
+        4,
+        3
+      ],
+      "template": "yin",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 133.7,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.175,
+        "min_duration_s": 0.1,
+        "max_duration_s": 0.25,
+        "dips_db": [
+          null,
+          17.98
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.34,
+          "end_s": 0.59,
+          "duration_s": 0.25,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.59,
+          "end_s": 0.69,
+          "duration_s": 0.1,
+          "dip_db": 17.98,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 25,
+            "voiced_frames": 22,
+            "coverage": 0.88,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 10,
+            "voiced_frames": 10,
+            "coverage": 1.0,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 17.98,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 111,
+        "voiced_frames": 41,
+        "voiced_ratio": 0.3694,
+        "rejected_frames": 70,
+        "rejection_rate": 0.6306,
+        "reasons": {
+          "ok": 41,
+          "silence": 5,
+          "no_candidate": 63,
+          "low_confidence": 0,
+          "octave_ambiguous": 1,
+          "continuity_gated": 1
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 93.9,
+        "p95_f0_hz": 155.25,
+        "median_abs_step_cents": 23.08
+      },
+      "gains_db": [
+        -8.866,
+        -20.476
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "j",
+            "duration_s": 0.072
+          },
+          {
+            "phoneme": "ing",
+            "duration_s": 0.178
+          }
+        ],
+        [
+          {
+            "phoneme": "h",
+            "duration_s": 0.04
+          },
+          {
+            "phoneme": "ai",
+            "duration_s": 0.06
+          }
+        ]
+      ],
+      "real_sha256": "738d9236936877dc9ffa3fbd767322f8b311607800cf46fcf102a91ef70ec420",
+      "mechanical_sha256": "14519396a16e0ba2866216d87157bc25143c65f23e8746eedc8330dd567c88c9",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_08/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_08/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_08/diagnostics.png",
+      "image_sha256": "61f3618d0120c02720a95c468b7b079555403ef79e91705b0ee05c051691fdc4"
+    },
+    {
+      "sample_id": "sample_09",
+      "utt_id": "SSB02880339",
+      "speaker": "SSB0288",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 1.189,
+      "pinyin": [
+        "du4",
+        "qing2"
+      ],
+      "text": "渡情",
+      "onsets": [
+        "d",
+        "q"
+      ],
+      "finals": [
+        "u",
+        "ing"
+      ],
+      "tones": [
+        4,
+        2
+      ],
+      "template": "yin",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 185.3,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "pitch_edge_held",
+          "detail": "syllable 0: first voiced frame 5 ms after / last 55 ms before the window edge; the synthesizer holds the edge value",
+          "severity": "warning"
+        },
+        {
+          "code": "pitch_edge_held",
+          "detail": "syllable 1: first voiced frame 35 ms after / last 15 ms before the window edge; the synthesizer holds the edge value",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.275,
+        "min_duration_s": 0.27,
+        "max_duration_s": 0.28,
+        "dips_db": [
+          null,
+          13.23
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.31,
+          "end_s": 0.58,
+          "duration_s": 0.27,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.58,
+          "end_s": 0.86,
+          "duration_s": 0.28,
+          "dip_db": 13.23,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 27,
+            "voiced_frames": 21,
+            "coverage": 0.7778,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.005,
+            "tail_s": 0.055,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 28,
+            "voiced_frames": 23,
+            "coverage": 0.8214,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.035,
+            "tail_s": 0.015,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 13.23,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 116,
+        "voiced_frames": 48,
+        "voiced_ratio": 0.4138,
+        "rejected_frames": 68,
+        "rejection_rate": 0.5862,
+        "reasons": {
+          "ok": 48,
+          "silence": 30,
+          "no_candidate": 32,
+          "low_confidence": 2,
+          "octave_ambiguous": 2,
+          "continuity_gated": 2
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 113.24,
+        "p95_f0_hz": 274.82,
+        "median_abs_step_cents": 24.62
+      },
+      "gains_db": [
+        -15.913,
+        -17.93
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "d",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "u",
+            "duration_s": 0.214
+          }
+        ],
+        [
+          {
+            "phoneme": "q",
+            "duration_s": 0.112
+          },
+          {
+            "phoneme": "ing",
+            "duration_s": 0.168
+          }
+        ]
+      ],
+      "real_sha256": "b671bb8adbe7e5d4d4310b2d861187727332f6cbb4fd52087c043c0b3b642597",
+      "mechanical_sha256": "12bb5a7b98c8998249cdaee160c062a347e009cadd4144a1ed65c4a5b6509a5e",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_09/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_09/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_09/diagnostics.png",
+      "image_sha256": "2b2f460db5517180672c0de87255027dc6b2a8b58208fa55f2f634cd4a71765a"
+    },
+    {
+      "sample_id": "sample_10",
+      "utt_id": "SSB18630221",
+      "speaker": "SSB1863",
+      "gender": "male",
+      "split": "dev",
+      "duration_s": 1.21,
+      "pinyin": [
+        "tao2",
+        "pao3"
+      ],
+      "text": "逃跑",
+      "onsets": [
+        "t",
+        "p"
+      ],
+      "finals": [
+        "ao",
+        "ao"
+      ],
+      "tones": [
+        2,
+        3
+      ],
+      "template": "yin",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 125.3,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.19,
+        "min_duration_s": 0.16,
+        "max_duration_s": 0.22,
+        "dips_db": [
+          null,
+          16.49
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.35,
+          "end_s": 0.57,
+          "duration_s": 0.22,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.57,
+          "end_s": 0.73,
+          "duration_s": 0.16,
+          "dip_db": 16.49,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 22,
+            "voiced_frames": 16,
+            "coverage": 0.7273,
+            "interior_gaps": 2,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.025,
+            "tail_s": 0.025,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 16,
+            "voiced_frames": 11,
+            "coverage": 0.6875,
+            "interior_gaps": 3,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.025,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 16.49,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 119,
+        "voiced_frames": 39,
+        "voiced_ratio": 0.3277,
+        "rejected_frames": 80,
+        "rejection_rate": 0.6723,
+        "reasons": {
+          "ok": 39,
+          "silence": 34,
+          "no_candidate": 37,
+          "low_confidence": 6,
+          "octave_ambiguous": 2,
+          "continuity_gated": 1
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 113.83,
+        "p95_f0_hz": 156.96,
+        "median_abs_step_cents": 36.43
+      },
+      "gains_db": [
+        -10.619,
+        -13.366
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "t",
+            "duration_s": 0.104
+          },
+          {
+            "phoneme": "au",
+            "duration_s": 0.116
+          }
+        ],
+        [
+          {
+            "phoneme": "p",
+            "duration_s": 0.1
+          },
+          {
+            "phoneme": "au",
+            "duration_s": 0.06
+          }
+        ]
+      ],
+      "real_sha256": "64b2da9b06d18f203d9ef035e8e95d0bb2d58ac3f529bc383b963843e97e5334",
+      "mechanical_sha256": "8e0a5e5d397df9ec6647aa30d1af8ff5ae988e100f4e33319d075534fefd41b8",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_10/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_10/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_10/diagnostics.png",
+      "image_sha256": "b628e85cc6cb43de58a7e1edb7568ed090fcaa1dfaf269ab9b7d2c2159f326ae"
+    },
+    {
+      "sample_id": "sample_11",
+      "utt_id": "SSB18910490",
+      "speaker": "SSB1891",
+      "gender": "female",
+      "split": "dev",
+      "duration_s": 1.215,
+      "pinyin": [
+        "du2",
+        "ni3"
+      ],
+      "text": "读你",
+      "onsets": [
+        "d",
+        "n"
+      ],
+      "finals": [
+        "u",
+        "i"
+      ],
+      "tones": [
+        2,
+        3
+      ],
+      "template": "yin",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 183.9,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.29,
+        "min_duration_s": 0.17,
+        "max_duration_s": 0.41,
+        "dips_db": [
+          null,
+          17.51
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.27,
+          "end_s": 0.68,
+          "duration_s": 0.41,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.68,
+          "end_s": 0.85,
+          "duration_s": 0.17,
+          "dip_db": 17.51,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 41,
+            "voiced_frames": 40,
+            "coverage": 0.9756,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 17,
+            "voiced_frames": 16,
+            "coverage": 0.9412,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.015,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 17.51,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 119,
+        "voiced_frames": 65,
+        "voiced_ratio": 0.5462,
+        "rejected_frames": 54,
+        "rejection_rate": 0.4538,
+        "reasons": {
+          "ok": 65,
+          "silence": 50,
+          "no_candidate": 0,
+          "low_confidence": 1,
+          "octave_ambiguous": 3,
+          "continuity_gated": 0
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 145.9,
+        "p95_f0_hz": 217.12,
+        "median_abs_step_cents": 27.68
+      },
+      "gains_db": [
+        -12.618,
+        -22.367
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "d",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "u",
+            "duration_s": 0.354
+          }
+        ],
+        [
+          {
+            "phoneme": "n",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "i",
+            "duration_s": 0.11
+          }
+        ]
+      ],
+      "real_sha256": "3fa19fc3da850d60c1646094df98a5f78bc4f548eb5df77b00034f5d11822ffb",
+      "mechanical_sha256": "9639933780723edecdd43dc2d1111ac1af387df0c0dca3c587900a2daf11620e",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_11/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_11/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_11/diagnostics.png",
+      "image_sha256": "b8fd3e282941a691798a16d7af9d2a3cca9eb62d174ac57f7f2c4a27a0d871d5"
+    },
+    {
+      "sample_id": "sample_12",
+      "utt_id": "SSB06010331",
+      "speaker": "SSB0601",
+      "gender": "female",
+      "split": "dev",
+      "duration_s": 1.25,
+      "pinyin": [
+        "bai2",
+        "bing1"
+      ],
+      "text": "白冰",
+      "onsets": [
+        "b",
+        "b"
+      ],
+      "finals": [
+        "ai",
+        "ing"
+      ],
+      "tones": [
+        2,
+        1
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 283.6,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.265,
+        "min_duration_s": 0.24,
+        "max_duration_s": 0.29,
+        "dips_db": [
+          null,
+          18.66
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.29,
+          "end_s": 0.53,
+          "duration_s": 0.24,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.53,
+          "end_s": 0.82,
+          "duration_s": 0.29,
+          "dip_db": 18.66,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 24,
+            "voiced_frames": 23,
+            "coverage": 0.9583,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 29,
+            "voiced_frames": 26,
+            "coverage": 0.8966,
+            "interior_gaps": 2,
+            "longest_gap_s": 0.02,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 18.66,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 123,
+        "voiced_frames": 52,
+        "voiced_ratio": 0.4228,
+        "rejected_frames": 71,
+        "rejection_rate": 0.5772,
+        "reasons": {
+          "ok": 52,
+          "silence": 67,
+          "no_candidate": 1,
+          "low_confidence": 0,
+          "octave_ambiguous": 3,
+          "continuity_gated": 0
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 244.88,
+        "p95_f0_hz": 340.51,
+        "median_abs_step_cents": 7.95
+      },
+      "gains_db": [
+        -23.087,
+        -22.297
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "b",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "ai",
+            "duration_s": 0.184
+          }
+        ],
+        [
+          {
+            "phoneme": "b",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "ing",
+            "duration_s": 0.234
+          }
+        ]
+      ],
+      "real_sha256": "acfbb07fd8fb6ff303fa0aef5a426a8f2fcd92ab893dd0abd0c32a3cbc76e2ff",
+      "mechanical_sha256": "3c951789103b61a4c69a289ad2a4bd210b1a284fdb920f32a096c7414e80367f",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_12/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_12/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_12/diagnostics.png",
+      "image_sha256": "443025ec85d6835bb7897fbbc71ecd90fafe7b01087a1716953d0c54465452b3"
+    },
+    {
+      "sample_id": "sample_13",
+      "utt_id": "SSB03950362",
+      "speaker": "SSB0395",
+      "gender": "female",
+      "split": "dev",
+      "duration_s": 1.259,
+      "pinyin": [
+        "ti2",
+        "shi4"
+      ],
+      "text": "提示",
+      "onsets": [
+        "t",
+        "sh"
+      ],
+      "finals": [
+        "i",
+        "apical_retroflex"
+      ],
+      "tones": [
+        2,
+        4
+      ],
+      "template": "yin",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 197.6,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees",
+          "pitch_gap_interpolated"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "pitch_edge_held",
+          "detail": "syllable 0: first voiced frame 15 ms after / last 85 ms before the window edge; the synthesizer holds the edge value",
+          "severity": "warning"
+        },
+        {
+          "code": "pitch_gap_interpolated",
+          "detail": "syllable 1: 2 interior rejection gap(s), longest 60 ms > 50 ms; the curve is linearly interpolated across it and the pair is not training-ready",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.285,
+        "min_duration_s": 0.24,
+        "max_duration_s": 0.33,
+        "dips_db": [
+          null,
+          12.66
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.34,
+          "end_s": 0.67,
+          "duration_s": 0.33,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.67,
+          "end_s": 0.91,
+          "duration_s": 0.24,
+          "dip_db": 12.66,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 33,
+            "voiced_frames": 22,
+            "coverage": 0.6667,
+            "interior_gaps": 2,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.015,
+            "tail_s": 0.085,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 24,
+            "voiced_frames": 13,
+            "coverage": 0.5417,
+            "interior_gaps": 2,
+            "longest_gap_s": 0.06,
+            "lead_s": 0.025,
+            "tail_s": 0.015,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 12.66,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 123,
+        "voiced_frames": 40,
+        "voiced_ratio": 0.3252,
+        "rejected_frames": 83,
+        "rejection_rate": 0.6748,
+        "reasons": {
+          "ok": 40,
+          "silence": 18,
+          "no_candidate": 51,
+          "low_confidence": 0,
+          "octave_ambiguous": 8,
+          "continuity_gated": 6
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 68.79,
+        "p95_f0_hz": 875.07,
+        "median_abs_step_cents": 24.74
+      },
+      "gains_db": [
+        -19.944,
+        -16.305
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "t",
+            "duration_s": 0.104
+          },
+          {
+            "phoneme": "i",
+            "duration_s": 0.226
+          }
+        ],
+        [
+          {
+            "phoneme": "sh",
+            "duration_s": 0.08
+          },
+          {
+            "phoneme": "apical_retroflex",
+            "duration_s": 0.16
+          }
+        ]
+      ],
+      "real_sha256": "8f5612c1f264503b048079cfab93121481255779e1979f1d4910b3c900a83086",
+      "mechanical_sha256": "fc4d086de53ceb53432ab08f8b9238d203ae0558e61235c35e6dd72a96360095",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_13/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_13/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_13/diagnostics.png",
+      "image_sha256": "2857f41989f5a69ac34252301caf8a1aec8a631a372daf135673f8dceabf3e13"
+    },
+    {
+      "sample_id": "sample_14",
+      "utt_id": "SSB13770005",
+      "speaker": "SSB1377",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 1.285,
+      "pinyin": [
+        "bu4",
+        "xing2",
+        "ma5"
+      ],
+      "text": "不行吗",
+      "onsets": [
+        "b",
+        "x",
+        "m"
+      ],
+      "finals": [
+        "u",
+        "ing",
+        "a"
+      ],
+      "tones": [
+        4,
+        2,
+        5
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 270.0,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 3 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "pitch_edge_held",
+          "detail": "syllable 0: first voiced frame 5 ms after / last 65 ms before the window edge; the synthesizer holds the edge value",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "3 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 3,
+        "mean_confidence": 0.79,
+        "min_confidence": 0.58,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.193,
+        "min_duration_s": 0.12,
+        "max_duration_s": 0.28,
+        "dips_db": [
+          null,
+          15.3,
+          6.96
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.33,
+          "end_s": 0.51,
+          "duration_s": 0.18,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.51,
+          "end_s": 0.63,
+          "duration_s": 0.12,
+          "dip_db": 15.3,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 0.63,
+          "end_s": 0.91,
+          "duration_s": 0.28,
+          "dip_db": 6.96,
+          "confidence": 0.58
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 18,
+            "voiced_frames": 12,
+            "coverage": 0.6667,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.065,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 12,
+            "voiced_frames": 11,
+            "coverage": 0.9167,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 15.3,
+            "confidence": 1.0
+          },
+          {
+            "index": 2,
+            "frames": 28,
+            "voiced_frames": 28,
+            "coverage": 1.0,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 6.96,
+            "confidence": 0.58
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 126,
+        "voiced_frames": 65,
+        "voiced_ratio": 0.5159,
+        "rejected_frames": 61,
+        "rejection_rate": 0.4841,
+        "reasons": {
+          "ok": 65,
+          "silence": 25,
+          "no_candidate": 30,
+          "low_confidence": 5,
+          "octave_ambiguous": 0,
+          "continuity_gated": 1
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 212.18,
+        "p95_f0_hz": 284.2,
+        "median_abs_step_cents": 17.58
+      },
+      "gains_db": [
+        -10.678,
+        -13.193,
+        -10.353
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "b",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "u",
+            "duration_s": 0.124
+          }
+        ],
+        [
+          {
+            "phoneme": "x",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "ing",
+            "duration_s": 0.06
+          }
+        ],
+        [
+          {
+            "phoneme": "m",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "a",
+            "duration_s": 0.22
+          }
+        ]
+      ],
+      "real_sha256": "52d68d08b2ded25af85a30399816151742f12ef35f4ee20e5375b9bd1b622db1",
+      "mechanical_sha256": "11c9cd2a95192a594f729b4668979db2dc0712ad9ea408bcdd4a6ad119254817",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_14/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_14/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_14/diagnostics.png",
+      "image_sha256": "73b7969439edd1f5a1d5700d29bdece19111dfb85b1a3f791649f82569bda94d"
+    },
+    {
+      "sample_id": "sample_15",
+      "utt_id": "SSB18370358",
+      "speaker": "SSB1837",
+      "gender": "female",
+      "split": "dev",
+      "duration_s": 1.296,
+      "pinyin": [
+        "le4",
+        "gou4"
+      ],
+      "text": "乐购",
+      "onsets": [
+        "l",
+        "g"
+      ],
+      "finals": [
+        "e",
+        "ou"
+      ],
+      "tones": [
+        4,
+        4
+      ],
+      "template": "yin",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 199.5,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.23,
+        "min_duration_s": 0.22,
+        "max_duration_s": 0.24,
+        "dips_db": [
+          null,
+          20.9
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.42,
+          "end_s": 0.66,
+          "duration_s": 0.24,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.66,
+          "end_s": 0.88,
+          "duration_s": 0.22,
+          "dip_db": 20.9,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 24,
+            "voiced_frames": 23,
+            "coverage": 0.9583,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 22,
+            "voiced_frames": 13,
+            "coverage": 0.5909,
+            "interior_gaps": 2,
+            "longest_gap_s": 0.05,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 20.9,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 127,
+        "voiced_frames": 42,
+        "voiced_ratio": 0.3307,
+        "rejected_frames": 85,
+        "rejection_rate": 0.6693,
+        "reasons": {
+          "ok": 42,
+          "silence": 0,
+          "no_candidate": 70,
+          "low_confidence": 5,
+          "octave_ambiguous": 6,
+          "continuity_gated": 4
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 189.81,
+        "p95_f0_hz": 241.19,
+        "median_abs_step_cents": 31.44
+      },
+      "gains_db": [
+        -18.14,
+        -14.638
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "l",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "e",
+            "duration_s": 0.18
+          }
+        ],
+        [
+          {
+            "phoneme": "g",
+            "duration_s": 0.058
+          },
+          {
+            "phoneme": "ou",
+            "duration_s": 0.162
+          }
+        ]
+      ],
+      "real_sha256": "1210bd9ca7e7845c99472e42d8e0d605e3048802a8f50d623406f946afc628e5",
+      "mechanical_sha256": "1cd41f7f21d28c8ccd49749be0bc5d345114aab05151fdd6eaee7a5eb9dfacc7",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_15/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_15/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_15/diagnostics.png",
+      "image_sha256": "57b6fb360388b3735b5f5de2945ee9aaf338dd010ed2ce7411fb4a9e8457e567"
+    },
+    {
+      "sample_id": "sample_16",
+      "utt_id": "SSB15930434",
+      "speaker": "SSB1593",
+      "gender": "female",
+      "split": "dev",
+      "duration_s": 1.296,
+      "pinyin": [
+        "li2",
+        "ming2"
+      ],
+      "text": "黎明",
+      "onsets": [
+        "l",
+        "m"
+      ],
+      "finals": [
+        "i",
+        "ing"
+      ],
+      "tones": [
+        2,
+        2
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 206.8,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 0.679,
+        "min_confidence": 0.679,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.325,
+        "min_duration_s": 0.21,
+        "max_duration_s": 0.44,
+        "dips_db": [
+          null,
+          8.15
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.26,
+          "end_s": 0.7,
+          "duration_s": 0.44,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.7,
+          "end_s": 0.91,
+          "duration_s": 0.21,
+          "dip_db": 8.15,
+          "confidence": 0.679
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 44,
+            "voiced_frames": 44,
+            "coverage": 1.0,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 21,
+            "voiced_frames": 21,
+            "coverage": 1.0,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 8.15,
+            "confidence": 0.679
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 127,
+        "voiced_frames": 79,
+        "voiced_ratio": 0.622,
+        "rejected_frames": 48,
+        "rejection_rate": 0.378,
+        "reasons": {
+          "ok": 79,
+          "silence": 47,
+          "no_candidate": 0,
+          "low_confidence": 0,
+          "octave_ambiguous": 1,
+          "continuity_gated": 0
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 191.44,
+        "p95_f0_hz": 227.78,
+        "median_abs_step_cents": 14.1
+      },
+      "gains_db": [
+        -13.377,
+        -17.516
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "l",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "i",
+            "duration_s": 0.38
+          }
+        ],
+        [
+          {
+            "phoneme": "m",
+            "duration_s": 0.06
+          },
+          {
+            "phoneme": "ing",
+            "duration_s": 0.15
+          }
+        ]
+      ],
+      "real_sha256": "7ea4f2a01aaa58e687bee9b38c995aae7159e41caa9e45139acdf076eae80608",
+      "mechanical_sha256": "ec9e6d06763a211878bb31d90dff04166b497f5e4878573b98b00776cf19e50c",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_16/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_16/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_16/diagnostics.png",
+      "image_sha256": "0ea26c2771298080980434bf0a05de20e0425f54fff1d80cccc65cbae7c8b247"
+    },
+    {
+      "sample_id": "sample_17",
+      "utt_id": "SSB03390129",
+      "speaker": "SSB0339",
+      "gender": "female",
+      "split": "dev",
+      "duration_s": 1.302,
+      "pinyin": [
+        "dian3",
+        "ge1"
+      ],
+      "text": "点歌",
+      "onsets": [
+        "d",
+        "g"
+      ],
+      "finals": [
+        "ian",
+        "e"
+      ],
+      "tones": [
+        3,
+        1
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 223.3,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.265,
+        "min_duration_s": 0.23,
+        "max_duration_s": 0.3,
+        "dips_db": [
+          null,
+          12.53
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.28,
+          "end_s": 0.58,
+          "duration_s": 0.3,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.58,
+          "end_s": 0.81,
+          "duration_s": 0.23,
+          "dip_db": 12.53,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 30,
+            "voiced_frames": 26,
+            "coverage": 0.8667,
+            "interior_gaps": 2,
+            "longest_gap_s": 0.01,
+            "lead_s": 0.015,
+            "tail_s": 0.015,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 23,
+            "voiced_frames": 22,
+            "coverage": 0.9565,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 12.53,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 128,
+        "voiced_frames": 54,
+        "voiced_ratio": 0.4219,
+        "rejected_frames": 74,
+        "rejection_rate": 0.5781,
+        "reasons": {
+          "ok": 54,
+          "silence": 68,
+          "no_candidate": 3,
+          "low_confidence": 0,
+          "octave_ambiguous": 3,
+          "continuity_gated": 0
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 68.51,
+        "p95_f0_hz": 233.59,
+        "median_abs_step_cents": 13.79
+      },
+      "gains_db": [
+        -20.97,
+        -18.928
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "d",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "ian",
+            "duration_s": 0.244
+          }
+        ],
+        [
+          {
+            "phoneme": "g",
+            "duration_s": 0.058
+          },
+          {
+            "phoneme": "e",
+            "duration_s": 0.172
+          }
+        ]
+      ],
+      "real_sha256": "1b4ac2b71a3f8758df62db01e16fddbf68121b1b3b8a0ad503e1390326cc966a",
+      "mechanical_sha256": "370d232795b5964bd3645e43eb3ea52b364422b3603d0982e28a638dec4218b6",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_17/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_17/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_17/diagnostics.png",
+      "image_sha256": "2fbd6441378377559e8495d1ba4f5f7125748c74175a2b180df6b991d1d15f24"
+    },
+    {
+      "sample_id": "sample_18",
+      "utt_id": "SSB07580481",
+      "speaker": "SSB0758",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 1.311,
+      "pinyin": [
+        "dan4",
+        "bao3"
+      ],
+      "text": "蛋堡",
+      "onsets": [
+        "d",
+        "b"
+      ],
+      "finals": [
+        "an",
+        "ao"
+      ],
+      "tones": [
+        4,
+        3
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 225.4,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 0.859,
+        "min_confidence": 0.859,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.235,
+        "min_duration_s": 0.22,
+        "max_duration_s": 0.25,
+        "dips_db": [
+          null,
+          10.31
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.33,
+          "end_s": 0.58,
+          "duration_s": 0.25,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.58,
+          "end_s": 0.8,
+          "duration_s": 0.22,
+          "dip_db": 10.31,
+          "confidence": 0.859
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 25,
+            "voiced_frames": 24,
+            "coverage": 0.96,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 22,
+            "voiced_frames": 19,
+            "coverage": 0.8636,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.03,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 10.31,
+            "confidence": 0.859
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 129,
+        "voiced_frames": 57,
+        "voiced_ratio": 0.4419,
+        "rejected_frames": 72,
+        "rejection_rate": 0.5581,
+        "reasons": {
+          "ok": 57,
+          "silence": 54,
+          "no_candidate": 13,
+          "low_confidence": 2,
+          "octave_ambiguous": 3,
+          "continuity_gated": 0
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 189.51,
+        "p95_f0_hz": 260.04,
+        "median_abs_step_cents": 16.69
+      },
+      "gains_db": [
+        -10.038,
+        -11.422
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "d",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "an",
+            "duration_s": 0.194
+          }
+        ],
+        [
+          {
+            "phoneme": "b",
+            "duration_s": 0.056
+          },
+          {
+            "phoneme": "au",
+            "duration_s": 0.164
+          }
+        ]
+      ],
+      "real_sha256": "906417fd628f2d62e5480e1a2e2af588809e4925db99f7cbc3d2ac3df0aee40d",
+      "mechanical_sha256": "50f466448b72d2d9718820e4110dcabf9d2f84a85986f60bcfed28ad83855ea9",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_18/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_18/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_18/diagnostics.png",
+      "image_sha256": "8ff3329bc084af67018eff6978723983de71b9a31c7d60018eb89118bf60f603"
+    },
+    {
+      "sample_id": "sample_19",
+      "utt_id": "SSB01450094",
+      "speaker": "SSB0145",
+      "gender": "female",
+      "split": "dev",
+      "duration_s": 1.353,
+      "pinyin": [
+        "qing2",
+        "ge1"
+      ],
+      "text": "情歌",
+      "onsets": [
+        "q",
+        "g"
+      ],
+      "finals": [
+        "ing",
+        "e"
+      ],
+      "tones": [
+        2,
+        1
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 248.1,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 2 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "pitch_edge_held",
+          "detail": "syllable 0: first voiced frame 55 ms after / last 5 ms before the window edge; the synthesizer holds the edge value",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "2 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 2,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.31,
+        "min_duration_s": 0.25,
+        "max_duration_s": 0.37,
+        "dips_db": [
+          null,
+          12.49
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.33,
+          "end_s": 0.7,
+          "duration_s": 0.37,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.7,
+          "end_s": 0.95,
+          "duration_s": 0.25,
+          "dip_db": 12.49,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 37,
+            "voiced_frames": 28,
+            "coverage": 0.7568,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.04,
+            "lead_s": 0.055,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 25,
+            "voiced_frames": 23,
+            "coverage": 0.92,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.02,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 12.49,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 133,
+        "voiced_frames": 62,
+        "voiced_ratio": 0.4662,
+        "rejected_frames": 71,
+        "rejection_rate": 0.5338,
+        "reasons": {
+          "ok": 62,
+          "silence": 60,
+          "no_candidate": 8,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 3
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 76.15,
+        "p95_f0_hz": 272.2,
+        "median_abs_step_cents": 16.11
+      },
+      "gains_db": [
+        -14.87,
+        -14.637
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "q",
+            "duration_s": 0.112
+          },
+          {
+            "phoneme": "ing",
+            "duration_s": 0.258
+          }
+        ],
+        [
+          {
+            "phoneme": "g",
+            "duration_s": 0.058
+          },
+          {
+            "phoneme": "e",
+            "duration_s": 0.192
+          }
+        ]
+      ],
+      "real_sha256": "1b680ffdb4e2db739c746ac852853eb7666d513fbcd7f47ebf060e5d5ad758a5",
+      "mechanical_sha256": "6fd55a8c9895bbe4e921e92aa4f6be6cc48fd061569a9f0bc38e8470566bf3d7",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_19/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_19/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_19/diagnostics.png",
+      "image_sha256": "d89e3ae188c628aece1b9579e9ebcc6818ff5a9c21024e41b8cb165241781c95"
+    },
+    {
+      "sample_id": "sample_20",
+      "utt_id": "SSB12740255",
+      "speaker": "SSB1274",
+      "gender": "female",
+      "split": "test",
+      "duration_s": 1.364,
+      "pinyin": [
+        "zhong1",
+        "guo2",
+        "mei3"
+      ],
+      "text": "中国美",
+      "onsets": [
+        "zh",
+        "g",
+        "m"
+      ],
+      "finals": [
+        "ong",
+        "uo",
+        "ei"
+      ],
+      "tones": [
+        1,
+        2,
+        3
+      ],
+      "template": "yang",
+      "template_choice_basis": "median f0 >= 200 Hz",
+      "measured_median_f0_hz": 223.3,
+      "status": "ok",
+      "readiness": {
+        "training_ready": false,
+        "reasons": [
+          "segmentation_count_disagrees"
+        ],
+        "min_boundary_confidence": 0.35,
+        "max_gap_s": 0.05
+      },
+      "issues": [
+        {
+          "code": "resampled",
+          "detail": "44100 Hz -> 24000 Hz",
+          "severity": "warning"
+        },
+        {
+          "code": "syllable_count_mismatch",
+          "detail": "transcript has 3 syllables, energy segmentation found 1",
+          "severity": "warning"
+        },
+        {
+          "code": "syllablewise_render",
+          "detail": "3 syllables rendered separately at measured onsets; each render applies a short fade in/out, so boundaries dip more than in real speech, and the onset/nucleus split inside a syllable is the g2p nominal-length heuristic, not a forced alignment",
+          "severity": "warning"
+        }
+      ],
+      "alignment": {
+        "method": "energy_dp",
+        "syllables": 3,
+        "mean_confidence": 1.0,
+        "min_confidence": 1.0,
+        "low_confidence_boundaries": 0,
+        "mean_duration_s": 0.25,
+        "min_duration_s": 0.09,
+        "max_duration_s": 0.44,
+        "dips_db": [
+          null,
+          12.68,
+          24.21
+        ]
+      },
+      "boundaries": [
+        {
+          "start_s": 0.27,
+          "end_s": 0.49,
+          "duration_s": 0.22,
+          "dip_db": null,
+          "confidence": null
+        },
+        {
+          "start_s": 0.49,
+          "end_s": 0.93,
+          "duration_s": 0.44,
+          "dip_db": 12.68,
+          "confidence": 1.0
+        },
+        {
+          "start_s": 0.93,
+          "end_s": 1.02,
+          "duration_s": 0.09,
+          "dip_db": 24.21,
+          "confidence": 1.0
+        }
+      ],
+      "pitch": {
+        "estimator": "viterbi_multicandidate",
+        "estimation": "viterbi",
+        "max_gap_s": 0.05,
+        "syllables": [
+          {
+            "index": 0,
+            "frames": 22,
+            "voiced_frames": 21,
+            "coverage": 0.9545,
+            "interior_gaps": 0,
+            "longest_gap_s": 0.0,
+            "lead_s": 0.015,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": null,
+            "confidence": null
+          },
+          {
+            "index": 1,
+            "frames": 44,
+            "voiced_frames": 39,
+            "coverage": 0.8864,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.03,
+            "lead_s": 0.005,
+            "tail_s": 0.025,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 12.68,
+            "confidence": 1.0
+          },
+          {
+            "index": 2,
+            "frames": 9,
+            "voiced_frames": 7,
+            "coverage": 0.7778,
+            "interior_gaps": 1,
+            "longest_gap_s": 0.02,
+            "lead_s": 0.005,
+            "tail_s": 0.005,
+            "octave_ambiguous_frames": 0,
+            "dip_db": 24.21,
+            "confidence": 1.0
+          }
+        ]
+      },
+      "f0_stats": {
+        "estimator": "viterbi_multicandidate",
+        "frames": 134,
+        "voiced_frames": 69,
+        "voiced_ratio": 0.5149,
+        "rejected_frames": 65,
+        "rejection_rate": 0.4851,
+        "reasons": {
+          "ok": 69,
+          "silence": 51,
+          "no_candidate": 9,
+          "low_confidence": 2,
+          "octave_ambiguous": 3,
+          "continuity_gated": 0
+        },
+        "median_f0_hz": null,
+        "p05_f0_hz": 130.23,
+        "p95_f0_hz": 265.93,
+        "median_abs_step_cents": 20.08
+      },
+      "gains_db": [
+        -18.997,
+        -21.767,
+        -26.021
+      ],
+      "allocations": [
+        [
+          {
+            "phoneme": "zh",
+            "duration_s": 0.077
+          },
+          {
+            "phoneme": "ong",
+            "duration_s": 0.143
+          }
+        ],
+        [
+          {
+            "phoneme": "g",
+            "duration_s": 0.058
+          },
+          {
+            "phoneme": "uo",
+            "duration_s": 0.382
+          }
+        ],
+        [
+          {
+            "phoneme": "m",
+            "duration_s": 0.03
+          },
+          {
+            "phoneme": "ei",
+            "duration_s": 0.06
+          }
+        ]
+      ],
+      "real_sha256": "0f42220050668280374c5b2fa5d357e609a81831dd73a7aca1e943fd745e0312",
+      "mechanical_sha256": "93b73ca2799bb4f2c831e186111c5352062ca97d1b4ad3eb98cf74a1ed0873be",
+      "real_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_20/real.wav",
+      "mechanical_wav": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_20/mechanical.wav",
+      "image": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2/sample_20/diagnostics.png",
+      "image_sha256": "accdf3d7d71f04628ba2a9be4f7c348c7016068fe10c92d3b68593a3f7845f97"
+    }
+  ]
+}

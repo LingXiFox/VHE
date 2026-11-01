@@ -1,0 +1,26 @@
+{
+  "experiment_id": "EXP-0018",
+  "title": "Twenty real-mechanical pairs with diagnostic previews",
+  "hypothesis": "With the viterbi tracker and the energy-DP aligner, a diverse 20-utterance sample drawn from dev/test can be paired end to end without manual boundaries; most pairs will be usable previews, but boundary confidence only measures energy-valley depth, so only a minority should qualify as training-ready until phoneme boundaries are checked by hand.",
+  "created_utc": "2026-11-01T06:36:37.427058+00:00",
+  "completed_utc": "2026-11-01T06:46:00+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "5b9beb4b33006ad96af5628d51510996ea31e584",
+    "status": "dirty at run time: parse_syllable fix, per-boundary evidence, new tests and EXP-0017/0018/0019 records uncommitted"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": [
+    "python experiments/EXP-0018/probe_pairs.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --out-root /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v1 --report experiments/EXP-0018/logs/pair_report_v1.json --sheet experiments/EXP-0018/logs/listening_sheet_v1.md --spk-info /Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted/spk-info.txt",
+    "python experiments/EXP-0018/probe_pairs.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --out-root /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v1 --report experiments/EXP-0018/logs/pair_report_v2.json --sheet experiments/EXP-0018/logs/listening_sheet_v2.md --spk-info /Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted/spk-info.txt",
+    "python experiments/EXP-0018/probe_pairs.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --out-root /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2 --report experiments/EXP-0018/logs/pair_report_v3.json --sheet experiments/EXP-0018/logs/listening_sheet_v3.md --spk-info /Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted/spk-info.txt --label v3"
+  ],
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "v1 failed (default proxy backend, 20/20 blocked). v2 exposed the parse_syllable defect: 3160 of 5314 manifest-renderable utterances could not be rendered because the underlying final was passed where the orthographic spelling was expected; fixed, now 0 blocked and both predicates agree on all 1920 distinct tokens. v3: 16 ok / 3 blocked (sub-80 ms DP windows) / 1 rejected (0.2997 voiced), 0 training-ready because the energy segmenter finds a single segment on continuous speech (segmentation_count_disagrees 19/20). Previews in /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-pairs/v2 (outside Git). No listening performed.",
+  "erratum": "completed_utc was earlier recorded as 2026-11-01T07:30:00+00:00, which was ahead of the wall clock at the time of writing; corrected to the time the record was written. Results and the command list are unchanged."
+}

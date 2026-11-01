@@ -61,6 +61,11 @@ def main() -> None:
     coverage.add_argument("--manifest", required=True)
     coverage.add_argument("--output", required=True, help="JSON coverage report; refuses to overwrite")
     coverage.add_argument("--top", type=int, default=12)
+    refresh = sub.add_parser("refresh", help="Re-score a manifest's renderable flags under the current inventory")
+    refresh.add_argument("--manifest", required=True, help="Existing JSONL manifest to read")
+    refresh.add_argument("--output", required=True, help="New JSONL manifest; refuses to overwrite")
+    refresh.add_argument("--root", default=None,
+                         help="Corpus root override (default: the manifest meta root)")
     args = parser.parse_args()
     if args.command == "doctor":
         from .backend import inspect_runtime
@@ -174,6 +179,13 @@ def main() -> None:
                           "utterance_coverage": report["stats"]["utterance_coverage"],
                           "quality_flags": report["quality_flags"]},
                          indent=2, ensure_ascii=False))
+    elif args.command == "refresh":
+        from .data.corpus import refresh_manifest
+        try:
+            summary = refresh_manifest(args.manifest, args.output, root=args.root)
+        except (FileNotFoundError, FileExistsError, ValueError, OSError) as exc:
+            parser.exit(2, f"Manifest refresh failed: {exc}\n")
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
     elif args.command == "synth":
         phones = [s.strip() for s in args.phonemes.split(",")]
         audio = synthesize(phones, f0_hz=args.f0, duration_s=args.duration,

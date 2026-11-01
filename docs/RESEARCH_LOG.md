@@ -207,3 +207,45 @@
 - 结论：三批均通过预注册条件（覆盖率单调上升、旧渲染不变、每单元四类渲染级证据）。整句 6.04% 仍是结构性限制——按音节乘积，一句里有一个未实现音节即整句阻塞。剩余阻塞按 stage-3 `next_units`：`final:uei`（+27534，需 ch/r）、`final:v`（+23661）、`final:in`（+22536）、`onset:ch`（+21214）、`final:eng`（+25944，需 r）、`final:apical_dental`（+20702）、`final:iao`（+20371）、`final:iang`（+18755）、`onset:r`（+17877）、`final:ie`（+17485）。`v`（ü）与 `apical_dental`（[ɿ]）需要新的声学设定，不能拿 u / i 顶替。
 - 未做：听音评分（不能声称更像真人）、Windows CUDA 真机验证。
 - 证据：`experiments/EXP-0016/`（`probe_coverage.py`、`probe_phonemes.py`、`logs/coverage_stage{0..3}.json`、`logs/phonemes_stage{1,2,3}*.json`、`artifacts/stage{1,2,3}/*.wav`）。
+
+## 2026-11-01 | P1.5 管线集成：拒绝式 F0 进配对、能量 DP 对齐、manifest 可渲染性刷新
+
+- F0：`build_pair(pitch_estimator="viterbi")` 成为默认，legacy YIN 保留为消融开关（`tests/test_data_pairing.py` 有对照测试）；曲线记 `frames/voiced_frames/coverage/interior_gaps/longest_gap_s/octave_ambiguous_frames/dip_db/confidence`，coverage < 0.35 打 `low_pitch_coverage`，长间隙只做**标注过的**线性插值并阻断 `training_ready`。
+- 对齐：新增 `src/vhe/data/align.py` 的能量谷 DP。代价 = `smooth/local_peak − 0.5×clip(rise/local_peak)`；加 rise 项的实测理由：纯能量谷会把边界停在 /b/ 长闭塞中段，第 2 个音节窗覆盖 0.0 浊音帧 → `insufficient_pitch_points`，加 rise 后三窗 coverage 0.72/0.72/0.91。`confidence` 只反映能量谷深度，**不代表音素边界正确**（连续 a/i/u 上 DP 的 min_confidence 仍 0.74–0.82）。
+- 可渲染性：`MANIFEST_VERSION=3` 加 `inventory` 指纹（`af1e7361…`，36 音素 / 19 onsets / 17 finals）与 `refresh_renderable`；`vhe refresh` 把 v3 刷成 v4（sha256 `1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31`），stale 5127 句全部 `newly_renderable`、0 句反向失效。
+- `CorpusPairs.from_manifest(revalidate=True)` 默认按当前库存重判并记 `staleness`；实测可加载 **5314 句 / 218 说话人 / 3.37 h**（train 4333 / dev 528 / test 453），与覆盖率报告一致。
+- 测试：`pytest -q` 360 passed / 1 skipped（skip = `tests/test_model.py:80` 需真 CUDA）。
+
+## 2026-11-01 | EXP-0017 `no_candidate` 帧专项：4/281 疑似有声漏检
+
+- 目的：把 `track_pitch` 的 281 个 `no_candidate` 帧分清是清音/气声/边缘，还是真正的有声漏检；阈值用 `ok` 帧的分位数校准，不用手调常数。
+- 每帧独立证据：HPS（65–400 Hz、0.5 Hz 网格、5 次谐波）、实倒谱峰 prominence、80–4000 Hz 谱平坦度、相对电平、最小 CMND。
+- 结果（12 句 / 2052 帧）：labels **aperiodic 174 / boundary_or_weak 103 / suspected_miss 4**；`suspected_miss` 占 `no_candidate` 的 1.4%、占非静音帧的 2.0%。位于两 `ok` 帧之间的只有 4 帧，全部是 `aperiodic`。
+- 交叉表说明机理：电平越高越"非周期"（>−20 dB 组 median flatness 0.129、min_cmnd 0.778），−20…−45 dB 组才是边缘/弱有声（median flatness 0.008–0.018）。即高电平被拒的帧不是漏检，是汽声/摩擦成分把周期性抹掉了。
+- SSB04350040：新跟踪器中位 250.0 Hz、legacy 280.3 Hz，逐帧中位偏差 5.4 cents、18.2% 帧 >50 cents；t=0.675 s 新 214.2 vs legacy 318.2（HPS 213.5、倒谱 210.5，峰 prominence 9.63），t=0.685 s 新 209.1 vs 417.7（HPS 206.5、倒谱 200.0）→ 独立证据支持新跟踪器；**无真值不宣称准确**。
+- **失败记录**：v1 用固定阈值（hps_z≥2、cep≥3、flatness≤0.25）把 220/281 判成 `suspected_miss`，作废保留。
+- 结论：27% 总拒绝率里只有 1.4% 是"真正有声却被拒"，其余是非周期帧（气声/清音/边界），因此**不降低 CMND 阈值**；要进一步提高有声召回只能靠真值或 forced alignment。
+- 证据：`experiments/EXP-0017/`。
+
+## 2026-11-01 | EXP-0018 真实配对 20 条：16 条出预览、0 条 training-ready
+
+- 目的：用真实语音走完"分析 → 边界 → 机械合成 → 质量报告"全链路，检验能不能开始 P2。
+- v1（未指定 backend）：落到 `FormantProxySynth`（`vowels` 库存）→ 20/20 `backend_inventory_insufficient`。产物移到 `derived/aishell3-pairs/v1_blocked_proxy_backend/`，报告保留为 `logs/pair_report_v1_blocked.json`。
+- v2：暴露 **`parse_syllable` 缺陷**——它把底层韵母（`iou`/`apical_retroflex`/`uo`）当成正字法写法传给 `syllable_phonemes`，拼出 `yiou`/`shapical_retroflex`/`wuo` 并被拒。实测 v4 manifest 的 5314 句可渲染句中 **3160 句（59%）实际不能渲染**（4408 音节：`shapical_retroflex` 1597、`yiou` 1237、`wuo` 900、`zhapical_retroflex` 503、`yian` 171）。修法：用 `token.written or token.final` 查表、保留 `underlying_final` 作记录；修复后 5314 句 / 35153 音节 **0 阻塞**，且在 1920 个 distinct token 上 `missing_units` 与 `parse_syllable` **0 不一致**（新增交叉测试）。
+- v3（有效）：**16 ok / 3 blocked / 1 rejected，0 training-ready**。reasons：`segmentation_count_disagrees` 19、`status_blocked` 3、`error_issues` 4、`no_pitch_frames` 1、`low_boundary_confidence` 1、`no_alignment` 1、`pitch_gap_interpolated` 1。38 处接缝 confidence 中位 1.000、最小 0.214；50 个音节窗 coverage 中位 0.892、<0.5 仅 1 个；机械增益 −26.02…−6.09 dB。
+- 3 条 blocked 全是 `syllable_plan_blocked`：DP 给出的窗长 0.0795 s 略低于 `ONSET_MIN_S + NUCLEUS_MIN_S = 0.08`（`de5`/`tao2`/`ce4`）；1 条 rejected 是 `ku4 pai4` 的 voiced_ratio 0.2997 < 0.30。
+- **0 training-ready 的根因**：普通 AISHELL 句是连续语流，能量分段器对 4–6 音节句只找到 **1 段** → `segmentation_count_disagrees`。DP 的 min_confidence 在连续元音上仍达 1.0，证明"置信度"不能自证边界正确；只有人工边界或真正的 forced aligner 能过闸。
+- 结论：预览只能标 `preview_only`，**不得**当训练数据。要做 P2 必须先引入带声学模型的强制对齐（或人工校正），并对齐结果再做一轮人工抽检。
+- 证据：`experiments/EXP-0018/`（`probe_pairs.py`、`logs/pair_report_v{1,v2,v3}.json`、`logs/listening_sheet_v3.md`、`derived/aishell3-pairs/v2/`）。
+
+## 2026-11-01 | EXP-0019 模板身份 vs 真人包络：F0 不能选音色，预设与真人相距约 7 dB
+
+- 目的：检查"按 F0 选模板"能不能算音色匹配，以及两个原创预设离真人有多远。**只做分析，不训练、不拟合模板、不造新配对**。
+- 度量：level-normalised log-mel LTAS（24 带 / 100–7000 Hz / 1024 帧 / 256 hop / 只取响帧），dB RMS 距离；同一份真实音频 + 同一条 F0 曲线渲染 yang 与 yin，两者的唯一差别是模板（有 hash 断言）。
+- 结果（EXP-0018 v3 的 16 条 ok 对）：F0 启发式与"更近预设"一致 **10/16 = 0.625**；median `d(real,yang)` 6.92 dB、`d(real,yin)` 8.42 dB、`d(yang,yin)` 6.03 dB；margin 1.48 dB、`gap/separation` **1.01**。
+- **预注册的定量预测不成立**："预设之间的距离远小于预设到真人的距离"实测比值 1.01，不是 <0.7。选对预设只挽回 1.48 dB，而失配本身约 7 dB。
+- **操作层结论成立**：5 个低 F0 说话人（125–200 Hz）反而更接近 `yang`（更大的共振峰尺度），与"低音=大声道=暗"的直觉相反 → F0 不携带音色信息，"按 F0 配对"不能称为音色匹配。
+- 1-D formant_scale 拟合不可辨识：v1 网格 0.75–1.20 有 9/16 顶到边界，v2 扩到 0.70–1.30 仍有 7/16 顶到 1.30（中位 1.175）；scale 与 tilt 混淆，只能做方向性解读（多数说话人需要比两个预设更大的尺度）。
+- 由此定下 P2 的五条可测试方案：模板按构造固定（seeded cycle，与录音无关）、用**合成原创音色**扩到 4 个身份（绝不按目标说话人拟合）、identity-preservation 指标 `d(VHE(x),x) < d(VHE(x),render(x,τ'))`、identity-leakage 守卫（`d(VHE(x),real)` 不得低于 `d(x,real)` 超界）、换模板时 F0/时长/边界不变。
+- 未做：听音、训练、二维 (scale, tilt) 拟合。下一步 EXP-0020：加两个原创模板、四身份重跑本探针。
+- 证据：`experiments/EXP-0019/`（`probe_identity.py`、`logs/identity_report_v1.json`、`logs/identity_report_v2.json`）。

@@ -19,15 +19,21 @@ import pytest
 from vhe.audio import write_wav
 from vhe.data.corpus import (
     MANIFEST_VERSION,
+    CorpusIndex,
     CorpusStats,
     annotate_manifest,
     apply_quality_flags,
     audit_prosody_labels,
     coverage_report,
+    entry_renderable,
+    inventory_fingerprint,
     parse_label_pinyin,
     rank_next_units,
     read_corpus_manifest,
+    refresh_manifest,
+    refresh_renderable,
     scan_corpus,
+    stats_from_entries,
     write_corpus_manifest,
 )
 from vhe.data.mandarin import split_token
@@ -346,4 +352,65 @@ def test_coverage_recompute_reads_no_audio(corpus_root: Path) -> None:
     assert report["stats"]["utterance_coverage"] == pytest.approx(
         index.stats.utterance_coverage)
     assert report["next_units"][0]["unit"] == "final:iang"
+
+
+
+# --- P1.5: stale renderability flags and inventory fingerprints ---------------------
+
+
+def test_inventory_fingerprint_matches_the_current_mandarin_inventory():
+    from vhe.synth.contract import INVENTORIES
+
+    fingerprint = inventory_fingerprint()
+    assert fingerprint["size"] == len(INVENTORIES["mandarin"])
+    assert fingerprint["onsets"] == sorted(fingerprint["onsets"])
+    assert len(fingerprint["sha256"]) == 64
+    assert fingerprint == inventory_fingerprint()
+
+
+def test_refresh_renderable_repairs_both_directions(corpus_root: Path) -> None:
+    index = scan_corpus(corpus_root)
+    entries = list(index.entries)
+    assert entries
+    # A scan that ran before EXP-0016 would have written renderable=False for syllables the
+    # current inventory renders, and True for anything the inventory later lost.
+    stale_true = replace(entries[0], renderable=False)
+    unrenderable = replace(entries[0], pinyin=("chuang2",), onsets=("ch",), finals=("uang",),
+                           renderable=True)
+    refreshed, report = refresh_renderable([stale_true, unrenderable])
+    assert report["checked"] == 2
+    assert report["stale"] == 2
+    assert report["newly_renderable"] == 1
+    assert report["no_longer_renderable"] == 1
+    assert [entry.renderable for entry in refreshed] == [True, False]
+    assert refreshed[0].utt_id == stale_true.utt_id
+
+
+def test_refresh_manifest_writes_a_scored_copy_and_refuses_to_overwrite(
+        corpus_root: Path, tmp_path: Path) -> None:
+    index = scan_corpus(corpus_root)
+    stale_entries = [replace(entry, renderable=False) for entry in index.entries]
+    stale_index = CorpusIndex(root=index.root, entries=stale_entries,
+                              stats=stats_from_entries(stale_entries))
+    source = tmp_path / "stale_manifest.jsonl"
+    write_corpus_manifest(source, stale_index)
+
+    output = tmp_path / "refreshed_manifest.jsonl"
+    expected_renderable = sum(1 for entry in index.entries if entry_renderable(entry))
+    report = refresh_manifest(source, output)
+    assert report["stale"] == expected_renderable
+    assert report["newly_renderable"] == expected_renderable
+    assert report["no_longer_renderable"] == 0
+    assert report["inventory"]["size"] == inventory_fingerprint()["size"]
+
+    refreshed, meta = read_corpus_manifest(output)
+    assert meta["version"] == MANIFEST_VERSION
+    assert len(meta["refreshed_from"]["sha256"]) == 64
+    assert meta["refreshed_from"]["sha256"] != report["manifest_sha256"]
+    assert meta["inventory"]["sha256"] == inventory_fingerprint()["sha256"]
+    assert any(entry.renderable for entry in refreshed)
+    assert all(entry.renderable == entry_renderable(entry) for entry in refreshed)
+
+    with pytest.raises(FileExistsError):
+        refresh_manifest(source, output)
 

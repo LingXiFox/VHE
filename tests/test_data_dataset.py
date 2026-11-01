@@ -17,11 +17,18 @@ from vhe.data.dataset import CorpusPairs, PairSample, summarize
 from vhe.data.pairing import PairResult
 
 
-def make_entry(index: int, *, split: str = "train", renderable: bool = True) -> CorpusEntry:
+def make_entry(index: int, *, split: str = "train", renderable: bool = True,
+               blocked: bool = False) -> CorpusEntry:
+    if blocked:
+        # chuang2 needs an onset (ch) and a final (uang) that the inventory lacks, so the
+        # entry is genuinely unrenderable and revalidation cannot flip it.
+        text, pinyin, onsets, finals, tones = "窗", ("chuang2",), ("ch",), ("uang",), (2,)
+    else:
+        text, pinyin, onsets, finals, tones = "大", ("da4",), ("d",), ("a",), (4,)
     return CorpusEntry(
         utt_id=f"SSB000{index:04d}", speaker=f"SSB000{index % 3}", split=split,
         source_dir="train", wav_path=f"train/wav/SSB000{index % 3}/SSB000{index:04d}.wav",
-        text="大", pinyin=("da4",), onsets=("d",), finals=("a",), tones=(4,),
+        text=text, pinyin=pinyin, onsets=onsets, finals=finals, tones=tones,
         erhua=(False,), sample_rate=44100, n_samples=44100, duration_s=1.0,
         renderable=renderable)
 
@@ -39,7 +46,7 @@ class FakeResult(PairResult):
 @pytest.fixture()
 def manifest(tmp_path, monkeypatch):
     entries = [make_entry(1), make_entry(2, split="dev"),
-               make_entry(3, renderable=False), make_entry(4)]
+               make_entry(3, renderable=False, blocked=True), make_entry(4)]
     target = tmp_path / "manifest.jsonl"
     write_corpus_manifest(target, _index(entries, tmp_path))
     captured: list[dict] = []
@@ -150,3 +157,50 @@ def test_quality_flags_are_surfaced_and_filterable(tmp_path, monkeypatch) -> Non
     assert report["usable"] == 2
     assert report["by_status"] == {"ok": 2, "blocked": 1}
     assert report["issue_codes"] == {"bad_pinyin": 1, "resampled": 1}
+
+
+def test_revalidation_repairs_a_stale_renderable_flag(tmp_path, monkeypatch) -> None:
+    # A manifest written before EXP-0016 stored renderable=False for a syllable the current
+    # inventory renders. The loader must not trust the stored boolean.
+    entries = [replace(make_entry(1), renderable=False), make_entry(2)]
+    target = tmp_path / "stale.jsonl"
+    write_corpus_manifest(target, _index(entries, tmp_path))
+
+    def fake_build_pair(path, pinyins, **kwargs):
+        return FakeResult(path.stem)
+
+    monkeypatch.setattr(dataset_module, "build_pair", fake_build_pair)
+    view = CorpusPairs.from_manifest(target, root=tmp_path)
+    assert [entry.utt_id for entry in view.entries] == ["SSB0000001", "SSB0000002"]
+    staleness = view.inventory()["staleness"]
+    assert staleness["revalidated"] is True
+    assert staleness["newly_renderable"] == 1
+    assert staleness["changed"] == 1
+    assert staleness["renderable_in_manifest"] == 1
+    assert staleness["renderable_now"] == 2
+
+    frozen = CorpusPairs.from_manifest(target, root=tmp_path, revalidate=False)
+    assert [entry.utt_id for entry in frozen.entries] == ["SSB0000002"]
+    assert frozen.inventory()["staleness"]["revalidated"] is False
+
+
+def test_the_loader_asks_for_the_mandarin_backend_and_viterbi_by_default(tmp_path,
+                                                                        monkeypatch) -> None:
+    target = tmp_path / "defaults.jsonl"
+    write_corpus_manifest(target, _index([make_entry(1)], tmp_path))
+    captured: list[dict] = []
+
+    def fake_build_pair(path, pinyins, **kwargs):
+        captured.append(kwargs)
+        return FakeResult(path.stem)
+
+    monkeypatch.setattr(dataset_module, "build_pair", fake_build_pair)
+    view = CorpusPairs.from_manifest(target, root=tmp_path)
+    _ = view[0]
+    assert captured[-1]["pitch_estimator"] == "viterbi"
+    assert captured[-1]["alignment"] == "dp"
+    assert captured[-1]["backend"].name == "mandarin_formant"
+    assert view.inventory()["backend"] == "mandarin_formant"
+    assert view.inventory()["pitch_estimator"] == "viterbi"
+    assert view.inventory()["alignment"] == "dp"
+

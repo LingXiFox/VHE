@@ -1,0 +1,1298 @@
+{
+  "experiment": "EXP-0019",
+  "hypothesis": "median F0 does not select a timbre match: the two presets differ by less than either differs from a real speaker",
+  "source_report": "/Volumes/Development/Projects/projects/VHE/experiments/EXP-0018/logs/pair_report_v3.json",
+  "manifest": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl",
+  "metric": {
+    "name": "log-mel LTAS distance",
+    "bands": 24,
+    "low_hz": 100.0,
+    "high_hz": 7000.0,
+    "frame": 1024,
+    "hop": 256,
+    "level_floor_ratio": 0.05,
+    "unit": "dB RMS over level-normalised band energies"
+  },
+  "settings": {
+    "heuristic_f0_hz": 200.0,
+    "grid": [
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1.0,
+      1.05,
+      1.1,
+      1.15,
+      1.2,
+      1.25,
+      1.3
+    ],
+    "fit_tilt": 1.35,
+    "fit_breathiness": 0.009,
+    "sample_rate": 24000
+  },
+  "samples": 16,
+  "agreement": {
+    "heuristic_equals_closer": 10,
+    "rate": 0.625
+  },
+  "d_real_yang_db": 6.917,
+  "d_real_yin_db": 8.423,
+  "d_yang_yin_db": 6.033,
+  "margin_db": 1.482,
+  "gap_over_separation": 1.012,
+  "rows": [
+    {
+      "sample_id": "sample_02",
+      "utt_id": "SSB10080285",
+      "speaker": "SSB1008",
+      "gender": "female",
+      "pinyin": [
+        "you3",
+        "qian2",
+        "zhen1",
+        "xing4",
+        "fu2"
+      ],
+      "median_f0_hz": 246.3,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 4.506,
+      "d_real_yin_db": 6.611,
+      "d_yang_yin_db": 4.563,
+      "margin_db": 2.105,
+      "gap_over_separation": 0.988,
+      "implied_scale": 1.05,
+      "implied_scale_distance_db": 4.818,
+      "scale_curve": [
+        [
+          0.7,
+          7.135
+        ],
+        [
+          0.75,
+          6.674
+        ],
+        [
+          0.8,
+          6.362
+        ],
+        [
+          0.85,
+          6.262
+        ],
+        [
+          0.9,
+          5.897
+        ],
+        [
+          0.95,
+          5.398
+        ],
+        [
+          1.0,
+          5.018
+        ],
+        [
+          1.05,
+          4.818
+        ],
+        [
+          1.1,
+          5.211
+        ],
+        [
+          1.15,
+          5.566
+        ],
+        [
+          1.2,
+          5.669
+        ],
+        [
+          1.25,
+          5.815
+        ],
+        [
+          1.3,
+          6.232
+        ]
+      ],
+      "inside_preset_range": true,
+      "at_grid_edge": false
+    },
+    {
+      "sample_id": "sample_04",
+      "utt_id": "SSB04350385",
+      "speaker": "SSB0435",
+      "gender": "female",
+      "pinyin": [
+        "su1",
+        "san1",
+        "de5",
+        "lian4",
+        "wu3",
+        "gong1"
+      ],
+      "median_f0_hz": 271.2,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 6.214,
+      "d_real_yin_db": 9.033,
+      "d_yang_yin_db": 6.978,
+      "margin_db": 2.819,
+      "gap_over_separation": 0.89,
+      "implied_scale": 1.3,
+      "implied_scale_distance_db": 5.612,
+      "scale_curve": [
+        [
+          0.7,
+          8.904
+        ],
+        [
+          0.75,
+          9.037
+        ],
+        [
+          0.8,
+          8.801
+        ],
+        [
+          0.85,
+          8.74
+        ],
+        [
+          0.9,
+          8.582
+        ],
+        [
+          0.95,
+          8.0
+        ],
+        [
+          1.0,
+          7.527
+        ],
+        [
+          1.05,
+          6.788
+        ],
+        [
+          1.1,
+          6.324
+        ],
+        [
+          1.15,
+          6.377
+        ],
+        [
+          1.2,
+          6.465
+        ],
+        [
+          1.25,
+          6.044
+        ],
+        [
+          1.3,
+          5.612
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": true
+    },
+    {
+      "sample_id": "sample_05",
+      "utt_id": "SSB11380340",
+      "speaker": "SSB1138",
+      "gender": "female",
+      "pinyin": [
+        "bei1",
+        "ai1"
+      ],
+      "median_f0_hz": 248.7,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 6.096,
+      "d_real_yin_db": 8.808,
+      "d_yang_yin_db": 6.264,
+      "margin_db": 2.712,
+      "gap_over_separation": 0.973,
+      "implied_scale": 1.1,
+      "implied_scale_distance_db": 6.548,
+      "scale_curve": [
+        [
+          0.7,
+          8.63
+        ],
+        [
+          0.75,
+          8.29
+        ],
+        [
+          0.8,
+          8.051
+        ],
+        [
+          0.85,
+          7.972
+        ],
+        [
+          0.9,
+          7.729
+        ],
+        [
+          0.95,
+          7.361
+        ],
+        [
+          1.0,
+          7.104
+        ],
+        [
+          1.05,
+          6.979
+        ],
+        [
+          1.1,
+          6.548
+        ],
+        [
+          1.15,
+          6.596
+        ],
+        [
+          1.2,
+          7.044
+        ],
+        [
+          1.25,
+          7.64
+        ],
+        [
+          1.3,
+          8.384
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": false
+    },
+    {
+      "sample_id": "sample_08",
+      "utt_id": "SSB05440115",
+      "speaker": "SSB0544",
+      "gender": "male",
+      "pinyin": [
+        "jing4",
+        "hai3"
+      ],
+      "median_f0_hz": 133.7,
+      "heuristic_template": "yin",
+      "closer_template": "yang",
+      "agrees": false,
+      "d_real_yang_db": 10.376,
+      "d_real_yin_db": 10.881,
+      "d_yang_yin_db": 5.407,
+      "margin_db": 0.505,
+      "gap_over_separation": 1.919,
+      "implied_scale": 1.3,
+      "implied_scale_distance_db": 10.362,
+      "scale_curve": [
+        [
+          0.7,
+          10.926
+        ],
+        [
+          0.75,
+          10.856
+        ],
+        [
+          0.8,
+          10.661
+        ],
+        [
+          0.85,
+          10.494
+        ],
+        [
+          0.9,
+          10.481
+        ],
+        [
+          0.95,
+          10.564
+        ],
+        [
+          1.0,
+          10.64
+        ],
+        [
+          1.05,
+          10.688
+        ],
+        [
+          1.1,
+          10.736
+        ],
+        [
+          1.15,
+          10.665
+        ],
+        [
+          1.2,
+          10.479
+        ],
+        [
+          1.25,
+          10.387
+        ],
+        [
+          1.3,
+          10.362
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": true
+    },
+    {
+      "sample_id": "sample_09",
+      "utt_id": "SSB02880339",
+      "speaker": "SSB0288",
+      "gender": "female",
+      "pinyin": [
+        "du4",
+        "qing2"
+      ],
+      "median_f0_hz": 185.3,
+      "heuristic_template": "yin",
+      "closer_template": "yang",
+      "agrees": false,
+      "d_real_yang_db": 5.317,
+      "d_real_yin_db": 7.545,
+      "d_yang_yin_db": 5.989,
+      "margin_db": 2.228,
+      "gap_over_separation": 0.888,
+      "implied_scale": 1.15,
+      "implied_scale_distance_db": 5.169,
+      "scale_curve": [
+        [
+          0.7,
+          7.064
+        ],
+        [
+          0.75,
+          7.047
+        ],
+        [
+          0.8,
+          7.067
+        ],
+        [
+          0.85,
+          7.189
+        ],
+        [
+          0.9,
+          7.029
+        ],
+        [
+          0.95,
+          6.733
+        ],
+        [
+          1.0,
+          6.361
+        ],
+        [
+          1.05,
+          5.805
+        ],
+        [
+          1.1,
+          5.296
+        ],
+        [
+          1.15,
+          5.169
+        ],
+        [
+          1.2,
+          5.456
+        ],
+        [
+          1.25,
+          5.75
+        ],
+        [
+          1.3,
+          5.984
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": false
+    },
+    {
+      "sample_id": "sample_10",
+      "utt_id": "SSB18630221",
+      "speaker": "SSB1863",
+      "gender": "male",
+      "pinyin": [
+        "tao2",
+        "pao3"
+      ],
+      "median_f0_hz": 125.3,
+      "heuristic_template": "yin",
+      "closer_template": "yang",
+      "agrees": false,
+      "d_real_yang_db": 9.024,
+      "d_real_yin_db": 9.506,
+      "d_yang_yin_db": 4.451,
+      "margin_db": 0.482,
+      "gap_over_separation": 2.027,
+      "implied_scale": 1.15,
+      "implied_scale_distance_db": 8.758,
+      "scale_curve": [
+        [
+          0.7,
+          10.627
+        ],
+        [
+          0.75,
+          10.211
+        ],
+        [
+          0.8,
+          9.89
+        ],
+        [
+          0.85,
+          9.625
+        ],
+        [
+          0.9,
+          9.392
+        ],
+        [
+          0.95,
+          9.215
+        ],
+        [
+          1.0,
+          9.065
+        ],
+        [
+          1.05,
+          8.907
+        ],
+        [
+          1.1,
+          8.762
+        ],
+        [
+          1.15,
+          8.758
+        ],
+        [
+          1.2,
+          8.901
+        ],
+        [
+          1.25,
+          9.079
+        ],
+        [
+          1.3,
+          9.262
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": false
+    },
+    {
+      "sample_id": "sample_11",
+      "utt_id": "SSB18910490",
+      "speaker": "SSB1891",
+      "gender": "female",
+      "pinyin": [
+        "du2",
+        "ni3"
+      ],
+      "median_f0_hz": 183.9,
+      "heuristic_template": "yin",
+      "closer_template": "yin",
+      "agrees": true,
+      "d_real_yang_db": 7.542,
+      "d_real_yin_db": 6.647,
+      "d_yang_yin_db": 6.613,
+      "margin_db": 0.895,
+      "gap_over_separation": 1.005,
+      "implied_scale": 0.7,
+      "implied_scale_distance_db": 6.29,
+      "scale_curve": [
+        [
+          0.7,
+          6.29
+        ],
+        [
+          0.75,
+          6.386
+        ],
+        [
+          0.8,
+          6.508
+        ],
+        [
+          0.85,
+          6.75
+        ],
+        [
+          0.9,
+          6.835
+        ],
+        [
+          0.95,
+          6.741
+        ],
+        [
+          1.0,
+          6.906
+        ],
+        [
+          1.05,
+          7.174
+        ],
+        [
+          1.1,
+          7.253
+        ],
+        [
+          1.15,
+          7.298
+        ],
+        [
+          1.2,
+          7.504
+        ],
+        [
+          1.25,
+          7.943
+        ],
+        [
+          1.3,
+          8.475
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": true
+    },
+    {
+      "sample_id": "sample_12",
+      "utt_id": "SSB06010331",
+      "speaker": "SSB0601",
+      "gender": "female",
+      "pinyin": [
+        "bai2",
+        "bing1"
+      ],
+      "median_f0_hz": 283.6,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 5.612,
+      "d_real_yin_db": 7.175,
+      "d_yang_yin_db": 5.444,
+      "margin_db": 1.563,
+      "gap_over_separation": 1.031,
+      "implied_scale": 1.2,
+      "implied_scale_distance_db": 4.939,
+      "scale_curve": [
+        [
+          0.7,
+          8.25
+        ],
+        [
+          0.75,
+          8.016
+        ],
+        [
+          0.8,
+          7.223
+        ],
+        [
+          0.85,
+          6.566
+        ],
+        [
+          0.9,
+          6.554
+        ],
+        [
+          0.95,
+          6.716
+        ],
+        [
+          1.0,
+          6.546
+        ],
+        [
+          1.05,
+          6.185
+        ],
+        [
+          1.1,
+          5.572
+        ],
+        [
+          1.15,
+          5.297
+        ],
+        [
+          1.2,
+          4.939
+        ],
+        [
+          1.25,
+          5.167
+        ],
+        [
+          1.3,
+          5.929
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": false
+    },
+    {
+      "sample_id": "sample_13",
+      "utt_id": "SSB03950362",
+      "speaker": "SSB0395",
+      "gender": "female",
+      "pinyin": [
+        "ti2",
+        "shi4"
+      ],
+      "median_f0_hz": 197.6,
+      "heuristic_template": "yin",
+      "closer_template": "yang",
+      "agrees": false,
+      "d_real_yang_db": 7.581,
+      "d_real_yin_db": 10.559,
+      "d_yang_yin_db": 5.734,
+      "margin_db": 2.978,
+      "gap_over_separation": 1.322,
+      "implied_scale": 1.3,
+      "implied_scale_distance_db": 7.0,
+      "scale_curve": [
+        [
+          0.7,
+          10.686
+        ],
+        [
+          0.75,
+          10.712
+        ],
+        [
+          0.8,
+          10.487
+        ],
+        [
+          0.85,
+          10.196
+        ],
+        [
+          0.9,
+          9.814
+        ],
+        [
+          0.95,
+          9.435
+        ],
+        [
+          1.0,
+          8.913
+        ],
+        [
+          1.05,
+          8.404
+        ],
+        [
+          1.1,
+          7.91
+        ],
+        [
+          1.15,
+          7.507
+        ],
+        [
+          1.2,
+          7.284
+        ],
+        [
+          1.25,
+          7.109
+        ],
+        [
+          1.3,
+          7.0
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": true
+    },
+    {
+      "sample_id": "sample_14",
+      "utt_id": "SSB13770005",
+      "speaker": "SSB1377",
+      "gender": "female",
+      "pinyin": [
+        "bu4",
+        "xing2",
+        "ma5"
+      ],
+      "median_f0_hz": 270.0,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 7.818,
+      "d_real_yin_db": 9.011,
+      "d_yang_yin_db": 7.485,
+      "margin_db": 1.193,
+      "gap_over_separation": 1.045,
+      "implied_scale": 1.3,
+      "implied_scale_distance_db": 5.994,
+      "scale_curve": [
+        [
+          0.7,
+          7.208
+        ],
+        [
+          0.75,
+          7.767
+        ],
+        [
+          0.8,
+          8.558
+        ],
+        [
+          0.85,
+          8.943
+        ],
+        [
+          0.9,
+          8.66
+        ],
+        [
+          0.95,
+          8.128
+        ],
+        [
+          1.0,
+          8.043
+        ],
+        [
+          1.05,
+          8.033
+        ],
+        [
+          1.1,
+          7.516
+        ],
+        [
+          1.15,
+          6.942
+        ],
+        [
+          1.2,
+          6.521
+        ],
+        [
+          1.25,
+          6.386
+        ],
+        [
+          1.3,
+          5.994
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": true
+    },
+    {
+      "sample_id": "sample_15",
+      "utt_id": "SSB18370358",
+      "speaker": "SSB1837",
+      "gender": "female",
+      "pinyin": [
+        "le4",
+        "gou4"
+      ],
+      "median_f0_hz": 199.5,
+      "heuristic_template": "yin",
+      "closer_template": "yang",
+      "agrees": false,
+      "d_real_yang_db": 5.191,
+      "d_real_yin_db": 7.835,
+      "d_yang_yin_db": 6.077,
+      "margin_db": 2.644,
+      "gap_over_separation": 0.854,
+      "implied_scale": 1.2,
+      "implied_scale_distance_db": 4.881,
+      "scale_curve": [
+        [
+          0.7,
+          8.347
+        ],
+        [
+          0.75,
+          8.207
+        ],
+        [
+          0.8,
+          8.066
+        ],
+        [
+          0.85,
+          7.859
+        ],
+        [
+          0.9,
+          7.44
+        ],
+        [
+          0.95,
+          6.817
+        ],
+        [
+          1.0,
+          6.125
+        ],
+        [
+          1.05,
+          5.533
+        ],
+        [
+          1.1,
+          5.116
+        ],
+        [
+          1.15,
+          4.913
+        ],
+        [
+          1.2,
+          4.881
+        ],
+        [
+          1.25,
+          5.0
+        ],
+        [
+          1.3,
+          5.246
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": false
+    },
+    {
+      "sample_id": "sample_16",
+      "utt_id": "SSB15930434",
+      "speaker": "SSB1593",
+      "gender": "female",
+      "pinyin": [
+        "li2",
+        "ming2"
+      ],
+      "median_f0_hz": 206.8,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 7.112,
+      "d_real_yin_db": 8.038,
+      "d_yang_yin_db": 5.591,
+      "margin_db": 0.926,
+      "gap_over_separation": 1.272,
+      "implied_scale": 1.3,
+      "implied_scale_distance_db": 6.757,
+      "scale_curve": [
+        [
+          0.7,
+          9.061
+        ],
+        [
+          0.75,
+          8.755
+        ],
+        [
+          0.8,
+          8.546
+        ],
+        [
+          0.85,
+          8.09
+        ],
+        [
+          0.9,
+          7.773
+        ],
+        [
+          0.95,
+          7.438
+        ],
+        [
+          1.0,
+          7.415
+        ],
+        [
+          1.05,
+          7.362
+        ],
+        [
+          1.1,
+          7.147
+        ],
+        [
+          1.15,
+          7.142
+        ],
+        [
+          1.2,
+          6.997
+        ],
+        [
+          1.25,
+          6.86
+        ],
+        [
+          1.3,
+          6.757
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": true
+    },
+    {
+      "sample_id": "sample_17",
+      "utt_id": "SSB03390129",
+      "speaker": "SSB0339",
+      "gender": "female",
+      "pinyin": [
+        "dian3",
+        "ge1"
+      ],
+      "median_f0_hz": 223.3,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 4.943,
+      "d_real_yin_db": 6.215,
+      "d_yang_yin_db": 7.008,
+      "margin_db": 1.272,
+      "gap_over_separation": 0.705,
+      "implied_scale": 1.0,
+      "implied_scale_distance_db": 4.952,
+      "scale_curve": [
+        [
+          0.7,
+          7.089
+        ],
+        [
+          0.75,
+          7.166
+        ],
+        [
+          0.8,
+          6.717
+        ],
+        [
+          0.85,
+          6.113
+        ],
+        [
+          0.9,
+          5.657
+        ],
+        [
+          0.95,
+          5.265
+        ],
+        [
+          1.0,
+          4.952
+        ],
+        [
+          1.05,
+          4.991
+        ],
+        [
+          1.1,
+          5.176
+        ],
+        [
+          1.15,
+          5.513
+        ],
+        [
+          1.2,
+          6.024
+        ],
+        [
+          1.25,
+          6.323
+        ],
+        [
+          1.3,
+          6.565
+        ]
+      ],
+      "inside_preset_range": true,
+      "at_grid_edge": false
+    },
+    {
+      "sample_id": "sample_18",
+      "utt_id": "SSB07580481",
+      "speaker": "SSB0758",
+      "gender": "female",
+      "pinyin": [
+        "dan4",
+        "bao3"
+      ],
+      "median_f0_hz": 225.4,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 7.467,
+      "d_real_yin_db": 8.869,
+      "d_yang_yin_db": 7.344,
+      "margin_db": 1.401,
+      "gap_over_separation": 1.017,
+      "implied_scale": 1.3,
+      "implied_scale_distance_db": 6.206,
+      "scale_curve": [
+        [
+          0.7,
+          9.725
+        ],
+        [
+          0.75,
+          9.184
+        ],
+        [
+          0.8,
+          8.671
+        ],
+        [
+          0.85,
+          8.612
+        ],
+        [
+          0.9,
+          8.473
+        ],
+        [
+          0.95,
+          8.204
+        ],
+        [
+          1.0,
+          8.175
+        ],
+        [
+          1.05,
+          7.856
+        ],
+        [
+          1.1,
+          7.372
+        ],
+        [
+          1.15,
+          7.152
+        ],
+        [
+          1.2,
+          6.794
+        ],
+        [
+          1.25,
+          6.41
+        ],
+        [
+          1.3,
+          6.206
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": true
+    },
+    {
+      "sample_id": "sample_19",
+      "utt_id": "SSB01450094",
+      "speaker": "SSB0145",
+      "gender": "female",
+      "pinyin": [
+        "qing2",
+        "ge1"
+      ],
+      "median_f0_hz": 248.1,
+      "heuristic_template": "yang",
+      "closer_template": "yin",
+      "agrees": false,
+      "d_real_yang_db": 6.722,
+      "d_real_yin_db": 6.349,
+      "d_yang_yin_db": 6.3,
+      "margin_db": 0.373,
+      "gap_over_separation": 1.008,
+      "implied_scale": 0.9,
+      "implied_scale_distance_db": 6.39,
+      "scale_curve": [
+        [
+          0.7,
+          6.394
+        ],
+        [
+          0.75,
+          6.68
+        ],
+        [
+          0.8,
+          6.882
+        ],
+        [
+          0.85,
+          6.583
+        ],
+        [
+          0.9,
+          6.39
+        ],
+        [
+          0.95,
+          6.453
+        ],
+        [
+          1.0,
+          6.468
+        ],
+        [
+          1.05,
+          6.488
+        ],
+        [
+          1.1,
+          6.844
+        ],
+        [
+          1.15,
+          7.419
+        ],
+        [
+          1.2,
+          8.121
+        ],
+        [
+          1.25,
+          8.698
+        ],
+        [
+          1.3,
+          9.135
+        ]
+      ],
+      "inside_preset_range": true,
+      "at_grid_edge": false
+    },
+    {
+      "sample_id": "sample_20",
+      "utt_id": "SSB12740255",
+      "speaker": "SSB1274",
+      "gender": "female",
+      "pinyin": [
+        "zhong1",
+        "guo2",
+        "mei3"
+      ],
+      "median_f0_hz": 223.3,
+      "heuristic_template": "yang",
+      "closer_template": "yang",
+      "agrees": true,
+      "d_real_yang_db": 11.557,
+      "d_real_yin_db": 13.143,
+      "d_yang_yin_db": 5.119,
+      "margin_db": 1.586,
+      "gap_over_separation": 2.257,
+      "implied_scale": 1.15,
+      "implied_scale_distance_db": 11.666,
+      "scale_curve": [
+        [
+          0.7,
+          13.755
+        ],
+        [
+          0.75,
+          13.531
+        ],
+        [
+          0.8,
+          13.182
+        ],
+        [
+          0.85,
+          12.826
+        ],
+        [
+          0.9,
+          12.586
+        ],
+        [
+          0.95,
+          12.321
+        ],
+        [
+          1.0,
+          12.045
+        ],
+        [
+          1.05,
+          11.945
+        ],
+        [
+          1.1,
+          11.815
+        ],
+        [
+          1.15,
+          11.666
+        ],
+        [
+          1.2,
+          11.693
+        ],
+        [
+          1.25,
+          11.765
+        ],
+        [
+          1.3,
+          11.754
+        ]
+      ],
+      "inside_preset_range": false,
+      "at_grid_edge": false
+    }
+  ],
+  "implied_scale": {
+    "median": 1.175,
+    "min": 0.7,
+    "max": 1.3,
+    "inside_preset_range": 3,
+    "at_grid_edge": 7,
+    "note": "diagnostic of the speaker/preset gap only; the synthesizer is never fitted to the target speaker when building pairs"
+  }
+}

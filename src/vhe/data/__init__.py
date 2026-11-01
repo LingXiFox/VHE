@@ -4,6 +4,7 @@ Only metadata plumbing lives here: no audio is downloaded, copied into the
 repository or fed to VHE from this package.
 """
 
+from .align import Alignment, Boundary, align_syllables
 from .f0 import F0Frame, F0Track, estimate_f0
 from .pitch import (
     PeriodCandidate,
@@ -16,6 +17,8 @@ from .pitch import (
 from .resample import resample
 from .segment import Segment, Segmentation, check_syllable_count, segment_by_energy
 from .pairing import (
+    ALIGNMENT_MODES,
+    PITCH_ESTIMATORS,
     PairResult,
     Syllable,
     build_pair,
@@ -49,4 +52,6 @@ __all__ = [
     "parse_split_sizes", "DEFAULT_SPLIT_SIZES", "SPLIT_SEED", "SPLIT_NAMES",
     "check_no_speaker_leak", "discover_splits", "read_manifest", "write_manifest",
     "PairResult", "Syllable", "build_pair", "parse_syllable", "write_pair",
+    "ALIGNMENT_MODES", "PITCH_ESTIMATORS",
+    "Alignment", "Boundary", "align_syllables",
 ]

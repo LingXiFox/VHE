@@ -62,6 +62,40 @@ def test_parse_syllable_splits_initial_final_tone():
     assert parse_syllable("v3").final == "v" and parse_syllable("v3").phoneme is None
 
 
+@pytest.mark.parametrize("token,phonemes", [
+    ("shi2", ("sh", "apical_retroflex")),
+    ("zhi1", ("zh", "apical_retroflex")),
+    ("wo3", ("uo",)),
+    ("you3", ("iou",)),
+    ("liu2", ("l", "iou")),
+    ("yan2", ("ian",)),
+    ("yue4", ()),
+    ("nv3", ()),
+    ("zher4", ()),
+    ("chun1", ()),
+])
+def test_parse_syllable_looks_up_the_written_final_not_the_underlying_one(token, phonemes):
+    """Regression: passing the underlying final into g2p built fake pinyin.
+
+    'shi' used to be resolved as 'sh' + 'apical_retroflex', which g2p turned into the
+    nonsense spelling 'shapical_retroflex' and blocked. 3160 of the 5314 utterances the
+    manifest called renderable hit this, so coverage and rendering disagreed by 59%.
+    """
+    syllable = parse_syllable(token, "mandarin")
+    assert syllable.phonemes == phonemes
+    if not phonemes:
+        assert syllable.reason
+
+
+def test_parse_syllable_keeps_the_written_spelling_next_to_the_underlying_final():
+    syllable = parse_syllable("you3", "mandarin")
+    assert (syllable.initial, syllable.final) == ("y", "ou")
+    assert syllable.underlying_final == "iou"
+    assert syllable.phonemes == ("iou",)
+    apical = parse_syllable("zhi1", "mandarin")
+    assert apical.final == "i" and apical.underlying_final == "apical_retroflex"
+
+
 @pytest.mark.parametrize("token", ["a", "1a", "a1b", "", "a0"])
 def test_parse_syllable_rejects_malformed_tokens(token):
     with pytest.raises(ValueError):
@@ -257,3 +291,159 @@ def test_build_pair_blocks_a_mandarin_syllable_outside_the_inventory(tmp_path):
     blocked = [s for s in result.syllables if not s["phonemes"]]
     assert [s["pinyin"] for s in blocked] == ["zi2"]
     assert "apical" in blocked[0]["reason"]
+
+# --- P1.5: pitch tracker, alignment modes and training readiness ---------------------
+
+
+def test_pair_pipeline_uses_the_viterbi_tracker_and_reports_readiness(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "mandarin_tracker.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth())
+    assert result.status == "ok", result.issues
+    # EXP-0015's tracker is the default; the legacy estimator is opt-in only.
+    assert result.pitch["estimator"] == "viterbi_multicandidate"
+    assert result.f0_stats["estimator"] == "viterbi_multicandidate"
+    assert "reasons" in result.f0_stats and "median_abs_step_cents" in result.f0_stats
+    assert result.alignment["method"] == "energy_segments"
+    # Energy segmentation produces no per-boundary confidence, so a pair built this way is
+    # never training-ready: the boundaries are the segmenter's, not verified ones.
+    assert result.readiness["training_ready"] is False
+    assert "no_boundary_confidence" in result.readiness["reasons"]
+
+
+def test_legacy_estimator_stays_available_as_an_ablation(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "mandarin_legacy.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), pitch_estimator="legacy",
+                        alignment="dp")
+    assert result.status == "ok", result.issues
+    assert result.pitch["estimator"] == "legacy_yin"
+    assert result.f0_stats["estimator"] == "legacy_yin"
+    assert result.f0_stats["median_f0_hz"] == pytest.approx(200.0, abs=5.0)
+
+
+def test_dp_alignment_gives_every_isolated_syllable_a_voiced_window(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "mandarin_dp.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), alignment="dp")
+    assert result.status == "ok", result.issues
+    assert result.alignment["method"] == "energy_dp"
+    assert len(result.syllables) == len(result.pitch["syllables"]) == 3
+    # The reward for rising energy is what keeps a boundary out of the middle of /b/'s
+    # closure; without it the second window contained no voiced frame at all.
+    assert min(item["coverage"] for item in result.pitch["syllables"]) > 0.5
+    assert result.readiness["training_ready"] is True, result.readiness
+
+
+def test_dp_does_not_call_a_continuous_vowel_split_training_ready(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "cont_vowels.wav"
+    audio = np.concatenate([render_vowel(p, 0.2) for p in ("a", "i", "u")])
+    write_wav(path, audio, 24000)
+    result = build_pair(path, ["a1", "i2", "u3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), alignment="dp")
+    assert result.status == "ok", result.issues
+    # The DP finds a deep valley between two vowels, but the independent energy segmenter
+    # sees one burst while the transcript claims three syllables, so the boundaries are not
+    # trusted -- even though dip depth alone would report high confidence.
+    assert result.alignment["min_confidence"] > 0.5
+    assert "segmentation_count_disagrees" in result.readiness["reasons"]
+    assert result.readiness["training_ready"] is False
+
+
+def test_manual_boundaries_are_the_only_route_to_a_trusted_pair(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "cont_manual.wav"
+    audio = np.concatenate([render_vowel(p, 0.2) for p in ("a", "i", "u")])
+    write_wav(path, audio, 24000)
+    result = build_pair(path, ["a1", "i2", "u3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), alignment="dp",
+                        boundaries_s=[(0.0, 0.2), (0.2, 0.4), (0.4, 0.6)])
+    assert result.status == "ok", result.issues
+    assert result.alignment["method"] == "manual"
+    assert [round(item["duration_s"], 3) for item in result.alignment["boundaries"]] \
+        == [0.2, 0.2, 0.2]
+    assert result.readiness["training_ready"] is True, result.readiness
+
+
+def test_energy_dp_boundaries_carry_their_own_evidence(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "evidenced.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), alignment="dp")
+    assert result.status == "ok", result.issues
+    bounds = result.alignment["boundaries"]
+    assert all({"start_s", "end_s", "duration_s", "dip_db", "confidence"} <= set(item)
+               for item in bounds)
+    # The first window has no left-hand join, so it has no valley evidence of its own.
+    assert bounds[0]["confidence"] is None
+    assert sum(1 for item in bounds if item["confidence"] is not None) == len(bounds) - 1
+
+
+def test_bad_manual_boundaries_are_reported_not_guessed(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "bad_manual.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(),
+                        boundaries_s=[(0.0, 0.2), (0.2, 0.4)])
+    assert result.status == "rejected"
+    codes = {issue["code"] for issue in result.issues}
+    assert "bad_manual_boundaries" in codes
+    assert result.readiness["training_ready"] is False
+
+
+def test_a_pitch_gap_is_interpolated_but_blocks_readiness(tmp_path):
+    from vhe.synth.mandarin import MandarinFormantSynth
+
+    path = tmp_path / "gap.wav"
+    audio = render_vowel("a", 0.5)
+    rate = 24000
+    audio[int(0.25 * rate):int(0.33 * rate)] = 0.0
+    write_wav(path, audio, rate)
+    result = build_pair(path, ["a1"], template=PRESETS["yang"],
+                        backend=MandarinFormantSynth(), alignment="dp",
+                        boundaries_s=[(0.0, 0.5)])
+    assert result.status == "ok", result.issues
+    codes = {issue["code"] for issue in result.issues}
+    assert "pitch_gap_interpolated" in codes
+    assert result.pitch["syllables"][0]["longest_gap_s"] > 0.05
+    assert result.readiness["training_ready"] is False
+    assert "pitch_gap_interpolated" in result.readiness["reasons"]
+
+
+def test_unknown_pitch_estimator_is_a_programming_error(tmp_path):
+    path = tmp_path / "anything.wav"
+    make_mandarin_utterance(path)
+    with pytest.raises(ValueError):
+        build_pair(path, ["ma1"], template=PRESETS["yang"], pitch_estimator="magic")
+    with pytest.raises(ValueError):
+        build_pair(path, ["ma1"], template=PRESETS["yang"], alignment="magic")
+
+
+def test_pair_record_serialises_the_new_diagnostics(tmp_path):
+    path = tmp_path / "record.wav"
+    make_mandarin_utterance(path)
+    result = build_pair(path, ["ma1", "ba2", "na3"], template=PRESETS["yang"],
+                        backend=__import__("vhe.synth.mandarin",
+                                           fromlist=["MandarinFormantSynth"]
+                                           ).MandarinFormantSynth())
+    record = result.as_dict()
+    for key in ("pitch", "alignment", "readiness"):
+        assert key in record
+    json.dumps(record, allow_nan=False)
+
