@@ -1,0 +1,132 @@
+{
+ "summary": {
+  "pairs": 3,
+  "speakers": [
+   "SSB1593",
+   "SSB1322",
+   "SSB1806"
+  ],
+  "seed": 42,
+  "bands": 12,
+  "logmel_mean": 1.546,
+  "real": {
+   "rms_db": -30.947,
+   "peak": 0.193,
+   "median_f0_hz": 226.6,
+   "periodicity": 0.54,
+   "hf_ratio": 0.008,
+   "flatness": 0.39
+  },
+  "robot": {
+   "rms_db": -30.947,
+   "peak": 0.408,
+   "median_f0_hz": 89.067,
+   "periodicity": 0.229,
+   "hf_ratio": 0.019,
+   "flatness": 0.494
+  }
+ },
+ "pairs": [
+  {
+   "utt_id": "SSB15930008",
+   "speaker": "SSB1593",
+   "pinyin": [
+    "yi4",
+    "bai3",
+    "ling2",
+    "yi1"
+   ],
+   "logmel": 1.483,
+   "real": {
+    "seconds": 1.526,
+    "rms_db": -28.45,
+    "peak": 0.184,
+    "median_f0_hz": 212.9,
+    "ac_f0_hz": 87.9,
+    "periodicity": 0.563,
+    "hf_ratio": 0.00019,
+    "flatness": 0.4015
+   },
+   "robot": {
+    "seconds": 1.526,
+    "rms_db": -28.45,
+    "peak": 0.313,
+    "median_f0_hz": 88.0,
+    "ac_f0_hz": 87.6,
+    "periodicity": 0.418,
+    "hf_ratio": 0.00052,
+    "flatness": 0.4776
+   }
+  },
+  {
+   "utt_id": "SSB13220021",
+   "speaker": "SSB1322",
+   "pinyin": [
+    "ba1",
+    "bai2",
+    "jiu3",
+    "shi2",
+    "wu2",
+    "dian3",
+    "yi1",
+    "yi1"
+   ],
+   "logmel": 1.438,
+   "real": {
+    "seconds": 2.33,
+    "rms_db": -25.89,
+    "peak": 0.339,
+    "median_f0_hz": 222.1,
+    "ac_f0_hz": 218.2,
+    "periodicity": 0.448,
+    "hf_ratio": 0.02207,
+    "flatness": 0.3971
+   },
+   "robot": {
+    "seconds": 2.33,
+    "rms_db": -25.89,
+    "peak": 0.805,
+    "median_f0_hz": 85.9,
+    "ac_f0_hz": 117.6,
+    "periodicity": 0.122,
+    "hf_ratio": 0.04725,
+    "flatness": 0.5035
+   }
+  },
+  {
+   "utt_id": "SSB18060007",
+   "speaker": "SSB1806",
+   "pinyin": [
+    "yan2",
+    "qing4",
+    "de5",
+    "di4",
+    "ming2",
+    "you3",
+    "shen2",
+    "me5"
+   ],
+   "logmel": 1.717,
+   "real": {
+    "seconds": 2.42,
+    "rms_db": -38.5,
+    "peak": 0.055,
+    "median_f0_hz": 244.8,
+    "ac_f0_hz": 263.7,
+    "periodicity": 0.609,
+    "hf_ratio": 0.00287,
+    "flatness": 0.371
+   },
+   "robot": {
+    "seconds": 2.42,
+    "rms_db": -38.5,
+    "peak": 0.106,
+    "median_f0_hz": 93.3,
+    "ac_f0_hz": 127.0,
+    "periodicity": 0.148,
+    "hf_ratio": 0.00795,
+    "flatness": 0.501
+   }
+  }
+ ]
+}

@@ -1,0 +1,230 @@
+{
+ "summary": {
+  "pairs": 6,
+  "speakers": [
+   "SSB1593",
+   "SSB1322",
+   "SSB1806"
+  ],
+  "seed": 42,
+  "logmel_mean": 1.662,
+  "real": {
+   "rms_db": -32.02,
+   "peak": 0.195,
+   "median_f0_hz": 222.983,
+   "periodicity": 0.524,
+   "hf_ratio": 0.015,
+   "flatness": 0.401
+  },
+  "robot": {
+   "rms_db": -32.02,
+   "peak": 0.231,
+   "median_f0_hz": 95.65,
+   "periodicity": 0.356,
+   "hf_ratio": 0.001,
+   "flatness": 0.313
+  }
+ },
+ "pairs": [
+  {
+   "utt_id": "SSB15930008",
+   "speaker": "SSB1593",
+   "pinyin": [
+    "yi4",
+    "bai3",
+    "ling2",
+    "yi1"
+   ],
+   "logmel": 1.719,
+   "real": {
+    "seconds": 1.526,
+    "rms_db": -28.45,
+    "peak": 0.184,
+    "median_f0_hz": 212.9,
+    "ac_f0_hz": 87.9,
+    "periodicity": 0.563,
+    "hf_ratio": 0.00019,
+    "flatness": 0.4015
+   },
+   "robot": {
+    "seconds": 1.526,
+    "rms_db": -28.45,
+    "peak": 0.21,
+    "median_f0_hz": 98.7,
+    "ac_f0_hz": 88.2,
+    "periodicity": 0.403,
+    "hf_ratio": 1e-05,
+    "flatness": 0.2954
+   }
+  },
+  {
+   "utt_id": "SSB15930016",
+   "speaker": "SSB1593",
+   "pinyin": [
+    "zhi3",
+    "shi4"
+   ],
+   "logmel": 1.691,
+   "real": {
+    "seconds": 1.34,
+    "rms_db": -29.14,
+    "peak": 0.241,
+    "median_f0_hz": 180.5,
+    "ac_f0_hz": 387.1,
+    "periodicity": 0.487,
+    "hf_ratio": 0.04094,
+    "flatness": 0.4485
+   },
+   "robot": {
+    "seconds": 1.34,
+    "rms_db": -29.14,
+    "peak": 0.289,
+    "median_f0_hz": 85.6,
+    "ac_f0_hz": 88.6,
+    "periodicity": 0.322,
+    "hf_ratio": 0.00167,
+    "flatness": 0.4059
+   }
+  },
+  {
+   "utt_id": "SSB13220021",
+   "speaker": "SSB1322",
+   "pinyin": [
+    "ba1",
+    "bai2",
+    "jiu3",
+    "shi2",
+    "wu2",
+    "dian3",
+    "yi1",
+    "yi1"
+   ],
+   "logmel": 1.648,
+   "real": {
+    "seconds": 2.33,
+    "rms_db": -25.89,
+    "peak": 0.339,
+    "median_f0_hz": 222.1,
+    "ac_f0_hz": 218.2,
+    "periodicity": 0.448,
+    "hf_ratio": 0.02207,
+    "flatness": 0.3971
+   },
+   "robot": {
+    "seconds": 2.33,
+    "rms_db": -25.89,
+    "peak": 0.5,
+    "median_f0_hz": 88.6,
+    "ac_f0_hz": 228.6,
+    "periodicity": 0.468,
+    "hf_ratio": 0.00099,
+    "flatness": 0.3079
+   }
+  },
+  {
+   "utt_id": "SSB13220035",
+   "speaker": "SSB1322",
+   "pinyin": [
+    "you3",
+    "mei2",
+    "you3",
+    "qi2",
+    "ta1",
+    "de5",
+    "hao3",
+    "dong1",
+    "xi5"
+   ],
+   "logmel": 1.608,
+   "real": {
+    "seconds": 2.57,
+    "rms_db": -30.27,
+    "peak": 0.288,
+    "median_f0_hz": 236.0,
+    "ac_f0_hz": 258.1,
+    "periodicity": 0.508,
+    "hf_ratio": 0.02016,
+    "flatness": 0.4199
+   },
+   "robot": {
+    "seconds": 2.57,
+    "rms_db": -30.27,
+    "peak": 0.261,
+    "median_f0_hz": 107.1,
+    "ac_f0_hz": 228.6,
+    "periodicity": 0.363,
+    "hf_ratio": 0.00123,
+    "flatness": 0.3356
+   }
+  },
+  {
+   "utt_id": "SSB18060007",
+   "speaker": "SSB1806",
+   "pinyin": [
+    "yan2",
+    "qing4",
+    "de5",
+    "di4",
+    "ming2",
+    "you3",
+    "shen2",
+    "me5"
+   ],
+   "logmel": 1.642,
+   "real": {
+    "seconds": 2.42,
+    "rms_db": -38.5,
+    "peak": 0.055,
+    "median_f0_hz": 244.8,
+    "ac_f0_hz": 263.7,
+    "periodicity": 0.609,
+    "hf_ratio": 0.00287,
+    "flatness": 0.371
+   },
+   "robot": {
+    "seconds": 2.42,
+    "rms_db": -38.5,
+    "peak": 0.057,
+    "median_f0_hz": 104.5,
+    "ac_f0_hz": 279.1,
+    "periodicity": 0.357,
+    "hf_ratio": 0.00012,
+    "flatness": 0.2539
+   }
+  },
+  {
+   "utt_id": "SSB18060038",
+   "speaker": "SSB1806",
+   "pinyin": [
+    "jian4",
+    "zhu4",
+    "she4",
+    "ji4",
+    "yan2",
+    "jiu1",
+    "suo3"
+   ],
+   "logmel": 1.666,
+   "real": {
+    "seconds": 2.66,
+    "rms_db": -39.87,
+    "peak": 0.061,
+    "median_f0_hz": 241.6,
+    "ac_f0_hz": 260.9,
+    "periodicity": 0.528,
+    "hf_ratio": 0.005,
+    "flatness": 0.3684
+   },
+   "robot": {
+    "seconds": 2.66,
+    "rms_db": -39.87,
+    "peak": 0.067,
+    "median_f0_hz": 89.4,
+    "ac_f0_hz": 258.1,
+    "periodicity": 0.224,
+    "hf_ratio": 0.00023,
+    "flatness": 0.2776
+   }
+  }
+ ]
+}

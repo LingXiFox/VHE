@@ -16,7 +16,7 @@
   "cuda_version": null,
   "gpu": "RTX 4090 Laptop 16376 MiB (WSL2) for the builder; alignment model trained there, analysis run on macOS",
   "config_sha256": null,
-  "notes": "Listening gate NOT done: 24 ready pairs in derived/aishell3-listen/EXP-0023-run5/ab plus sheet.md await the owner's scores. Readiness probe on a fixed dev sample: 34/60 = 56.7% ready, every blocked pair blocked by pitch_gap_interpolated only. Aligner model v3 sha256 d824935ea6d4e671d35f70f278cd51f3e01990e62ee81e1ebf4995516044c42a; readiness log sha256 94ff4ab56b9ca760c69eb532b09d53989012d9e2e4cd0a9cf5a6c2e44184439f.",
+  "notes": "Listening gate NOT done: 24 ready pairs in derived/aishell3-listen/EXP-0023-run5/ab plus sheet.md await the owner's scores. Readiness probe on a fixed dev sample: 34/60 = 56.7% ready, every blocked pair blocked by pitch_gap_interpolated only. Aligner model v3 sha256 d824935ea6d4e671d35f70f278cd51f3e01990e62ee81e1ebf4995516044c42a; readiness log sha256 94ff4ab56b9ca760c69eb532b09d53989012d9e2e4cd0a9cf5a6c2e44184439f. Listening check performed 2026-11-01 and FAILED: unintelligible with electronic artefacts; objective probes point at the formant synthesiser, not alignment or pitch.",
   "extra": {
     "runs": {
       "run3": {
@@ -50,5 +50,32 @@
       "ready_rate": 0.5667
     },
     "bug": "span time base offset added twice (align_index.py, build_listening_package.py), fixed in 57ed0ef"
+  },
+  "listening": {
+    "date": "2026-11-01",
+    "listener": "owner",
+    "pairs": 24,
+    "verdict": "failed",
+    "quote_zh": "后面的机械声效果不咋地，听不清还有类似电子杂音一样",
+    "defects": [
+      "intelligibility",
+      "electronic artefacts"
+    ],
+    "objective_corroboration": {
+      "rms_match": true,
+      "mech_peak_mean": 0.132,
+      "real_peak_mean": 0.171,
+      "periodicity_mech": 0.578,
+      "periodicity_real": 0.57,
+      "median_f0_mech_hz": 218.8,
+      "median_f0_real_hz": 213.6,
+      "flatness_mech": 0.023,
+      "flatness_real": 0.051,
+      "hf_ratio_mech_max": 0.0293,
+      "clicks": {
+        "SSB18630018": 16
+      }
+    },
+    "attribution": "formant synthesiser timbre and segment transitions, not the pairing pipeline"
   }
 }

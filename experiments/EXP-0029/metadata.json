@@ -1,0 +1,20 @@
+{
+  "experiment_id": "EXP-0029",
+  "title": "Can an analysis-resynthesis source replace the formant synthesiser as x_mechanical?",
+  "hypothesis": "The formant synthesiser's output is unintelligible and covers the reference with 5.59 log-mel distance. Rendering a pulse-train excitation through the reference's band-flattened envelope should produce a mechanical copy that stays within 2.5 log-mel, keeps the fundamental within 5 % and keeps at least half the energy above 6 kHz, while sounding audibly mechanical. If the distance collapses below 1.0 the task becomes trivial and the approach must be reconsidered.",
+  "created_utc": "2026-11-01T13:40:00+00:00",
+  "python": "3.14.6",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "dcb3d67028dd49726b5b6181bdd80d898283b0c3",
+    "status": "M experiments/EXP-0023/README.md\n M experiments/EXP-0023/metadata.json\n?? experiments/EXP-0029/\n?? src/vhe/data/robotize.py\n?? tests/test_data_robotize.py"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+  "command": ".venv/bin/python experiments/EXP-0029/probe_robotize.py --manifest <manifest.jsonl> --root <AISHELL-3/extracted> --out <derived>/aishell3-listen/EXP-0029-b12 --speakers 3 --per-speaker 1 --bands 12",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Runs: bands=24 filterbank-weight envelope (HF collapse, kept as failing record), bands=24 per-bin band mean (log-mel 0.933, default), bands=12 per-bin band mean (1.546, rejected: synthetic 220 Hz vowel drops to 110.6 Hz and loudness is 2.6 dB low). Listening criterion still open. estimate_f0 misreads the buzzy output as a subharmonic; pitch was checked by autocorrelation instead. Metadata written after the runs - process violation recorded in the README."
+}
