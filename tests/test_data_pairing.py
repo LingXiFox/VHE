@@ -245,12 +245,15 @@ def test_build_pair_blocks_a_mandarin_syllable_outside_the_inventory(tmp_path):
 
     path = tmp_path / "mandarin_blocked.wav"
     make_mandarin_utterance(path)
-    result = build_pair(path, ["ma1", "shi2", "na3"], template=PRESETS["yang"],
+    # zi2 is the dental apical vowel [ɿ], still absent from the inventory; shi2 became
+    # renderable in EXP-0016 stage 2, so the apical refusal is now covered by the dental
+    # series. The assertion is unchanged: no near-substitution.
+    result = build_pair(path, ["ma1", "zi2", "na3"], template=PRESETS["yang"],
                         backend=MandarinFormantSynth())
     assert result.status == "blocked"
     assert result.mechanical is None
     codes = {issue["code"] for issue in result.issues}
     assert "backend_inventory_insufficient" in codes
     blocked = [s for s in result.syllables if not s["phonemes"]]
-    assert [s["pinyin"] for s in blocked] == ["shi2"]
+    assert [s["pinyin"] for s in blocked] == ["zi2"]
     assert "apical" in blocked[0]["reason"]

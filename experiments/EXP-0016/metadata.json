@@ -7,14 +7,15 @@
   "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
   "git": {
     "commit": "1cd72f068756246a39e8d0ef729c46094fd19033",
-    "status": "dirty: EXP-0016 stage 1 (phonology inventory, g2p finals, tests, probes)"
+    "status": "dirty: EXP-0016 stages 1-3 (phonology inventory 26 -> 36, g2p finals, tests, probes, docs)"
   },
   "seed": null,
   "dataset_manifest_sha256": "10539f61d015bc81dff88cb0ee5ba72b640ab703ee57373324f7c446a624c80f",
-  "command": "python experiments/EXP-0016/probe_coverage.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl --stage 1 --out experiments/EXP-0016/logs/coverage_stage1.json && python experiments/EXP-0016/probe_phonemes.py --stage 1 --units e ian ing iou --json experiments/EXP-0016/logs/phonemes_stage1_v2.json --wav-dir experiments/EXP-0016/artifacts/stage1",
+  "command": "python experiments/EXP-0016/probe_coverage.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl --stage 0 --out experiments/EXP-0016/logs/coverage_stage0.json && python experiments/EXP-0016/probe_phonemes.py --stage 1 --units e ian ing iou --json experiments/EXP-0016/logs/phonemes_stage1_v2.json --wav-dir experiments/EXP-0016/artifacts/stage1 && python experiments/EXP-0016/probe_coverage.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl --stage 1 --out experiments/EXP-0016/logs/coverage_stage1.json && python experiments/EXP-0016/probe_phonemes.py --stage 2 --units apical_retroflex uo ong en --json experiments/EXP-0016/logs/phonemes_stage2_v4.json --wav-dir experiments/EXP-0016/artifacts/stage2 && python experiments/EXP-0016/probe_coverage.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl --stage 2 --out experiments/EXP-0016/logs/coverage_stage2.json && python experiments/EXP-0016/probe_phonemes.py --stage 3 --units zh h --json experiments/EXP-0016/logs/phonemes_stage3.json --wav-dir experiments/EXP-0016/artifacts/stage3 && python experiments/EXP-0016/probe_coverage.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl --stage 3 --out experiments/EXP-0016/logs/coverage_stage3.json",
   "torch_version": null,
   "cuda_version": null,
   "gpu": null,
   "config_sha256": null,
-  "notes": "Stage 1 (e, ian, ing, iou) accepted: syllable coverage 0.309544 -> 0.503755, utterance coverage 0.002124 -> 0.012279 (187 -> 1081 of 88035). The 8 stage-0 regression renders are byte-identical after the inventory grew (logs/phonemes_stage1_v2.json, regression.all_same=true). Two measurement designs were discarded before the final harmonic-peak probe (logs/phonemes_stage1_v1.json keeps a label defect). No listening test; utterance coverage is still 1.2%."
+  "notes": "Three pre-registered batches accepted, inventory 26 -> 36 (+10 units). Syllable coverage on the v3 manifest 0.309544 -> 0.503755 (stage 1: e ian ing iou) -> 0.621630 (stage 2: apical_retroflex uo ong en) -> 0.692366 (stage 3: zh h); utterance coverage 0.002124 (187/88035) -> 0.012279 -> 0.037894 -> 0.060362 (5314/88035). Coverage recomputed from the same manifest entries without re-decoding any WAV. The 8 stage-0 regression renders stayed byte-identical after every batch (regression.all_same=true in phonemes_stage1_v2.json, phonemes_stage2_v4.json, phonemes_stage3.json). Superseded probe logs are kept as evidence: phonemes_stage1_v1.json (label defect: l+iou written as liou), phonemes_stage2.json (no F3), phonemes_stage2_v2.json (F3 added), phonemes_stage2_v3.json (template ratio quantised by the 200 Hz harmonic grid, void). No listening test; utterance coverage is still 6.04% and Windows CUDA is unverified.",
+  "completed_utc": "2026-11-01T05:40:00+00:00"
 }

@@ -1,0 +1,404 @@
+{
+  "stage": 2,
+  "units": {
+    "apical_retroflex": {
+      "kind": "final",
+      "carrier": "sh",
+      "onset_plus_final": "sh+apical_retroflex",
+      "pinyin": "shi",
+      "phonemes": [
+        "sh",
+        "apical_retroflex"
+      ],
+      "yang": {
+        "syllable": "shi",
+        "plan_s": [
+          [
+            "sh",
+            0.08
+          ],
+          [
+            "apical_retroflex",
+            0.22
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.20195,
+        "peak": 0.5074,
+        "f0_median_hz": 199.71,
+        "voiced_ratio": 0.929,
+        "rejections": {
+          "ok": 26,
+          "silence": 0,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 0
+        },
+        "nucleus_start_s": 0.08,
+        "wav": "experiments/EXP-0016/artifacts/stage2/shapical_retroflex_yang.wav",
+        "wav_sha256": "3002dff46f76c543d56b0e626f90db93d9a129d06f6409fd9d88f52214655f40"
+      },
+      "yin": {
+        "syllable": "shi",
+        "plan_s": [
+          [
+            "sh",
+            0.08
+          ],
+          [
+            "apical_retroflex",
+            0.22
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.20181,
+        "peak": 0.4288,
+        "f0_median_hz": 199.74,
+        "voiced_ratio": 0.929,
+        "rejections": {
+          "ok": 26,
+          "silence": 0,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 0
+        },
+        "nucleus_start_s": 0.08,
+        "wav": "experiments/EXP-0016/artifacts/stage2/shapical_retroflex_yin.wav",
+        "wav_sha256": "453316c1fee4769647da2a8fb0ffc6d971bc7a205026587a7e60bc92611a7515"
+      },
+      "template_centroid_ratio": 1.209,
+      "glide": {
+        "f1_early_hz": 300.0,
+        "f1_late_hz": 300.0,
+        "f2_early_hz": 1600.0,
+        "f2_late_hz": 1600.0,
+        "f3_early_hz": 1800.0,
+        "f3_late_hz": 1800.0,
+        "low_share_early": 0.85596,
+        "low_share_late": 0.85506
+      },
+      "nasal": {},
+      "onset": {}
+    },
+    "uo": {
+      "kind": "final",
+      "carrier": "d",
+      "onset_plus_final": "d+uo",
+      "pinyin": "duo",
+      "phonemes": [
+        "d",
+        "uo"
+      ],
+      "yang": {
+        "syllable": "duo",
+        "plan_s": [
+          [
+            "d",
+            0.056
+          ],
+          [
+            "uo",
+            0.244
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.19975,
+        "peak": 0.5081,
+        "f0_median_hz": 200.32,
+        "voiced_ratio": 0.893,
+        "rejections": {
+          "ok": 25,
+          "silence": 1,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 0
+        },
+        "nucleus_start_s": 0.056,
+        "wav": "experiments/EXP-0016/artifacts/stage2/duo_yang.wav",
+        "wav_sha256": "174e73e517afae9ce5b4a140b4d0663ada92549d5e953ff94cf2f4b1d596e2cb"
+      },
+      "yin": {
+        "syllable": "duo",
+        "plan_s": [
+          [
+            "d",
+            0.056
+          ],
+          [
+            "uo",
+            0.244
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.19948,
+        "peak": 0.4251,
+        "f0_median_hz": 200.33,
+        "voiced_ratio": 0.893,
+        "rejections": {
+          "ok": 25,
+          "silence": 1,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 0
+        },
+        "nucleus_start_s": 0.056,
+        "wav": "experiments/EXP-0016/artifacts/stage2/duo_yin.wav",
+        "wav_sha256": "227c57aff65521bdd47169d91cdc4651439e0334ea41871b54da1ec14ef94f6a"
+      },
+      "template_centroid_ratio": 1.305,
+      "glide": {
+        "f1_early_hz": 400.0,
+        "f1_late_hz": 500.0,
+        "f2_early_hz": 900.0,
+        "f2_late_hz": 900.0,
+        "f3_early_hz": 2500.0,
+        "f3_late_hz": 2600.0,
+        "low_share_early": 0.26998,
+        "low_share_late": 0.01324
+      },
+      "nasal": {},
+      "onset": {}
+    },
+    "ong": {
+      "kind": "final",
+      "carrier": "d",
+      "onset_plus_final": "d+ong",
+      "pinyin": "dong",
+      "phonemes": [
+        "d",
+        "ong"
+      ],
+      "yang": {
+        "syllable": "dong",
+        "plan_s": [
+          [
+            "d",
+            0.056
+          ],
+          [
+            "ong",
+            0.244
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.19949,
+        "peak": 0.7755,
+        "f0_median_hz": 200.34,
+        "voiced_ratio": 0.893,
+        "rejections": {
+          "ok": 25,
+          "silence": 1,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 0
+        },
+        "nucleus_start_s": 0.056,
+        "wav": "experiments/EXP-0016/artifacts/stage2/dong_yang.wav",
+        "wav_sha256": "50899985cfc1bd070cd930c37bc273c2117a42ec467ee1bcd8cd20be9ed593b9"
+      },
+      "yin": {
+        "syllable": "dong",
+        "plan_s": [
+          [
+            "d",
+            0.056
+          ],
+          [
+            "ong",
+            0.244
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.19944,
+        "peak": 0.6395,
+        "f0_median_hz": 200.33,
+        "voiced_ratio": 0.893,
+        "rejections": {
+          "ok": 25,
+          "silence": 1,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 0
+        },
+        "nucleus_start_s": 0.056,
+        "wav": "experiments/EXP-0016/artifacts/stage2/dong_yin.wav",
+        "wav_sha256": "13b3fceac57baff702ea6582da0b9d92f80646cc93237a989abe6b8bf710bc47"
+      },
+      "template_centroid_ratio": 1.299,
+      "glide": {
+        "f1_early_hz": 400.0,
+        "f1_late_hz": 400.0,
+        "f2_early_hz": 900.0,
+        "f2_late_hz": 900.0,
+        "f3_early_hz": 2600.0,
+        "f3_late_hz": 2500.0,
+        "low_share_early": 0.14211,
+        "low_share_late": 0.46557
+      },
+      "nasal": {
+        "nasal_from": 0.55,
+        "coda_low_share_nasal": 0.03461,
+        "coda_low_share_oral": 0.01563,
+        "head_low_share_nasal": 0.00631,
+        "head_low_share_oral": 0.00631
+      },
+      "onset": {}
+    },
+    "en": {
+      "kind": "final",
+      "carrier": "b",
+      "onset_plus_final": "b+en",
+      "pinyin": "ben",
+      "phonemes": [
+        "b",
+        "en"
+      ],
+      "yang": {
+        "syllable": "ben",
+        "plan_s": [
+          [
+            "b",
+            0.056
+          ],
+          [
+            "en",
+            0.244
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.19957,
+        "peak": 0.6525,
+        "f0_median_hz": 200.23,
+        "voiced_ratio": 0.857,
+        "rejections": {
+          "ok": 24,
+          "silence": 1,
+          "no_candidate": 1,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 2
+        },
+        "nucleus_start_s": 0.056,
+        "wav": "experiments/EXP-0016/artifacts/stage2/ben_yang.wav",
+        "wav_sha256": "498d06de4c1b1c108d17f627aa963f1555c534d4df74e7493e7a4eee99d6e4c6"
+      },
+      "yin": {
+        "syllable": "ben",
+        "plan_s": [
+          [
+            "b",
+            0.056
+          ],
+          [
+            "en",
+            0.244
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.19953,
+        "peak": 0.6528,
+        "f0_median_hz": 200.34,
+        "voiced_ratio": 0.893,
+        "rejections": {
+          "ok": 25,
+          "silence": 1,
+          "no_candidate": 1,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 1
+        },
+        "nucleus_start_s": 0.056,
+        "wav": "experiments/EXP-0016/artifacts/stage2/ben_yin.wav",
+        "wav_sha256": "85da259fbda5775df3eb768bc7b2e57c3f1c7fa5a4c3bf5d19f328f88e25f1b2"
+      },
+      "template_centroid_ratio": 1.319,
+      "glide": {
+        "f1_early_hz": 500.0,
+        "f1_late_hz": 400.0,
+        "f2_early_hz": 1500.0,
+        "f2_late_hz": 1700.0,
+        "f3_early_hz": 2700.0,
+        "f3_late_hz": 1800.0,
+        "low_share_early": 0.00395,
+        "low_share_late": 0.33545
+      },
+      "nasal": {
+        "nasal_from": 0.62,
+        "coda_low_share_nasal": 0.01866,
+        "coda_low_share_oral": 0.00882,
+        "head_low_share_nasal": 0.00129,
+        "head_low_share_oral": 0.00129
+      },
+      "onset": {}
+    }
+  },
+  "regression": {
+    "baseline_inventory_size": 26,
+    "current_inventory_size": 36,
+    "cases": {
+      "ma1": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "62e452603c3f6834adf47fd5259c99a1e21d214fd428c2cd28b778eee3ada35b",
+        "expected_sha256": "62e452603c3f6834adf47fd5259c99a1e21d214fd428c2cd28b778eee3ada35b"
+      },
+      "sha1": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "531d2a1e08213ebb4f70552c4c102907ebda84c32bfd513cafc65761ec9480a8",
+        "expected_sha256": "531d2a1e08213ebb4f70552c4c102907ebda84c32bfd513cafc65761ec9480a8"
+      },
+      "ban3": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "72d0dd3ab615f7d4e882f07ba7ea34f9fccbdf563ccc8ba600ce75972396c160",
+        "expected_sha256": "72d0dd3ab615f7d4e882f07ba7ea34f9fccbdf563ccc8ba600ce75972396c160"
+      },
+      "dei3": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "41befde626bb02a023dee9a6f8068a3851cb2476faf4dcfecdf772a80462dfb6",
+        "expected_sha256": "41befde626bb02a023dee9a6f8068a3851cb2476faf4dcfecdf772a80462dfb6"
+      },
+      "gou3": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "7654283e1abec4c2664be44b1eb0519ac421d8f94df74ac572d413e25a70088a",
+        "expected_sha256": "7654283e1abec4c2664be44b1eb0519ac421d8f94df74ac572d413e25a70088a"
+      },
+      "bi1": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "c58f02a6b858d29e0d533f2c615e9fc7049d39a2e49082f2fd0b4c5ae80e2be4",
+        "expected_sha256": "c58f02a6b858d29e0d533f2c615e9fc7049d39a2e49082f2fd0b4c5ae80e2be4"
+      },
+      "dan1": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "6d95341fc18e23b01a0ef3f51a24047d9c870f9442f8d028dc5f2b837f4e9c51",
+        "expected_sha256": "6d95341fc18e23b01a0ef3f51a24047d9c870f9442f8d028dc5f2b837f4e9c51"
+      },
+      "ai4": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "5f84e69ad4e27496b9c70c43ce55af746ba6b6da1046d7b5346c240c1f9145f1",
+        "expected_sha256": "5f84e69ad4e27496b9c70c43ce55af746ba6b6da1046d7b5346c240c1f9145f1"
+      }
+    },
+    "all_same": true
+  }
+}

@@ -30,6 +30,16 @@ from vhe.synth import MANDARIN_PHONEMES
     ("p", "ing", ("p", "ing")),
     ("l", "iu", ("l", "iou")),  # liu = /liou/
     ("y", "ou", ("iou",)),      # you = /iou/
+    # inventory stage 2 (EXP-0016): the apical vowel is its own unit, never /i/.
+    ("sh", "i", ("sh", "apical_retroflex")),
+    ("d", "uo", ("d", "uo")),
+    ("d", "ong", ("d", "ong")),
+    ("b", "en", ("b", "en")),
+    # inventory stage 3 (EXP-0016): initials zh and h.
+    ("zh", "i", ("zh", "apical_retroflex")),
+    ("zh", "an", ("zh", "an")),
+    ("h", "e", ("h", "e")),
+    ("h", "ong", ("h", "ong")),
 ])
 def test_renderable_syllables_map_to_onset_plus_nucleus(initial, final, expected):
     phonemes, reason = syllable_phonemes(initial, final)
@@ -45,16 +55,16 @@ def test_zero_initial_glide_spellings_are_single_vowels(initial, final, phoneme)
 
 
 @pytest.mark.parametrize("initial,final,needle", [
-    ("z", "i", "apical"),          # si  -> [sɿ], not /si/
-    ("sh", "i", "apical"),         # shi -> [ʂʅ]
+    ("z", "i", "apical"),          # zi  -> [tsɿ], not /tsi/ (dental not yet a unit)
+    ("s", "i", "apical"),          # si  -> [sɿ]
     ("j", "u", "ü"),               # ju  -> jü
     ("x", "uan", "inventory"),     # xuan: final not in the subset
-    ("zh", "a", "onset"),          # zh not in the inventory
-    ("h", "a", "onset"),
+    ("ch", "a", "onset"),          # ch is still not an inventory unit (zh was stage 3)
+    ("ch", "e", "onset"),
     ("r", "en", "onset"),
     ("l", "ie", "final"),          # ie is still not a unit (stage 1 did not add it)
     ("b", "ie", "final"),
-    ("d", "uo", "final"),
+    ("d", "uan", "final"),
     ("", "er", "final"),
 ])
 def test_unrenderable_syllables_are_blocked_with_a_reason(initial, final, needle):

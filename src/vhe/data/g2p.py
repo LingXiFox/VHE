@@ -37,6 +37,8 @@ SYNTH_FINAL_TO_PHONEME: dict[str, str] = {
     "ai": "ai", "ei": "ei", "ao": "au", "ou": "ou",
     "an": "an", "ang": "ang",
     "ian": "ian", "ing": "ing", "iou": "iou",
+    "uo": "uo", "ong": "ong", "en": "en",
+    "apical_retroflex": "apical_retroflex",
 }
 
 #: Onsets the synthesizer can render, derived from the inventory itself (no second list).
@@ -98,7 +100,7 @@ def syllable_phonemes(initial: str, final: str, inventory: str = "mandarin", *,
     # y/w are orthographic glides, never onsets: 'yi' is /i/, 'wu' is /u/.
     if initial and initial not in ("y", "w") and initial not in SUPPORTED_ONSETS:
         return (), f"onset {initial!r} is not in the {inventory!r} inventory"
-    if token.final.startswith("apical_"):
+    if token.final.startswith("apical_") and token.final not in SYNTH_FINAL_TO_PHONEME:
         symbol = "[ɿ]" if token.final == "apical_dental" else "[ʅ]"
         return (), (f"pinyin {initial + final!r} spells the apical vowel {symbol}, which is "
                     f"not in the {inventory!r} inventory")

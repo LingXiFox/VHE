@@ -1,0 +1,222 @@
+{
+  "stage": 3,
+  "units": {
+    "zh": {
+      "kind": "onset",
+      "carrier": "zh",
+      "onset_plus_final": "zh+a",
+      "pinyin": "zha",
+      "phonemes": [
+        "zh",
+        "a"
+      ],
+      "yang": {
+        "syllable": "zha",
+        "plan_s": [
+          [
+            "zh",
+            0.077
+          ],
+          [
+            "a",
+            0.223
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.20394,
+        "peak": 0.5065,
+        "f0_median_hz": 200.33,
+        "voiced_ratio": 0.893,
+        "rejections": {
+          "ok": 25,
+          "silence": 0,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 1
+        },
+        "nucleus_start_s": 0.077,
+        "wav": "experiments/EXP-0016/artifacts/stage3/zhzh_yang.wav",
+        "wav_sha256": "ce9287a5d3b2325b7f4f6eeb27928242a4c865d7383cd503c5ac54d3bd8c80c7"
+      },
+      "yin": {
+        "syllable": "zha",
+        "plan_s": [
+          [
+            "zh",
+            0.077
+          ],
+          [
+            "a",
+            0.223
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.20385,
+        "peak": 0.5168,
+        "f0_median_hz": 200.14,
+        "voiced_ratio": 0.857,
+        "rejections": {
+          "ok": 24,
+          "silence": 0,
+          "no_candidate": 2,
+          "low_confidence": 0,
+          "octave_ambiguous": 1,
+          "continuity_gated": 1
+        },
+        "nucleus_start_s": 0.077,
+        "wav": "experiments/EXP-0016/artifacts/stage3/zhzh_yin.wav",
+        "wav_sha256": "0a363f15cff17998413f700069f03320707fd37551fd60e78ef2cbb8119e95b5"
+      },
+      "glide": {},
+      "nasal": {},
+      "onset": {
+        "closure_rms": 0.000223,
+        "burst_rms": 0.07284,
+        "closure_to_burst": 0.00306,
+        "frication_rms": 0.06478,
+        "low_mid_share": 0.0239,
+        "mid_share": 0.6158,
+        "high_share": 0.3842
+      }
+    },
+    "h": {
+      "kind": "onset",
+      "carrier": "h",
+      "onset_plus_final": "h+a",
+      "pinyin": "ha",
+      "phonemes": [
+        "h",
+        "a"
+      ],
+      "yang": {
+        "syllable": "ha",
+        "plan_s": [
+          [
+            "h",
+            0.08
+          ],
+          [
+            "a",
+            0.22
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.20334,
+        "peak": 0.5151,
+        "f0_median_hz": 199.86,
+        "voiced_ratio": 0.857,
+        "rejections": {
+          "ok": 24,
+          "silence": 0,
+          "no_candidate": 3,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 1
+        },
+        "nucleus_start_s": 0.08,
+        "wav": "experiments/EXP-0016/artifacts/stage3/hh_yang.wav",
+        "wav_sha256": "d7005fdfc1b2ce684584eef79cb4692d1a24b0f0a27b9b04d7db2843b74a5eca"
+      },
+      "yin": {
+        "syllable": "ha",
+        "plan_s": [
+          [
+            "h",
+            0.08
+          ],
+          [
+            "a",
+            0.22
+          ]
+        ],
+        "samples": 7200,
+        "duration_s": 0.3,
+        "rms": 0.20336,
+        "peak": 0.5221,
+        "f0_median_hz": 199.86,
+        "voiced_ratio": 0.857,
+        "rejections": {
+          "ok": 24,
+          "silence": 0,
+          "no_candidate": 3,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 1
+        },
+        "nucleus_start_s": 0.08,
+        "wav": "experiments/EXP-0016/artifacts/stage3/hh_yin.wav",
+        "wav_sha256": "9be5c5b7ef6b8efe9f66f08050e9be428d601bc7d7fad9a5f87052051f8925c0"
+      },
+      "glide": {},
+      "nasal": {},
+      "onset": {
+        "closure_rms": 0.057941,
+        "burst_rms": 0.0571,
+        "closure_to_burst": 1.01466,
+        "frication_rms": 0.05132,
+        "low_mid_share": 0.5937,
+        "mid_share": 0.7463,
+        "high_share": 0.0
+      }
+    }
+  },
+  "regression": {
+    "baseline_inventory_size": 26,
+    "current_inventory_size": 36,
+    "cases": {
+      "ma1": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "62e452603c3f6834adf47fd5259c99a1e21d214fd428c2cd28b778eee3ada35b",
+        "expected_sha256": "62e452603c3f6834adf47fd5259c99a1e21d214fd428c2cd28b778eee3ada35b"
+      },
+      "sha1": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "531d2a1e08213ebb4f70552c4c102907ebda84c32bfd513cafc65761ec9480a8",
+        "expected_sha256": "531d2a1e08213ebb4f70552c4c102907ebda84c32bfd513cafc65761ec9480a8"
+      },
+      "ban3": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "72d0dd3ab615f7d4e882f07ba7ea34f9fccbdf563ccc8ba600ce75972396c160",
+        "expected_sha256": "72d0dd3ab615f7d4e882f07ba7ea34f9fccbdf563ccc8ba600ce75972396c160"
+      },
+      "dei3": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "41befde626bb02a023dee9a6f8068a3851cb2476faf4dcfecdf772a80462dfb6",
+        "expected_sha256": "41befde626bb02a023dee9a6f8068a3851cb2476faf4dcfecdf772a80462dfb6"
+      },
+      "gou3": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "7654283e1abec4c2664be44b1eb0519ac421d8f94df74ac572d413e25a70088a",
+        "expected_sha256": "7654283e1abec4c2664be44b1eb0519ac421d8f94df74ac572d413e25a70088a"
+      },
+      "bi1": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "c58f02a6b858d29e0d533f2c615e9fc7049d39a2e49082f2fd0b4c5ae80e2be4",
+        "expected_sha256": "c58f02a6b858d29e0d533f2c615e9fc7049d39a2e49082f2fd0b4c5ae80e2be4"
+      },
+      "dan1": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "6d95341fc18e23b01a0ef3f51a24047d9c870f9442f8d028dc5f2b837f4e9c51",
+        "expected_sha256": "6d95341fc18e23b01a0ef3f51a24047d9c870f9442f8d028dc5f2b837f4e9c51"
+      },
+      "ai4": {
+        "same_bytes": true,
+        "same_samples": true,
+        "sha256": "5f84e69ad4e27496b9c70c43ce55af746ba6b6da1046d7b5346c240c1f9145f1",
+        "expected_sha256": "5f84e69ad4e27496b9c70c43ce55af746ba6b6da1046d7b5346c240c1f9145f1"
+      }
+    },
+    "all_same": true
+  }
+}

@@ -81,9 +81,12 @@ def test_unparsable_tokens_raise_instead_of_being_approximated(token) -> None:
 def test_y_and_w_are_not_missing_onsets() -> None:
     """The synthesizer renders 'ya' from /ia/: counting a unit for y would be a false gap."""
     assert missing_units("y", "ia", SUPPORTED_ONSETS, SUPPORTED_FINALS) == ("final:ia",)
-    assert missing_units("w", "uo", SUPPORTED_ONSETS, SUPPORTED_FINALS) == ("final:uo",)
+    # 'uo' became renderable in inventory stage 2 (EXP-0016); 'ua' is still missing, so the
+    # y/w property is asserted with a final the inventory does not cover yet.
+    assert missing_units("w", "ua", SUPPORTED_ONSETS, SUPPORTED_FINALS) == ("final:ua",)
     assert renderable_units("y", "a", SUPPORTED_ONSETS, SUPPORTED_FINALS)
-    assert missing_units("zh", "a", SUPPORTED_ONSETS, SUPPORTED_FINALS) == ("onset:zh",)
+    # 'zh' became renderable in inventory stage 3 (EXP-0016); 'ch' is still an onset gap.
+    assert missing_units("ch", "a", SUPPORTED_ONSETS, SUPPORTED_FINALS) == ("onset:ch",)
 
 
 def test_erhua_is_reported_as_its_own_missing_unit() -> None:

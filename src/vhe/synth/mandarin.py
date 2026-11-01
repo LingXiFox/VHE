@@ -226,6 +226,13 @@ class MandarinFormantSynth:
             # Nasal murmur and lateral are a few dB below the vowel body; the nasal pole
             # in the filter adds some of it back, this keeps the balance from flipping.
             voiced[:] = 0.50 if spec.kind == "nasal" else 0.62
+        elif spec.kind == "approximant":
+            # A syllabic approximant ([ʅ], [ɿ]) runs both sources: the voiced body is the
+            # syllable nucleus, the noise is the residual frication of the retroflex/dental
+            # gesture. Voicing is full, not the nasal 0.5, because this segment carries the
+            # syllable's level; the noise gain is small enough not to take over.
+            voiced[:] = 1.0
+            noise[:] = spec.noise_gain
         elif spec.kind == "fricative":
             noise[:] = spec.noise_gain
         elif spec.kind in ("stop", "affricate"):

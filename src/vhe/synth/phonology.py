@@ -20,7 +20,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-Kind = Literal["vowel", "diphthong", "nasal", "lateral", "stop", "fricative", "affricate"]
+Kind = Literal["vowel", "diphthong", "nasal", "lateral", "approximant", "stop", "fricative",
+               "affricate"]
 
 # Formant triple in Hz: (F1, F2, F3).
 Formants = tuple[float, float, float]
@@ -121,6 +122,29 @@ MANDARIN_PHONEMES: dict[str, PhonemeSpec] = {
         (0.55, 400.0, 2050.0, 2900.0),
         (1.0, 330.0, 1750.0, 2700.0),
     ), nasal_from=0.50),
+    # --- inventory stage 2 (EXP-0016): apical retroflex, uo, ong, en -------------------
+    # The apical vowel after zh/ch/sh/r is [ʅ], a syllabic retroflex approximant, not /i/.
+    # Its cues are a raised F1 near 320 Hz and a *lowered* F3 (~1900 Hz) plus weak
+    # frication riding on the voiced body, which is why it needs the "approximant" source
+    # (voiced and noise at once) instead of the vowel source.
+    "apical_retroflex": PhonemeSpec("apical_retroflex", "approximant", True, (
+        (0.0, 320.0, 1500.0, 1900.0),
+    ), noise_band=(2500.0, 7000.0), noise_gain=0.10),
+    "uo": PhonemeSpec("uo", "diphthong", True, (        # [wo]: u closes, o opens the jaw
+        (0.0, 320.0, 750.0, 2300.0),
+        (0.55, 450.0, 850.0, 2400.0),
+        (1.0, 480.0, 880.0, 2400.0),
+    )),
+    "ong": PhonemeSpec("ong", "nasal", True, (          # [ʊŋ]: rounded, velar coda
+        (0.0, 380.0, 900.0, 2400.0),
+        (0.55, 430.0, 820.0, 2450.0),
+        (1.0, 350.0, 900.0, 2350.0),
+    ), nasal_from=0.55),
+    "en": PhonemeSpec("en", "nasal", True, (            # [ən]: mid central, alveolar coda
+        (0.0, 520.0, 1350.0, 2500.0),
+        (0.62, 470.0, 1450.0, 2500.0),
+        (1.0, 330.0, 1650.0, 2500.0),
+    ), nasal_from=0.62),
     # --- sonorant initials ----------------------------------------------------------
     "m": PhonemeSpec("m", "nasal", True, ((0.0, 250.0, 1000.0, 2200.0),), nasal_from=0.0),
     "n": PhonemeSpec("n", "nasal", True, ((0.0, 250.0, 1600.0, 2600.0),), nasal_from=0.0),
@@ -163,6 +187,19 @@ MANDARIN_PHONEMES: dict[str, PhonemeSpec] = {
     "q": PhonemeSpec("q", "affricate", False, ((0.0, 300.0, 2000.0, 2700.0),),
                      noise_band=(3000.0, 8000.0), noise_gain=0.28,
                      burst=(4000.0, 2000.0, 0.004, 0.8), closure_s=0.030, vot_s=0.070),
+    # --- inventory stage 3 (EXP-0016): initials zh, h --------------------------------
+    # [ʈʂ] is the unaspirated retroflex affricate: a retroflex closure, a short burst and
+    # a frication tail with sh's band but a VOT one quarter as long (ch is aspirated).
+    # Its F2 locus is low (1600 Hz), like sh's, not the 1800 Hz of the dental series.
+    "zh": PhonemeSpec("zh", "affricate", False, ((0.0, 320.0, 1600.0, 2500.0),),
+                      noise_band=(2000.0, 6000.0), noise_gain=0.30,
+                      burst=(3000.0, 1500.0, 0.004, 1.0), closure_s=0.035, vot_s=0.030),
+    # [x] is a velar fricative: turbulent noise centred near 1.5-2 kHz, one octave below
+    # the palatal [ɕ] of "x" (3000-8000 Hz). Mandarin 'h' never precedes a front rounded
+    # or high front vowel (no "hi"/"hü" syllable), so [x] covers every 'h' it will meet;
+    # the [ç] allophone of German "ich" is out of scope, not silently approximated.
+    "h": PhonemeSpec("h", "fricative", False, ((0.0, 400.0, 1300.0, 2400.0),),
+                     noise_band=(900.0, 4000.0), noise_gain=0.20),
 }
 
 MANDARIN_PHONEME_IDS: tuple[str, ...] = tuple(MANDARIN_PHONEMES)

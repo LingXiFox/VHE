@@ -90,8 +90,9 @@ def test_backend_declares_its_inventory_and_version():
 
 
 def test_unknown_phoneme_is_rejected_and_nothing_is_substituted():
+    # 'ch' is the closest neighbour of the (now supported) 'zh': nothing may stand in for it.
     with pytest.raises(ValueError, match="Unsupported phoneme"):
-        render("zh", duration_s=0.1)
+        render("ch", duration_s=0.1)
 
 
 def test_mandarin_backend_rejects_vowel_inventory_request():
@@ -293,6 +294,16 @@ def band_energy(window: np.ndarray, low: float, high: float) -> float:
     return float(spectrum[(freqs >= low) & (freqs < high)].sum())
 
 
+def spectrum_centroid(window: np.ndarray, low: float = 200.0,
+                      high: float = 3000.0) -> float:
+    """Energy-weighted mean frequency: tracks a global formant scaling without band choice."""
+    n = 1 << (window.size - 1).bit_length()
+    spectrum = np.abs(np.fft.rfft(window * np.hanning(window.size), n)) ** 2
+    freqs = np.fft.rfftfreq(n, 1.0 / SR)
+    mask = (freqs >= low) & (freqs < high)
+    return float((spectrum[mask] * freqs[mask]).sum() / spectrum[mask].sum())
+
+
 def slice_s(audio: np.ndarray, start_s: float, stop_s: float) -> np.ndarray:
     return audio[int(round(start_s * SR)):int(round(stop_s * SR))]
 
@@ -356,7 +367,7 @@ def test_stage1_final_follows_the_voice_template(unit: str) -> None:
     assert 1.10 <= yang / yin <= 1.40, (unit, yang, yin)
 
 
-@pytest.mark.parametrize("unit", ["ian", "ing"])
+@pytest.mark.parametrize("unit", ["ian", "ing", "ong", "en"])
 def test_nasal_coda_resonance_is_applied_only_in_the_coda(unit: str,
                                                           monkeypatch: pytest.MonkeyPatch
                                                           ) -> None:
@@ -399,3 +410,185 @@ def test_stage1_onset_boundary_keeps_a_real_closure_and_the_pitch() -> None:
     assert 0.70 < track.voiced_ratio < 0.95
     assert abs(float(np.median(track.voiced_f0)) - 200.0) < 4.0
 
+
+
+# --- inventory stage 2 (EXP-0016): apical_retroflex, uo, ong, en -------------------
+#
+# The apical vowel after zh/ch/sh/r is [ʅ]: a syllabic retroflex approximant whose cues are
+# a raised F1 (~320 Hz), a *lowered* F3 (~1900 Hz) and residual frication on a voiced body.
+# The tests below check those cues on the rendered signal, so "shi" cannot silently become
+# /ʃi/ and the [wo]-[ʊŋ]-[ən] trajectories cannot collapse into steady vowels.
+
+STAGE2_FINALS = ("apical_retroflex", "uo", "ong", "en")
+
+
+def test_stage2_units_are_declared_with_their_acoustic_class() -> None:
+    from vhe.data.g2p import SYNTH_FINAL_TO_PHONEME
+    from vhe.synth import MANDARIN_PHONEMES
+
+    for unit in STAGE2_FINALS:
+        assert unit in MANDARIN_PHONEMES, unit
+        assert SYNTH_FINAL_TO_PHONEME[unit] == unit
+    apical = MANDARIN_PHONEMES["apical_retroflex"]
+    assert apical.kind == "approximant" and apical.voiced
+    assert apical.noise_gain > 0.0 and apical.noise_band is not None
+    assert MANDARIN_PHONEMES["uo"].kind == "diphthong"
+    for nasal in ("ong", "en"):
+        assert MANDARIN_PHONEMES[nasal].kind == "nasal"
+        assert MANDARIN_PHONEMES[nasal].nasal_from is not None
+
+
+@pytest.mark.parametrize("unit", STAGE2_FINALS)
+def test_stage2_units_keep_pitch_and_length(unit: str) -> None:
+    from vhe.data.pitch import track_pitch
+
+    audio = render(((unit, 0.30),), f0=200.0)
+    assert audio.size == int(round(0.30 * SR))
+    track = track_pitch(audio, SR)
+    assert track.voiced_ratio > 0.80, track.stats()["reasons"]
+    assert abs(float(np.median(track.voiced_f0)) - 200.0) < 4.0
+
+
+def test_apical_retroflex_has_a_lowered_third_formant_not_an_i() -> None:
+    from vhe.synth import MANDARIN_PHONEMES
+
+    # Declared targets first: [ʅ] has a lowered F3, /i/ does not.
+    assert MANDARIN_PHONEMES["apical_retroflex"].targets[0][3] < 2100.0
+    assert MANDARIN_PHONEMES["i"].targets[0][3] > 2900.0
+
+    apical = render((("apical_retroflex", 0.30),), f0=100.0)
+    high_front = render((("i", 0.30),), f0=100.0)
+    # Measured: a peak near 1800 Hz sits inside [ʅ]'s lowered-F3 region, and the energy
+    # balance across 1600-2000 Hz vs 2100-2600 Hz separates the two by two orders of
+    # magnitude (8.1 vs 0.04). A band ratio is used instead of a single peak because /i/'s
+    # strong F2 (2250 Hz) shoulder can win a naive 1800-3800 Hz peak search.
+    # The F3 peak sits in 1600-2000 Hz; its exact harmonic is not asserted because F2's
+    # (1500 Hz) skirt reaches into the band and can win the search at 1600 Hz.
+    assert 1600.0 <= harmonic_peak(slice_s(apical, 0.100, 0.200), 1600.0, 2100.0) <= 2000.0
+
+    def f3_region_share(audio: np.ndarray) -> float:
+        window = slice_s(audio, 0.100, 0.200)
+        return band_energy(window, 1600.0, 2000.0) / band_energy(window, 2100.0, 2600.0)
+
+    assert f3_region_share(apical) > 10.0 * f3_region_share(high_front)
+    # Raised F1: [ʅ] is not a high vowel.
+    assert 250.0 <= harmonic_peak(slice_s(apical, 0.100, 0.200), 200.0, 900.0) <= 400.0
+    # The retroflex is produced with a constriction, so it carries more high-band noise than
+    # a plain vowel: dropping that noise would make [ʅ] indistinguishable from [i].
+    def noise_share(audio: np.ndarray) -> float:
+        window = slice_s(audio, 0.100, 0.200)
+        return band_energy(window, 2500.0, 7000.0) / band_energy(window, 300.0, 1200.0)
+
+    assert noise_share(apical) > 3.0 * noise_share(high_front)
+
+
+def test_uo_raises_the_first_formant_into_its_nucleus() -> None:
+    audio = render((("uo", 0.30),), f0=100.0)
+    early = harmonic_peak(slice_s(audio, 0.055, 0.095), 200.0, 900.0)
+    late = harmonic_peak(slice_s(audio, 0.225, 0.265), 200.0, 900.0)
+    # [wo]: the jaw opens from u to o, so F1 rises; F2 stays in the back-vowel region.
+    assert late > early, (early, late)
+    assert harmonic_peak(slice_s(audio, 0.225, 0.265), 600.0, 1600.0) <= 1100.0
+
+
+def test_en_raises_its_second_formant_into_the_alveolar_coda() -> None:
+    audio = render((("en", 0.30),), f0=100.0)
+    early = harmonic_peak(slice_s(audio, 0.055, 0.095), 900.0, 3000.0)
+    late = harmonic_peak(slice_s(audio, 0.225, 0.265), 900.0, 3000.0)
+    # [ən]: the alveolar coda pulls F2 up towards ~1650 Hz while F1 falls.
+    assert late >= early + 200.0, (early, late)
+    assert harmonic_peak(slice_s(audio, 0.225, 0.265), 200.0, 900.0) <= 500.0
+
+
+@pytest.mark.parametrize("unit", STAGE2_FINALS)
+def test_stage2_unit_follows_the_voice_template(unit: str) -> None:
+    # The back vowels' F1 dominates the spectrum, so a single-formant peak search is not a
+    # stable template probe once F1 and F2 both move; the spectral centroid is. PRESETS
+    # formant_scale 1.08 vs 0.87 -> 1.24, measured 1.21-1.32 on these four units.
+    yang = spectrum_centroid(slice_s(render(((unit, 0.30),), f0=100.0, template="yang"),
+                                     0.100, 0.200))
+    yin = spectrum_centroid(slice_s(render(((unit, 0.30),), f0=100.0, template="yin"),
+                                    0.100, 0.200))
+    assert 1.10 <= yang / yin <= 1.40, (unit, yang, yin)
+
+
+
+# --- inventory stage 3 (EXP-0016): initials zh, h -----------------------------------
+STAGE3_ONSETS = ("zh", "h")
+
+
+def band_share(window: np.ndarray, low: float, high: float,
+               total_low: float = 200.0, total_high: float = 9000.0) -> float:
+    return band_energy(window, low, high) / band_energy(window, total_low, total_high)
+
+
+def test_stage3_initials_are_declared_with_their_acoustic_class() -> None:
+    from vhe.synth import MANDARIN_PHONEMES
+
+    zh = MANDARIN_PHONEMES["zh"]
+    h = MANDARIN_PHONEMES["h"]
+    # [ʈʂ]: an unaspirated retroflex affricate. Same band as sh (retroflex place), but a
+    # short VOT, like z, instead of ch's long aspiration.
+    assert zh.kind == "affricate" and zh.voiced is False
+    assert zh.noise_band == MANDARIN_PHONEMES["sh"].noise_band
+    assert zh.vot_s == MANDARIN_PHONEMES["z"].vot_s < MANDARIN_PHONEMES["q"].vot_s
+    assert 2000.0 <= zh.burst[0] <= 4000.0
+    # [x]: a velar fricative, an octave below the palatal [ɕ] of "x".
+    assert h.kind == "fricative" and h.voiced is False
+    assert h.noise_band[0] < MANDARIN_PHONEMES["x"].noise_band[0]
+    assert h.noise_band[1] < MANDARIN_PHONEMES["x"].noise_band[1]
+    assert h.noise_gain < MANDARIN_PHONEMES["x"].noise_gain
+
+
+def test_zh_closure_stays_silent_until_its_burst() -> None:
+    audio = render((("zh", 0.12),), f0=120.0)
+    closure = slice_s(audio, 0.012, 0.020)
+    burst = slice_s(audio, 0.035, 0.043)
+    closure_rms = float(np.sqrt(np.mean(np.asarray(closure, dtype=np.float64) ** 2)))
+    burst_rms = float(np.sqrt(np.mean(np.asarray(burst, dtype=np.float64) ** 2)))
+    # An affricate that leaked its frication into the closure would lose the stop cue and
+    # sound like a fricative; a missing burst would turn it into a stop.
+    assert closure_rms < 0.02 * burst_rms, (closure_rms, burst_rms)
+
+
+def test_zh_frication_is_retroflex_not_palatal() -> None:
+    zh = slice_s(render((("zh", 0.12),), f0=120.0), 0.045, 0.070)
+    palatal = slice_s(render((("j", 0.12),), f0=120.0), 0.045, 0.070)
+    # Energy balance low-band vs high-band: [ʈʂ] sits below 6 kHz, [tɕ] above it.
+    # Measured: zh 1.57, j 0.41.
+    def balance(window: np.ndarray) -> float:
+        return band_share(window, 2000.0, 6000.0) / band_share(window, 6000.0, 9000.0)
+
+    assert band_share(zh, 2000.0, 6000.0) > 1.5 * band_share(palatal, 2000.0, 6000.0)
+    assert balance(zh) > 2.0 * balance(palatal), (balance(zh), balance(palatal))
+
+
+def test_h_is_a_velar_fricative_not_the_palatal_x() -> None:
+    h = render((("h", 0.12),), f0=120.0)
+    palatal = render((("x", 0.12),), f0=120.0)
+    # [x]'s turbulence sits near 1.5-2 kHz; [ɕ] is a 3-8 kHz hiss.
+    assert band_share(h, 1000.0, 3000.0) > 0.4
+    assert band_share(h, 1000.0, 3000.0) > 5.0 * band_share(palatal, 1000.0, 3000.0)
+    assert band_share(h, 6000.0, 9000.0) < 0.1
+
+
+@pytest.mark.parametrize("initial,final", [("zh", "i"), ("h", "e")])
+def test_stage3_syllables_keep_pitch_length_and_a_noisy_onset(initial: str, final: str) -> None:
+    from vhe.data.g2p import syllable_plan
+    from vhe.data.pitch import track_pitch
+
+    plan, reason = syllable_plan(initial, final, 0.30)
+    assert reason is None
+    audio = render(tuple(plan), f0=200.0, duration_s=0.30)
+    assert audio.size == int(0.30 * SR)
+    track = track_pitch(audio, SR)
+    f0 = track.voiced_f0
+    assert f0.size > 0
+    assert abs(float(np.median(f0)) - 200.0) <= 5.0
+    assert track.voiced_ratio > 0.80
+    # The onset is frication, the body is voiced: the noise band must dominate the onset
+    # and nearly vanish in the vowel, or the consonant has been replaced by a vowel.
+    onset = slice_s(audio, 0.010, 0.070)
+    body = slice_s(audio, 0.150, 0.250)
+    low, high = (1000.0, 3000.0) if initial == "h" else (2000.0, 6000.0)
+    assert band_share(onset, low, high) > 5.0 * band_share(body, low, high)

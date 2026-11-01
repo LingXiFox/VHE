@@ -193,3 +193,17 @@
 - 结论：跟踪器显著优于 EXP-0014，但**仍不宣称"可直接用于成对构造"**：无真实 F0 真值、拒绝率偏高、SSB04350040 中位 F0 与 legacy 差 0.18 倍频程原因未查明。未做听音。
 - 证据：`experiments/EXP-0015/`（`probe_pitch.py`、`logs/pitch_report_v1.json`、`logs/pitch_report_v2.json`）。
 
+## 2026-11-01 | EXP-0016 按实测边际分批扩表：26 → 36 音素，音节 30.95% → 69.24%
+
+- 假设：按声学类别成批加入**整单元**韵母（每个韵母一个 `PhonemeSpec`，带完整共振峰轨迹，绝不拆成 i+a+n），会让 v3 manifest 上的音节覆盖率单调上升、不会让非法音节变得可渲染、已支持音素的渲染逐字节不变；整句覆盖率仍会远低于音节覆盖率（一句需要每个音节都可渲染）。
+- 批次与声学实现（`src/vhe/synth/phonology.py`）
+  - stage 1：`e`（[ɤ] 稳态，F1 500 / F2 1280 / F3 2500）、`ian`（F2 2250→1900 后接鼻尾，`nasal_from=0.60`）、`ing`（F2 2250→2050 后接鼻尾，`nasal_from=0.50`）、`iou`（F2 2200→1000 复韵母）。
+  - stage 2：`apical_retroflex`（[ʅ]，F1 300 / F2 1600 / F3 1800 全程平，新增 `approximant` 带摩擦浊音声源分支）、`uo`（F1 400→500）、`ong`（鼻尾，`nasal_from` 生效）、`en`（F2 1500→1700 + 鼻尾）。
+  - stage 3：声母 `zh`（affricate，`noise_band=(2000,6000)`、`noise_gain=0.30`、`burst=(3000,1500,0.004,1.0)`、`closure_s=0.035`、`vot_s=0.030`）、`h`（[x] fricative，`noise_band=(900,4000)`、`noise_gain=0.20`）。普通话 h 不拼 i/y，故 [x] 覆盖全部 h 音节，不用 [ç] 近似替代。
+- 覆盖率（同一 v3 manifest `10539f61…`，只重算条目、不重解码 WAV）：音节 **0.309544 → 0.503755 → 0.621630 → 0.692366**；整句 **0.002124（187/88035）→ 0.012279 → 0.037894 → 0.060362（5314/88035）**。
+- 渲染级证据（`probe_phonemes.py`，每单元 yang/yin 双模板、16-bit PCM、sha256）：滑音方向（ian/ing/iou 段尾 F2 ≤ 段首 −200 Hz、e 首尾差 ≤100 Hz）、模板比 1.10–1.40（`PRESETS` 的 1.08/0.87 = 1.24）、鼻尾低带能量 2.1–2.2×、zh 闭塞/爆发 0.00306（闭塞未提前泄露）、zh vs j 的 (2–6k)/(6–9k) 比 1.57 vs 0.41、h 低中带占比 0.594 vs x 的 0.0；音节层 F0 中位 199.7–200.3 Hz（误差 <0.3%）、长度精确、`track_pitch` voiced 0.857–0.929、reasons 全 `ok`。
+- 回归：8 条 stage-0 音节在每批之后 sha256 全部不变（`regression.all_same=true`，`logs/render_baseline.json`）。
+- **失败记录（全部保留）**：滑音度量两次作废（FFT 长度与窗口不匹配；带能量比随谐波落点剧烈跳动，参照元音也到 3.57）→ 定稿 f0=100 Hz 谐波峰值定位；`phonemes_stage1_v1.json` 把 l+iou 写成 `liou`（拼音正字法错误）；探针把单元 id 当拼音（`shapical_retroflex`）；`phonemes_stage2_v3.json` 的模板比被 200 Hz 谐波网格量化成 1.089–1.619（作废，v4 重测 1.209–1.319）；两处峰值断言误报（1600 vs 1800、/i/ 的 F3 实测 2400）→ 改为区间/带比断言并把 F3 移回声明层；扩表使 4 条既有断言失效（未知音素样例、w+uo / zh+a 缺口、`shi2` 可渲染）→ 全部重定向到仍阻塞的单元（`ch`、`ua`、`zi2`），断言文本与判据未改。
+- 结论：三批均通过预注册条件（覆盖率单调上升、旧渲染不变、每单元四类渲染级证据）。整句 6.04% 仍是结构性限制——按音节乘积，一句里有一个未实现音节即整句阻塞。剩余阻塞按 stage-3 `next_units`：`final:uei`（+27534，需 ch/r）、`final:v`（+23661）、`final:in`（+22536）、`onset:ch`（+21214）、`final:eng`（+25944，需 r）、`final:apical_dental`（+20702）、`final:iao`（+20371）、`final:iang`（+18755）、`onset:r`（+17877）、`final:ie`（+17485）。`v`（ü）与 `apical_dental`（[ɿ]）需要新的声学设定，不能拿 u / i 顶替。
+- 未做：听音评分（不能声称更像真人）、Windows CUDA 真机验证。
+- 证据：`experiments/EXP-0016/`（`probe_coverage.py`、`probe_phonemes.py`、`logs/coverage_stage{0..3}.json`、`logs/phonemes_stage{1,2,3}*.json`、`artifacts/stage{1,2,3}/*.wav`）。
