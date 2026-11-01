@@ -21,6 +21,15 @@ from vhe.synth import MANDARIN_PHONEMES
     ("b", "ai", ("b", "ai")),
     ("l", "ei", ("l", "ei")),
     ("n", "ou", ("n", "ou")),
+    # inventory stage 1 (EXP-0016): a final unit carries its own medial glide, so the
+    # phoneme list stays onset + one unit and never becomes a segment concatenation.
+    ("", "e", ("e",)),
+    ("g", "e", ("g", "e")),
+    ("b", "ian", ("b", "ian")),
+    ("y", "an", ("ian",)),      # yan = /ian/, the glide belongs to the unit
+    ("p", "ing", ("p", "ing")),
+    ("l", "iu", ("l", "iou")),  # liu = /liou/
+    ("y", "ou", ("iou",)),      # you = /iou/
 ])
 def test_renderable_syllables_map_to_onset_plus_nucleus(initial, final, expected):
     phonemes, reason = syllable_phonemes(initial, final)
@@ -43,7 +52,7 @@ def test_zero_initial_glide_spellings_are_single_vowels(initial, final, phoneme)
     ("zh", "a", "onset"),          # zh not in the inventory
     ("h", "a", "onset"),
     ("r", "en", "onset"),
-    ("", "ian", "final"),
+    ("l", "ie", "final"),          # ie is still not a unit (stage 1 did not add it)
     ("b", "ie", "final"),
     ("d", "uo", "final"),
     ("", "er", "final"),

@@ -1,0 +1,45 @@
+{
+  "inventory_size": 26,
+  "renders": {
+    "ma1": {
+      "sha256": "62e452603c3f6834adf47fd5259c99a1e21d214fd428c2cd28b778eee3ada35b",
+      "samples": 7200,
+      "rms": 0.198673
+    },
+    "sha1": {
+      "sha256": "531d2a1e08213ebb4f70552c4c102907ebda84c32bfd513cafc65761ec9480a8",
+      "samples": 7200,
+      "rms": 0.207923
+    },
+    "ban3": {
+      "sha256": "72d0dd3ab615f7d4e882f07ba7ea34f9fccbdf563ccc8ba600ce75972396c160",
+      "samples": 7200,
+      "rms": 0.199684
+    },
+    "dei3": {
+      "sha256": "41befde626bb02a023dee9a6f8068a3851cb2476faf4dcfecdf772a80462dfb6",
+      "samples": 7200,
+      "rms": 0.199581
+    },
+    "gou3": {
+      "sha256": "7654283e1abec4c2664be44b1eb0519ac421d8f94df74ac572d413e25a70088a",
+      "samples": 7200,
+      "rms": 0.199507
+    },
+    "bi1": {
+      "sha256": "c58f02a6b858d29e0d533f2c615e9fc7049d39a2e49082f2fd0b4c5ae80e2be4",
+      "samples": 7200,
+      "rms": 0.199698
+    },
+    "dan1": {
+      "sha256": "6d95341fc18e23b01a0ef3f51a24047d9c870f9442f8d028dc5f2b837f4e9c51",
+      "samples": 6000,
+      "rms": 0.199547
+    },
+    "ai4": {
+      "sha256": "5f84e69ad4e27496b9c70c43ce55af746ba6b6da1046d7b5346c240c1f9145f1",
+      "samples": 6000,
+      "rms": 0.198132
+    }
+  }
+}

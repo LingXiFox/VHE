@@ -1,0 +1,20 @@
+{
+  "experiment_id": "EXP-0016",
+  "title": "Mandarin phoneme inventory expansion in measured-marginal batches",
+  "hypothesis": "Adding final units one acoustically-defined batch at a time (stage 1: e, ian, ing, iou as single units with full formant trajectories) raises measured syllable coverage on the AISHELL-3 v3 manifest monotonically and never makes an invalid syllable renderable, while leaving every already-supported phoneme's rendering byte-identical; utterance coverage stays far below syllable coverage because a sentence needs every syllable.",
+  "created_utc": "2026-11-01T05:21:30.767811+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "1cd72f068756246a39e8d0ef729c46094fd19033",
+    "status": "dirty: EXP-0016 stage 1 (phonology inventory, g2p finals, tests, probes)"
+  },
+  "seed": null,
+  "dataset_manifest_sha256": "10539f61d015bc81dff88cb0ee5ba72b640ab703ee57373324f7c446a624c80f",
+  "command": "python experiments/EXP-0016/probe_coverage.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl --stage 1 --out experiments/EXP-0016/logs/coverage_stage1.json && python experiments/EXP-0016/probe_phonemes.py --stage 1 --units e ian ing iou --json experiments/EXP-0016/logs/phonemes_stage1_v2.json --wav-dir experiments/EXP-0016/artifacts/stage1",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Stage 1 (e, ian, ing, iou) accepted: syllable coverage 0.309544 -> 0.503755, utterance coverage 0.002124 -> 0.012279 (187 -> 1081 of 88035). The 8 stage-0 regression renders are byte-identical after the inventory grew (logs/phonemes_stage1_v2.json, regression.all_same=true). Two measurement designs were discarded before the final harmonic-peak probe (logs/phonemes_stage1_v1.json keeps a label defect). No listening test; utterance coverage is still 1.2%."
+}

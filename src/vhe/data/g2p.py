@@ -33,9 +33,10 @@ from .mandarin import ONSETS, PinyinError, Token, resolve_final, split_token
 
 #: Underlying final id -> synthesizer phoneme id. Only finals that are one unit there.
 SYNTH_FINAL_TO_PHONEME: dict[str, str] = {
-    "a": "a", "i": "i", "u": "u",
+    "a": "a", "i": "i", "u": "u", "e": "e",
     "ai": "ai", "ei": "ei", "ao": "au", "ou": "ou",
     "an": "an", "ang": "ang",
+    "ian": "ian", "ing": "ing", "iou": "iou",
 }
 
 #: Onsets the synthesizer can render, derived from the inventory itself (no second list).

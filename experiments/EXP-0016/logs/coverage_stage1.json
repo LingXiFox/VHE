@@ -1,0 +1,1068 @@
+{
+  "version": 2,
+  "stats": {
+    "utterances": 88035,
+    "speakers": 218,
+    "syllables": 997997,
+    "total_hours": 85.6178,
+    "distinct_tokens": 1920,
+    "distinct_onsets": 24,
+    "distinct_finals": 39,
+    "distinct_segments": 14,
+    "distinct_tone_forms": 1920,
+    "erhua_syllables": 1805,
+    "blocked_syllables": 495251,
+    "blocked_utterances": 86954,
+    "renderable_syllables": 502746,
+    "renderable_utterances": 1081,
+    "syllable_coverage": 0.503755,
+    "utterance_coverage": 0.012279,
+    "tones": {
+      "1": 210317,
+      "2": 235098,
+      "3": 160859,
+      "4": 330936,
+      "5": 60787
+    },
+    "onsets": {
+      "y": 97143,
+      "d": 93131,
+      "sh": 80440,
+      "j": 71162,
+      "l": 54043,
+      "zh": 53341,
+      "x": 51245,
+      "b": 49426,
+      "g": 46985,
+      "w": 43313,
+      "h": 39711,
+      "q": 36649,
+      "m": 36428,
+      "t": 31646,
+      "z": 30759,
+      "ch": 29513,
+      "s": 28151,
+      "f": 27232,
+      "n": 23580,
+      "r": 18356,
+      "k": 16963,
+      "-": 15548,
+      "p": 12076,
+      "c": 11156
+    },
+    "finals": {
+      "i": 91385,
+      "e": 91073,
+      "u": 61615,
+      "apical_retroflex": 53935,
+      "ian": 47442,
+      "ai": 41550,
+      "uo": 38153,
+      "ing": 37436,
+      "en": 36857,
+      "iou": 34896,
+      "an": 34263,
+      "a": 33816,
+      "ong": 32588,
+      "ang": 29453,
+      "uei": 27950,
+      "ao": 27543,
+      "eng": 26316,
+      "v": 23661,
+      "in": 22536,
+      "ou": 21926,
+      "apical_dental": 20702,
+      "iao": 20371,
+      "iang": 18755,
+      "ie": 17485,
+      "ei": 16757,
+      "uan": 16360,
+      "ia": 11573,
+      "van": 10806,
+      "er": 9408,
+      "ve": 9169,
+      "uang": 8314,
+      "uen": 8124,
+      "ua": 5329,
+      "vn": 4352,
+      "iong": 3297,
+      "uai": 2739,
+      "o": 42,
+      "ueng": 18,
+      "io": 2
+    },
+    "segments": {
+      "a": 308314,
+      "i": 240353,
+      "e": 233749,
+      "u": 202236,
+      "n": 180740,
+      "ng": 156177,
+      "j": 153821,
+      "w": 106987,
+      "o": 95019,
+      "apical_retroflex": 53935,
+      "y": 28013,
+      "apical_dental": 20702,
+      "yu": 19975,
+      "er": 9408
+    },
+    "blocked_units": {
+      "final:apical_retroflex": 53935,
+      "onset:zh": 53341,
+      "onset:h": 39711,
+      "final:uo": 38153,
+      "final:en": 36857,
+      "final:ong": 32588,
+      "onset:ch": 29513,
+      "final:uei": 27950,
+      "final:eng": 26316,
+      "final:v": 23661,
+      "final:in": 22536,
+      "final:apical_dental": 20702,
+      "final:iao": 20371,
+      "final:iang": 18755,
+      "onset:r": 18356,
+      "final:ie": 17485,
+      "final:uan": 16360,
+      "final:ia": 11573,
+      "final:van": 10806,
+      "final:er": 9408,
+      "final:ve": 9169,
+      "final:uang": 8314,
+      "final:uen": 8124,
+      "final:ua": 5329,
+      "final:vn": 4352,
+      "final:iong": 3297,
+      "final:uai": 2739,
+      "erhua": 1805,
+      "final:o": 42,
+      "final:ueng": 18,
+      "final:io": 2
+    },
+    "missing_sets": [
+      {
+        "units": [
+          "final:apical_retroflex"
+        ],
+        "syllables": 37809
+      },
+      {
+        "units": [
+          "final:uo"
+        ],
+        "syllables": 34762
+      },
+      {
+        "units": [
+          "final:en"
+        ],
+        "syllables": 23873
+      },
+      {
+        "units": [
+          "final:v"
+        ],
+        "syllables": 23653
+      },
+      {
+        "units": [
+          "final:in"
+        ],
+        "syllables": 22528
+      },
+      {
+        "units": [
+          "onset:zh"
+        ],
+        "syllables": 22004
+      },
+      {
+        "units": [
+          "final:ong"
+        ],
+        "syllables": 21195
+      },
+      {
+        "units": [
+          "final:uei"
+        ],
+        "syllables": 21112
+      },
+      {
+        "units": [
+          "final:apical_dental"
+        ],
+        "syllables": 20702
+      },
+      {
+        "units": [
+          "final:iao"
+        ],
+        "syllables": 20347
+      },
+      {
+        "units": [
+          "onset:h"
+        ],
+        "syllables": 20109
+      },
+      {
+        "units": [
+          "final:iang"
+        ],
+        "syllables": 18752
+      },
+      {
+        "units": [
+          "final:ie"
+        ],
+        "syllables": 17484
+      },
+      {
+        "units": [
+          "onset:ch"
+        ],
+        "syllables": 17430
+      },
+      {
+        "units": [
+          "final:eng"
+        ],
+        "syllables": 15101
+      },
+      {
+        "units": [
+          "final:apical_retroflex",
+          "onset:zh"
+        ],
+        "syllables": 12240
+      },
+      {
+        "units": [
+          "final:uan"
+        ],
+        "syllables": 11839
+      },
+      {
+        "units": [
+          "final:ia"
+        ],
+        "syllables": 11567
+      },
+      {
+        "units": [
+          "final:van"
+        ],
+        "syllables": 10766
+      },
+      {
+        "units": [
+          "final:er"
+        ],
+        "syllables": 9408
+      },
+      {
+        "units": [
+          "final:ve"
+        ],
+        "syllables": 9157
+      },
+      {
+        "units": [
+          "final:ong",
+          "onset:zh"
+        ],
+        "syllables": 8367
+      },
+      {
+        "units": [
+          "final:en",
+          "onset:r"
+        ],
+        "syllables": 8151
+      },
+      {
+        "units": [
+          "final:uen"
+        ],
+        "syllables": 6360
+      },
+      {
+        "units": [
+          "final:uei",
+          "onset:h"
+        ],
+        "syllables": 6083
+      },
+      {
+        "units": [
+          "final:eng",
+          "onset:ch"
+        ],
+        "syllables": 5876
+      },
+      {
+        "units": [
+          "final:uang"
+        ],
+        "syllables": 5767
+      },
+      {
+        "units": [
+          "onset:r"
+        ],
+        "syllables": 5611
+      },
+      {
+        "units": [
+          "final:eng",
+          "onset:zh"
+        ],
+        "syllables": 4684
+      },
+      {
+        "units": [
+          "final:ua",
+          "onset:h"
+        ],
+        "syllables": 4569
+      },
+      {
+        "units": [
+          "final:vn"
+        ],
+        "syllables": 4351
+      },
+      {
+        "units": [
+          "final:iong"
+        ],
+        "syllables": 3296
+      },
+      {
+        "units": [
+          "final:uo",
+          "onset:h"
+        ],
+        "syllables": 2835
+      },
+      {
+        "units": [
+          "final:uai"
+        ],
+        "syllables": 2361
+      },
+      {
+        "units": [
+          "final:en",
+          "onset:zh"
+        ],
+        "syllables": 2265
+      },
+      {
+        "units": [
+          "final:apical_retroflex",
+          "onset:r"
+        ],
+        "syllables": 2137
+      },
+      {
+        "units": [
+          "final:uan",
+          "onset:h"
+        ],
+        "syllables": 1765
+      },
+      {
+        "units": [
+          "final:apical_retroflex",
+          "onset:ch"
+        ],
+        "syllables": 1693
+      },
+      {
+        "units": [
+          "final:en",
+          "onset:h"
+        ],
+        "syllables": 1525
+      },
+      {
+        "units": [
+          "final:uan",
+          "onset:zh"
+        ],
+        "syllables": 1250
+      },
+      {
+        "units": [
+          "final:uan",
+          "onset:ch"
+        ],
+        "syllables": 1146
+      },
+      {
+        "units": [
+          "final:uang",
+          "onset:zh"
+        ],
+        "syllables": 1116
+      },
+      {
+        "units": [
+          "final:ong",
+          "onset:r"
+        ],
+        "syllables": 1057
+      },
+      {
+        "units": [
+          "erhua"
+        ],
+        "syllables": 1042
+      },
+      {
+        "units": [
+          "final:ong",
+          "onset:ch"
+        ],
+        "syllables": 1016
+      },
+      {
+        "units": [
+          "final:en",
+          "onset:ch"
+        ],
+        "syllables": 980
+      },
+      {
+        "units": [
+          "final:ong",
+          "onset:h"
+        ],
+        "syllables": 953
+      },
+      {
+        "units": [
+          "final:uang",
+          "onset:ch"
+        ],
+        "syllables": 819
+      },
+      {
+        "units": [
+          "final:uang",
+          "onset:h"
+        ],
+        "syllables": 609
+      },
+      {
+        "units": [
+          "final:uen",
+          "onset:zh"
+        ],
+        "syllables": 574
+      },
+      {
+        "units": [
+          "final:ua"
+        ],
+        "syllables": 562
+      },
+      {
+        "units": [
+          "final:uen",
+          "onset:h"
+        ],
+        "syllables": 497
+      },
+      {
+        "units": [
+          "final:uen",
+          "onset:ch"
+        ],
+        "syllables": 446
+      },
+      {
+        "units": [
+          "final:eng",
+          "onset:r"
+        ],
+        "syllables": 372
+      },
+      {
+        "units": [
+          "final:uei",
+          "onset:r"
+        ],
+        "syllables": 343
+      },
+      {
+        "units": [
+          "final:uo",
+          "onset:zh"
+        ],
+        "syllables": 296
+      },
+      {
+        "units": [
+          "final:uei",
+          "onset:zh"
+        ],
+        "syllables": 284
+      },
+      {
+        "units": [
+          "final:eng",
+          "onset:h"
+        ],
+        "syllables": 279
+      },
+      {
+        "units": [
+          "final:uai",
+          "onset:h"
+        ],
+        "syllables": 279
+      },
+      {
+        "units": [
+          "final:uan",
+          "onset:r"
+        ],
+        "syllables": 257
+      },
+      {
+        "units": [
+          "final:uen",
+          "onset:r"
+        ],
+        "syllables": 222
+      },
+      {
+        "units": [
+          "final:uo",
+          "onset:r"
+        ],
+        "syllables": 203
+      },
+      {
+        "units": [
+          "final:ua",
+          "onset:zh"
+        ],
+        "syllables": 184
+      },
+      {
+        "units": [
+          "erhua",
+          "onset:h"
+        ],
+        "syllables": 146
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uan"
+        ],
+        "syllables": 99
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uai"
+        ],
+        "syllables": 83
+      },
+      {
+        "units": [
+          "final:uei",
+          "onset:ch"
+        ],
+        "syllables": 73
+      },
+      {
+        "units": [
+          "erhua",
+          "onset:zh"
+        ],
+        "syllables": 63
+      },
+      {
+        "units": [
+          "erhua",
+          "final:en"
+        ],
+        "syllables": 59
+      },
+      {
+        "units": [
+          "erhua",
+          "final:apical_retroflex"
+        ],
+        "syllables": 55
+      },
+      {
+        "units": [
+          "final:o"
+        ],
+        "syllables": 42
+      },
+      {
+        "units": [
+          "erhua",
+          "final:van"
+        ],
+        "syllables": 40
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uei",
+          "onset:h"
+        ],
+        "syllables": 31
+      },
+      {
+        "units": [
+          "erhua",
+          "final:iao"
+        ],
+        "syllables": 24
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uei"
+        ],
+        "syllables": 24
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uen"
+        ],
+        "syllables": 23
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uo"
+        ],
+        "syllables": 21
+      },
+      {
+        "units": [
+          "final:ueng"
+        ],
+        "syllables": 18
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uo",
+          "onset:h"
+        ],
+        "syllables": 17
+      },
+      {
+        "units": [
+          "final:uo",
+          "onset:ch"
+        ],
+        "syllables": 17
+      },
+      {
+        "units": [
+          "erhua",
+          "final:ua",
+          "onset:h"
+        ],
+        "syllables": 12
+      },
+      {
+        "units": [
+          "erhua",
+          "final:ve"
+        ],
+        "syllables": 12
+      },
+      {
+        "units": [
+          "final:uai",
+          "onset:ch"
+        ],
+        "syllables": 9
+      },
+      {
+        "units": [
+          "erhua",
+          "final:in"
+        ],
+        "syllables": 8
+      },
+      {
+        "units": [
+          "erhua",
+          "final:v"
+        ],
+        "syllables": 8
+      },
+      {
+        "units": [
+          "final:uai",
+          "onset:zh"
+        ],
+        "syllables": 7
+      },
+      {
+        "units": [
+          "erhua",
+          "final:ia"
+        ],
+        "syllables": 6
+      },
+      {
+        "units": [
+          "erhua",
+          "onset:ch"
+        ],
+        "syllables": 4
+      },
+      {
+        "units": [
+          "erhua",
+          "final:en",
+          "onset:r"
+        ],
+        "syllables": 3
+      },
+      {
+        "units": [
+          "erhua",
+          "final:eng",
+          "onset:zh"
+        ],
+        "syllables": 3
+      },
+      {
+        "units": [
+          "erhua",
+          "final:iang"
+        ],
+        "syllables": 3
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uang"
+        ],
+        "syllables": 3
+      },
+      {
+        "units": [
+          "erhua",
+          "final:ua"
+        ],
+        "syllables": 2
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uan",
+          "onset:ch"
+        ],
+        "syllables": 2
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uan",
+          "onset:h"
+        ],
+        "syllables": 2
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uo",
+          "onset:zh"
+        ],
+        "syllables": 2
+      },
+      {
+        "units": [
+          "final:io"
+        ],
+        "syllables": 2
+      },
+      {
+        "units": [
+          "erhua",
+          "final:apical_retroflex",
+          "onset:zh"
+        ],
+        "syllables": 1
+      },
+      {
+        "units": [
+          "erhua",
+          "final:en",
+          "onset:ch"
+        ],
+        "syllables": 1
+      },
+      {
+        "units": [
+          "erhua",
+          "final:eng"
+        ],
+        "syllables": 1
+      },
+      {
+        "units": [
+          "erhua",
+          "final:ie"
+        ],
+        "syllables": 1
+      },
+      {
+        "units": [
+          "erhua",
+          "final:iong"
+        ],
+        "syllables": 1
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uen",
+          "onset:ch"
+        ],
+        "syllables": 1
+      },
+      {
+        "units": [
+          "erhua",
+          "final:uen",
+          "onset:zh"
+        ],
+        "syllables": 1
+      },
+      {
+        "units": [
+          "erhua",
+          "final:vn"
+        ],
+        "syllables": 1
+      }
+    ],
+    "issue_codes": {}
+  },
+  "utterances_per_split": {
+    "dev": 8189,
+    "test": 6880,
+    "train": 72966
+  },
+  "quality_flags": {
+    "prosody_conflict": 2
+  },
+  "next_units": [
+    {
+      "unit": "final:apical_retroflex",
+      "syllables_unblocked": 37864,
+      "also_needs": [
+        "onset:ch",
+        "onset:r",
+        "onset:zh"
+      ],
+      "cumulative_unblocked": 37864,
+      "syllables_unblocked_alone": 53935
+    },
+    {
+      "unit": "final:uo",
+      "syllables_unblocked": 34783,
+      "also_needs": [
+        "onset:ch",
+        "onset:h",
+        "onset:r",
+        "onset:zh"
+      ],
+      "cumulative_unblocked": 72647,
+      "syllables_unblocked_alone": 38153
+    },
+    {
+      "unit": "onset:zh",
+      "syllables_unblocked": 34606,
+      "also_needs": [
+        "final:en",
+        "final:eng",
+        "final:ong",
+        "final:ua",
+        "final:uai",
+        "final:uan",
+        "final:uang",
+        "final:uei",
+        "final:uen"
+      ],
+      "cumulative_unblocked": 107253,
+      "syllables_unblocked_alone": 53341
+    },
+    {
+      "unit": "final:ong",
+      "syllables_unblocked": 29562,
+      "also_needs": [
+        "onset:ch",
+        "onset:h",
+        "onset:r"
+      ],
+      "cumulative_unblocked": 136815,
+      "syllables_unblocked_alone": 32588
+    },
+    {
+      "unit": "final:en",
+      "syllables_unblocked": 26197,
+      "also_needs": [
+        "onset:ch",
+        "onset:h",
+        "onset:r"
+      ],
+      "cumulative_unblocked": 163012,
+      "syllables_unblocked_alone": 36857
+    },
+    {
+      "unit": "onset:h",
+      "syllables_unblocked": 25585,
+      "also_needs": [
+        "final:eng",
+        "final:ua",
+        "final:uai",
+        "final:uan",
+        "final:uang",
+        "final:uei",
+        "final:uen"
+      ],
+      "cumulative_unblocked": 188597,
+      "syllables_unblocked_alone": 39711
+    },
+    {
+      "unit": "final:uei",
+      "syllables_unblocked": 27534,
+      "also_needs": [
+        "onset:ch",
+        "onset:r"
+      ],
+      "cumulative_unblocked": 216131,
+      "syllables_unblocked_alone": 27950
+    },
+    {
+      "unit": "final:v",
+      "syllables_unblocked": 23661,
+      "also_needs": [],
+      "cumulative_unblocked": 239792,
+      "syllables_unblocked_alone": 23661
+    },
+    {
+      "unit": "final:in",
+      "syllables_unblocked": 22536,
+      "also_needs": [],
+      "cumulative_unblocked": 262328,
+      "syllables_unblocked_alone": 22536
+    },
+    {
+      "unit": "onset:ch",
+      "syllables_unblocked": 21214,
+      "also_needs": [
+        "final:eng",
+        "final:uai",
+        "final:uan",
+        "final:uang",
+        "final:uen"
+      ],
+      "cumulative_unblocked": 283542,
+      "syllables_unblocked_alone": 29513
+    },
+    {
+      "unit": "erhua",
+      "syllables_unblocked": 1805,
+      "also_needs": [],
+      "cumulative_unblocked": 285347,
+      "syllables_unblocked_alone": 1805,
+      "note": "needs an erhua final unit, not a phoneme"
+    }
+  ],
+  "stage": 1,
+  "manifest": "/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl",
+  "manifest_entries": 88035,
+  "manifest_root": "/Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted",
+  "inventory": {
+    "size": 30,
+    "phonemes": [
+      "a",
+      "i",
+      "u",
+      "ai",
+      "ei",
+      "au",
+      "ou",
+      "an",
+      "ang",
+      "e",
+      "iou",
+      "ian",
+      "ing",
+      "m",
+      "n",
+      "l",
+      "b",
+      "p",
+      "d",
+      "t",
+      "g",
+      "k",
+      "f",
+      "s",
+      "sh",
+      "x",
+      "z",
+      "c",
+      "j",
+      "q"
+    ],
+    "onsets": [
+      "b",
+      "c",
+      "d",
+      "f",
+      "g",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "p",
+      "q",
+      "s",
+      "sh",
+      "t",
+      "x",
+      "z"
+    ],
+    "finals": [
+      "a",
+      "ai",
+      "an",
+      "ang",
+      "ao",
+      "e",
+      "ei",
+      "i",
+      "ian",
+      "ing",
+      "iou",
+      "ou",
+      "u"
+    ]
+  }
+}

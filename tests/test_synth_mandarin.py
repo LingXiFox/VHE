@@ -258,3 +258,144 @@ def test_tensor_handoff_is_lossless_in_fp32(device: str):
     # The renderer itself must accept the tensor round-trip without changing its output.
     again = render("a", f0=200.0, duration_s=0.2)
     assert np.array_equal(audio, again)
+
+
+# --- inventory stage 1 (EXP-0016): e, ian, ing, iou --------------------------------
+#
+# The acceptance question for a new phoneme is not "does it make a sound" but "does the
+# emitted signal carry the contrast it claims". These tests measure the rendered audio:
+# pitch, length, the direction of the formant glide, the template dependence of the
+# formants, the coda nasal resonance and the onset boundary. Values are quantised to the
+# harmonic grid on purpose (f0=100 Hz probe), so tolerances are in whole harmonics.
+
+STAGE1_FINALS = ("e", "ian", "ing", "iou")
+
+
+def harmonic_peak(window: np.ndarray, low: float, high: float,
+                  f0: float = 100.0) -> float:
+    """Strongest harmonic in [low, high): the only formant localisation a comb allows."""
+    n = 1 << (window.size - 1).bit_length()
+    spectrum = np.abs(np.fft.rfft(window * np.hanning(window.size), n))
+    freqs = np.fft.rfftfreq(n, 1.0 / SR)
+    best_amp, best_hz = -1.0, 0.0
+    for k in range(int(np.ceil(low / f0)), int(high / f0) + 1):
+        index = int(np.searchsorted(freqs, k * f0))
+        amp = float(np.max(spectrum[max(0, index - 1):index + 2]))
+        if amp > best_amp:
+            best_amp, best_hz = amp, k * f0
+    return best_hz
+
+
+def band_energy(window: np.ndarray, low: float, high: float) -> float:
+    n = 1 << (window.size - 1).bit_length()
+    spectrum = np.abs(np.fft.rfft(window * np.hanning(window.size), n)) ** 2
+    freqs = np.fft.rfftfreq(n, 1.0 / SR)
+    return float(spectrum[(freqs >= low) & (freqs < high)].sum())
+
+
+def slice_s(audio: np.ndarray, start_s: float, stop_s: float) -> np.ndarray:
+    return audio[int(round(start_s * SR)):int(round(stop_s * SR))]
+
+
+def test_stage1_units_are_declared_with_their_acoustic_class() -> None:
+    from vhe.data.g2p import SYNTH_FINAL_TO_PHONEME
+    from vhe.synth import MANDARIN_PHONEMES
+
+    for unit in STAGE1_FINALS:
+        assert unit in MANDARIN_PHONEMES, unit
+        assert SYNTH_FINAL_TO_PHONEME[unit] == unit
+    assert MANDARIN_PHONEMES["e"].kind == "vowel"
+    assert MANDARIN_PHONEMES["iou"].kind == "diphthong"
+    for nasal in ("ian", "ing"):
+        assert MANDARIN_PHONEMES[nasal].kind == "nasal"
+        assert MANDARIN_PHONEMES[nasal].nasal_from is not None
+    # A trajectory that does not move would be a vowel wearing a diphthong's name: the
+    # second formant has to fall from the medial glide to the nucleus/coda target.
+    for unit, points in (("iou", MANDARIN_PHONEMES["iou"].targets),
+                         ("ian", MANDARIN_PHONEMES["ian"].targets),
+                         ("ing", MANDARIN_PHONEMES["ing"].targets)):
+        assert points[-1][2] < points[0][2] - 200.0, (unit, points)
+
+
+@pytest.mark.parametrize("unit", STAGE1_FINALS)
+def test_stage1_final_keeps_pitch_and_length(unit: str) -> None:
+    from vhe.data.pitch import track_pitch
+
+    audio = render(((unit, 0.30),), f0=200.0)
+    assert audio.size == int(round(0.30 * SR))
+    track = track_pitch(audio, SR)
+    assert track.voiced_ratio > 0.85, track.stats()["reasons"]
+    assert abs(float(np.median(track.voiced_f0)) - 200.0) < 4.0
+
+
+@pytest.mark.parametrize("unit", ["iou", "ian", "ing"])
+def test_stage1_final_glides_downwards_into_its_nucleus(unit: str) -> None:
+    audio = render(((unit, 0.30),), f0=100.0)
+    early = harmonic_peak(slice_s(audio, 0.055, 0.095), 900.0, 3000.0)
+    late = harmonic_peak(slice_s(audio, 0.225, 0.265), 900.0, 3000.0)
+    # iou drops ~900 Hz, ian/ing ~300-400 Hz; a harmonic grid of 100 Hz plus the
+    # coarticulation smoothing leaves a 200 Hz floor for the assertion.
+    assert late <= early - 200.0, (unit, early, late)
+
+
+def test_stage1_steady_vowel_does_not_glide() -> None:
+    audio = render((("e", 0.30),), f0=100.0)
+    early = harmonic_peak(slice_s(audio, 0.055, 0.095), 900.0, 3000.0)
+    late = harmonic_peak(slice_s(audio, 0.225, 0.265), 900.0, 3000.0)
+    assert abs(late - early) <= 100.0, (early, late)
+    assert 400.0 <= harmonic_peak(slice_s(audio, 0.100, 0.200), 200.0, 900.0) <= 600.0
+
+
+@pytest.mark.parametrize("unit", STAGE1_FINALS)
+def test_stage1_final_follows_the_voice_template(unit: str) -> None:
+    yang = harmonic_peak(slice_s(render(((unit, 0.30),), f0=100.0, template="yang"),
+                                 0.055, 0.095), 900.0, 3000.0)
+    yin = harmonic_peak(slice_s(render(((unit, 0.30),), f0=100.0, template="yin"),
+                                0.055, 0.095), 900.0, 3000.0)
+    # PRESETS formant_scale 1.08 vs 0.87 -> a 1.24 ratio; the harmonic grid widens it.
+    assert 1.10 <= yang / yin <= 1.40, (unit, yang, yin)
+
+
+@pytest.mark.parametrize("unit", ["ian", "ing"])
+def test_nasal_coda_resonance_is_applied_only_in_the_coda(unit: str,
+                                                          monkeypatch: pytest.MonkeyPatch
+                                                          ) -> None:
+    from dataclasses import replace
+
+    from vhe.synth import phonology
+
+    nasal = render(((unit, 0.30),), f0=200.0)
+    spec = phonology.MANDARIN_PHONEMES[unit]
+    monkeypatch.setitem(phonology.MANDARIN_PHONEMES, unit, replace(spec, nasal_from=None))
+    oral = render(((unit, 0.30),), f0=200.0)
+    monkeypatch.undo()
+
+    def low_share(audio: np.ndarray, start: float, stop: float) -> float:
+        window = slice_s(audio, start, stop)
+        return band_energy(window, 200.0, 320.0) / band_energy(window, 300.0, 3000.0)
+
+    # The nasal pole lifts 200-320 Hz relative to the rest of the spectrum, and only after
+    # nasal_from, so the onset half must be unchanged in share.
+    assert low_share(nasal, 0.225, 0.265) > 1.5 * low_share(oral, 0.225, 0.265)
+    head_nasal, head_oral = low_share(nasal, 0.055, 0.095), low_share(oral, 0.055, 0.095)
+    assert abs(head_nasal - head_oral) <= 0.05 * max(head_nasal, head_oral)
+
+
+def test_stage1_onset_boundary_keeps_a_real_closure_and_the_pitch() -> None:
+    from vhe.data.g2p import syllable_plan
+    from vhe.data.pitch import track_pitch
+
+    plan, reason = syllable_plan("d", "ian", 0.30)
+    assert reason is None
+    assert [name for name, _seconds in plan] == ["d", "ian"]
+    audio = render(plan, f0=200.0)
+    assert audio.size == int(round(0.30 * SR))
+    closure = float(np.sqrt(np.mean(slice_s(audio, 0.000, 0.040).astype(np.float64) ** 2)))
+    vowel = float(np.sqrt(np.mean(slice_s(audio, 0.120, 0.200).astype(np.float64) ** 2)))
+    # A 30 ms closure + 6 ms burst + 12 ms VOT must stay a closure: if the nucleus leaked
+    # into the onset the boundary would be gone even though the length still matched.
+    assert closure < 0.1 * vowel, (closure, vowel)
+    track = track_pitch(audio, SR)
+    assert 0.70 < track.voiced_ratio < 0.95
+    assert abs(float(np.median(track.voiced_f0)) - 200.0) < 4.0
+

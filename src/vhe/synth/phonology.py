@@ -101,6 +101,26 @@ MANDARIN_PHONEMES: dict[str, PhonemeSpec] = {
         (0.6, 750.0, 1000.0, 2500.0),
         (1.0, 600.0, 900.0, 2400.0),
     ), nasal_from=0.55),
+    # --- inventory stage 1 (EXP-0016): the four highest-marginal finals ---------------
+    # A final is one synthesis unit with its own trajectory, never a concatenation of
+    # segments: concatenating /i/ + /a/ + /n/ would produce three steady vowels instead of
+    # the [jɛn] glide, which is the "close enough" substitution this project forbids.
+    "e": _vowel("e", 500.0, 1280.0, 2500.0),          # [ɤ] back unrounded mid
+    "iou": PhonemeSpec("iou", "diphthong", True, (      # [joʊ]: jiu/qiu/xiu, you
+        (0.0, 300.0, 2200.0, 3000.0),
+        (0.45, 520.0, 1000.0, 2500.0),
+        (1.0, 380.0, 860.0, 2350.0),
+    )),
+    "ian": PhonemeSpec("ian", "nasal", True, (          # [jɛn]: the [ɛ] is not /a/
+        (0.0, 300.0, 2250.0, 3050.0),
+        (0.45, 560.0, 1900.0, 2600.0),
+        (1.0, 470.0, 1750.0, 2550.0),
+    ), nasal_from=0.60),
+    "ing": PhonemeSpec("ing", "nasal", True, (          # [iŋ]: F2 falls into the velar pinch
+        (0.0, 300.0, 2250.0, 3050.0),
+        (0.55, 400.0, 2050.0, 2900.0),
+        (1.0, 330.0, 1750.0, 2700.0),
+    ), nasal_from=0.50),
     # --- sonorant initials ----------------------------------------------------------
     "m": PhonemeSpec("m", "nasal", True, ((0.0, 250.0, 1000.0, 2200.0),), nasal_from=0.0),
     "n": PhonemeSpec("n", "nasal", True, ((0.0, 250.0, 1600.0, 2600.0),), nasal_from=0.0),
