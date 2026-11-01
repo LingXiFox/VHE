@@ -110,6 +110,8 @@ def main() -> None:
     pair_cache.add_argument("--output", required=True, help="New pair cache directory")
     pair_cache.add_argument("--splits", default="train")
     pair_cache.add_argument("--template", default="yang")
+    pair_cache.add_argument("--backend", default="mandarin",
+                            help="synth backend; must match the manifest's renderable inventory")
     pair_cache.add_argument("--sample-rate", type=int, default=24000)
     pair_cache.add_argument("--limit", type=int, default=None)
     pair_cache.add_argument("--seed", type=int, default=42)
@@ -197,7 +199,8 @@ def main() -> None:
 
         try:
             meta = build_pair_cache(args.index, args.manifest, args.root, args.output,
-                                    template=args.template, sample_rate=args.sample_rate,
+                                    template=args.template, backend_name=args.backend,
+                                    sample_rate=args.sample_rate,
                                     splits=args.splits.split(","), limit=args.limit,
                                     seed=args.seed)
         except FileExistsError as exc:

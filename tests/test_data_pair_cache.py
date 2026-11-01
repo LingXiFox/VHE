@@ -64,7 +64,7 @@ def test_writes_only_training_ready_pairs_and_records_rejections(tmp_path: Path)
     calls = []
 
     def builder(wav_path, pinyins, **kwargs):
-        calls.append((wav_path, tuple(pinyins), kwargs["alignment"]))
+        calls.append((wav_path, tuple(pinyins), kwargs["alignment"], kwargs.get("backend")))
         return results[Path(wav_path).stem]
 
     meta = build_pair_cache(index, manifest, tmp_path, tmp_path / "cache",
@@ -74,6 +74,9 @@ def test_writes_only_training_ready_pairs_and_records_rejections(tmp_path: Path)
     assert meta["rejected_rows"][0]["utt_id"] == "u2"
     assert meta["rejected_reasons"] == {"low": 1}
     assert calls[0][2] == "forced"
+    # A stub builder receives no backend (it does not synthesize); the real builder gets the
+    # mandarin inventory because the formant proxy would reject every transcript.
+    assert calls[0][3] is None
     assert sorted(path.name for path in (tmp_path / "cache" / "pairs").iterdir()) == \
         ["u1.npz", "u3.npz"]
 

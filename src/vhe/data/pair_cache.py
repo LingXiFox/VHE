@@ -14,6 +14,9 @@ Rules:
 * Arrays are stored as float32 at the requested rate; nothing else is stored, because the
   manifest and the alignment index are the provenance.
 * The speaker/split columns are copied from the index so a split never mixes speakers.
+* The synthesizer backend is chosen once and passed to every pair build. It must match the
+  inventory the manifest's renderable flags were computed with: the default formant proxy
+  only renders {a, i, u}, so silently using it rejects every real sentence (EXP-0025 run 1).
 """
 
 from __future__ import annotations
@@ -54,13 +57,15 @@ def build_pair_cache(index: str | Path, manifest: str | Path, root: str | Path,
                      output: str | Path, *, template: str = "yang",
                      sample_rate: int = 24000, splits: Sequence[str] = ("train",),
                      limit: Optional[int] = None, seed: int = 42,
+                     backend_name: str = "mandarin",
                      pair_builder: Optional[Callable] = None) -> dict:
     """Render pairs for every training-ready row and write an index beside them."""
-    from ..synth import PRESETS
+    from ..synth import PRESETS, get_backend
     from .pairing import build_pair
 
     if pair_builder is None:
         pair_builder = build_pair
+    backend = get_backend(backend_name) if pair_builder is build_pair else None
     out = Path(output)
     if out.exists():
         raise FileExistsError(f"Refusing to overwrite existing pair cache: {out}")
@@ -87,8 +92,9 @@ def build_pair_cache(index: str | Path, manifest: str | Path, root: str | Path,
             rejected.append({"utt_id": utt_id, "reason": "no transcript in manifest"})
             continue
         result = pair_builder(Path(root) / row["wav_path"], transcript,
-                             template=PRESETS[template], sample_rate=sample_rate,
-                             seed=seed, alignment="forced", phone_spans=_spans(row))
+                             template=PRESETS[template], backend=backend,
+                             sample_rate=sample_rate, seed=seed, alignment="forced",
+                             phone_spans=_spans(row))
         ready = bool(result.readiness.get("training_ready"))
         if not ready or result.real is None or result.mechanical is None:
             rejected.append({"utt_id": utt_id, "speaker": row.get("speaker"),
@@ -112,7 +118,8 @@ def build_pair_cache(index: str | Path, manifest: str | Path, root: str | Path,
     meta = {"type": "meta", "version": CACHE_VERSION, "index": str(index),
             "manifest": str(manifest), "root": str(root), "template": template,
             "sample_rate": sample_rate, "splits": list(splits), "seed": seed,
-            "requested": len(rows), "written": len(written), "rejected": len(rejected),
+            "backend": backend_name, "requested": len(rows), "written": len(written),
+            "rejected": len(rejected),
             "rejected_reasons": dict(Counter(code for item in rejected
                                              for code in item.get("reasons", ["(skipped)"]))),
             "rejected_rows": rejected}
