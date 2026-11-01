@@ -132,8 +132,8 @@ def main() -> int:
         if dp.mechanical is not None and dp.real is not None:
             rate = dp.sample_rate
             speaker_dir = out / utt_id
-            if not (speaker_dir / "mech_dp.wav").exists():
-                speaker_dir.mkdir(exist_ok=True)
+            speaker_dir.mkdir(exist_ok=True)
+            if not (speaker_dir / "real.wav").exists():
                 write_wav(speaker_dir / "real.wav", dp.real, rate)
             write_wav(speaker_dir / "mech_dp.wav", dp.mechanical, rate)
             record["logmel_dp"] = round(logmel_distance(dp.real, dp.mechanical, rate), 5)
