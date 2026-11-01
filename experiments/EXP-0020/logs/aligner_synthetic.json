@@ -1,0 +1,129 @@
+{
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.6",
+  "sample_rate": 16000,
+  "hop_s": 0.01,
+  "seed": 42,
+  "train_utterances": 30,
+  "eval_utterances": 8,
+  "crop_frames": [
+    13,
+    13
+  ],
+  "runs": [
+    {
+      "components": 1,
+      "iterations": 0,
+      "monotone": true,
+      "trained_loglik": null,
+      "max_boundary_error_s": 0.012,
+      "mean_boundary_error_s": 0.0059,
+      "min_confidence": 0.9369,
+      "errors_s": [
+        0.0025,
+        0.0039,
+        0.0083,
+        0.0043,
+        0.012,
+        0.0032,
+        0.0072,
+        0.006
+      ]
+    },
+    {
+      "components": 1,
+      "iterations": 1,
+      "monotone": true,
+      "trained_loglik": 16378.3283,
+      "max_boundary_error_s": 0.0117,
+      "mean_boundary_error_s": 0.0067,
+      "min_confidence": 0.978,
+      "errors_s": [
+        0.0117,
+        0.0039,
+        0.0085,
+        0.0093,
+        0.004,
+        0.0032,
+        0.0072,
+        0.006
+      ]
+    },
+    {
+      "components": 1,
+      "iterations": 4,
+      "monotone": true,
+      "trained_loglik": 25428.9497,
+      "max_boundary_error_s": 0.0118,
+      "mean_boundary_error_s": 0.0097,
+      "min_confidence": 0.9573,
+      "errors_s": [
+        0.0117,
+        0.009,
+        0.0089,
+        0.0095,
+        0.008,
+        0.0118,
+        0.0089,
+        0.0097
+      ]
+    },
+    {
+      "components": 2,
+      "iterations": 0,
+      "monotone": true,
+      "trained_loglik": null,
+      "max_boundary_error_s": 0.026,
+      "mean_boundary_error_s": 0.0122,
+      "min_confidence": 0.8986,
+      "errors_s": [
+        0.0125,
+        0.0176,
+        0.0189,
+        0.0105,
+        0.026,
+        0.0032,
+        0.0028,
+        0.006
+      ]
+    },
+    {
+      "components": 2,
+      "iterations": 1,
+      "monotone": true,
+      "trained_loglik": 20481.544,
+      "max_boundary_error_s": 0.026,
+      "mean_boundary_error_s": 0.0124,
+      "min_confidence": 0.8854,
+      "errors_s": [
+        0.0083,
+        0.0176,
+        0.0089,
+        0.0205,
+        0.026,
+        0.0032,
+        0.0028,
+        0.0116
+      ]
+    },
+    {
+      "components": 2,
+      "iterations": 4,
+      "monotone": true,
+      "trained_loglik": 29602.6195,
+      "max_boundary_error_s": 0.026,
+      "mean_boundary_error_s": 0.0155,
+      "min_confidence": 0.9469,
+      "errors_s": [
+        0.0183,
+        0.0176,
+        0.0089,
+        0.0205,
+        0.026,
+        0.0123,
+        0.0108,
+        0.0097
+      ]
+    }
+  ]
+}

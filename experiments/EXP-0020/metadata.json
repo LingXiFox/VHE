@@ -1,0 +1,23 @@
+{
+  "experiment_id": "EXP-0020",
+  "title": "Synthetic validation of the chain-HMM forced aligner",
+  "hypothesis": "A flat-start Baum-Welch chain HMM with 3 states per phoneme recovers phone boundaries on spectrally separable synthetic phones to within 2 frames (20 ms) at a 10 ms hop, and Baum-Welch iterations improve on the flat-start segmentation.",
+  "created_utc": "2026-11-01T11:22:57.643451+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "87d79aa153dba68cce28d126fccfc52cb6ee80ac",
+    "status": "dirty at run time: src/vhe/data/{features,hmm,aligner}.py and their tests uncommitted"
+  },
+  "seed": 42,
+  "dataset_manifest_sha256": null,
+  "command": [
+    "python experiments/EXP-0020/probe_aligner_synthetic.py --out experiments/EXP-0020/logs/aligner_synthetic.json"
+  ],
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Synthetic only: 30 train utterances of 3-5 band-limited phones, 8 held-out utterances of 4 distinct phones, 3 states/phone, 16 kHz, 10 ms hop. Grid over components (1,2) x iterations (0,1,4). Result: 1 component recovers every interior boundary within 12 ms (mean 5.9 ms) at flat start and 11.8 ms after 4 EM passes, so the 20 ms gate passes; 2 components are worse (26 ms). Baum-Welch raises likelihood monotonically (16378 -> 25429 nats) but does not improve boundaries (mean error 5.9 -> 9.7 ms), so the predicted EM gain is falsified on this fixture and the fixture cannot rank configurations. Five development bugs recorded in the README (state-id scope, repeated-index scatter, variance floor, unvisited states, iterations=0 silently running one pass). No real speech, no training, no listening.",
+  "completed_utc": "2026-11-01T19:40:00+08:00"
+}
