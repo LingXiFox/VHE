@@ -11,9 +11,17 @@ not contain, and a wrong path here becomes a wrong *duration* in the mechanical 
 
 Transitions were originally fixed (stay 0.5 / advance 0.5) on the argument that 3-state phones
 then expect ~60 ms, "the right order for Mandarin", so re-estimating them buys nothing. EXP-0021
-falsified that: with fixed transitions every phoneme class collapsed into 0.05-0.135 s (vowel
-over stop 1.43) because the prior, not the data, set the duration. Stay probabilities can now be
-per state, and Baum-Welch re-estimates them from expected transition counts (EXP-0022).
+found every phoneme class decoding into 0.05-0.135 s (vowel over stop 1.43) under that setting
+and proposed per-state stay probabilities as the fix; EXP-0022 implemented them and falsified the
+causal story behind it: with a fixed 0.5 the *model* implies 60 ms per phone, yet the decoder
+still emits 115.7 ms for vowels and 72.7 ms for stops, and re-estimating all 108 stay
+probabilities moves decodes by 1.07 ms on average (median 0.0, max 40) while raising the
+per-utterance log-likelihood by ~20 nats. The transition term is therefore not what sets decoded
+durations - an extra frame costs ~0.69 nats, a frame of the wrong phone costs tens of nats in the
+emission term - and the class-duration spread in EXP-0021 came from the emission model and the
+corpus, not from this prior. Per-state stay probabilities stay in the code (they are a real knob,
+and the estimated model implies durations closer to the decoded ones), but they are not the lever
+that fixes duration collapse; an explicit-duration model would act on spans directly instead.
 
 A scalar stay probability remains the default: it is the flat-start control the ablation needs
 and the value a chain falls back to when transitions are not being estimated.
