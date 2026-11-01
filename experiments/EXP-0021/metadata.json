@@ -1,0 +1,25 @@
+{
+ "experiment_id": "EXP-0021",
+ "title": "Real-corpus check of the chain-HMM aligner on an AISHELL-3 subset",
+ "hypothesis": "A chain HMM trained on 226 AISHELL-3 utterances (16 speakers, 0.15 h) reproduces the energy-valley DP syllable starts within 50 ms for >=80% of interior boundaries, keeps <=10% of phones at the 3-frame floor, and gains mean span confidence from Baum-Welch iterations over the flat start.",
+ "created_utc": "2026-11-01T11:22:00+00:00",
+ "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3] (macOS run); 3.12.14 (4090 run)",
+ "platform": "macOS-27.2-arm64 (APPLE M5, CPU) and Linux-6.18.33.2-microsoft-standard-WSL2-x86_64 (RTX 4090 Laptop, CPU only)",
+ "git": {
+  "commit": "f9544a6854883306ed4a6cce9402230f99840d91",
+  "status": "dirty at run time: experiments/EXP-0021/probe_corpus_aligner.py uncommitted; the aligner itself is f9544a6"
+ },
+ "seed": 42,
+ "dataset_manifest_sha256": "1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31",
+ "command": [
+  "python experiments/EXP-0021/probe_corpus_aligner.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --root /Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted --train-speakers 3 --eval-speakers 2 --per-speaker 4 --eval-utterances 6 --iterations 0 2 --out experiments/EXP-0021/logs/corpus_aligner_mac12.json",
+  "python experiments/EXP-0021/probe_corpus_aligner.py --manifest ... --root ... --train-speakers 6 --eval-speakers 2 --per-speaker 10 --eval-utterances 20 --iterations 0 3 --out experiments/EXP-0021/logs/corpus_aligner_mac60.json",
+  "ssh -p 2222 hands@10.0.0.190: PYTHONPATH=~/VHE/src python /tmp/probe_corpus_aligner.py --manifest /home/hands/datasets/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl --root /home/hands/datasets/VHE-Datasets/AISHELL-3/extracted --train-speakers 16 --eval-speakers 4 --per-speaker 20 --eval-utterances 60 --iterations 0 4 --out /tmp/exp0021_remote.json"
+ ],
+ "torch_version": null,
+ "cuda_version": null,
+ "gpu": null,
+ "config_sha256": null,
+ "notes": "CPU-only NumPy aligner. Train 226 renderable utterances from 16 train-split speakers (0.152 h, 38291 frames after the silence gate); evaluate on 60 utterances from 3 dev-split speakers, never seen in training. Reference for syllable starts is the energy-valley DP (vhe.data.align.align_syllables), which is itself unvalidated. Result: the >=80%-within-50 ms prediction fails (30.7% at 4 EM passes, 27.9% at flat start); the floor prediction passes (5.2% vs 12.4%); the confidence prediction passes (0.489 -> 0.816). Durations cluster at ~0.11 s for every phoneme class (vowel 0.114, diphthong 0.135, nasal 0.130, fricative 0.117, affricate 0.112, stop 0.080, lateral 0.052), which is the signature of the fixed 0.5 self-loop prior (expected 6 frames = 60 ms per 3-state phone) rather than of the data. No listening, no VHE training.",
+ "completed_utc": "2026-11-01T11:45:00+00:00"
+}
