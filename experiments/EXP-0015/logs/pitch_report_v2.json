@@ -1,0 +1,724 @@
+{
+  "synthetic": [
+    {
+      "case": "constant_110",
+      "frames_new": 58,
+      "legacy_default": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.485995446542163,
+        "p90_abs_cents": 6.596884946094206,
+        "signed_median_cents": 0.0009427620793013271
+      },
+      "legacy_fmax500": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.485995446542163,
+        "p90_abs_cents": 6.596884946094206,
+        "signed_median_cents": 0.0009427620793013271
+      },
+      "new_default": {
+        "frames": 58,
+        "voiced_frames": 58,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 58
+        },
+        "median_abs_cents": 5.029732214799959,
+        "p90_abs_cents": 6.8067523380343395,
+        "signed_median_cents": 0.02498530258847448
+      },
+      "new_reasons": {
+        "ok": 58,
+        "silence": 0,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "new_median_abs_step_cents": 1.27
+    },
+    {
+      "case": "constant_165",
+      "frames_new": 58,
+      "legacy_default": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.3423092550696145,
+        "p90_abs_cents": 6.48719931561511,
+        "signed_median_cents": -0.011868815966578386
+      },
+      "legacy_fmax500": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.3423092550696145,
+        "p90_abs_cents": 6.48719931561511,
+        "signed_median_cents": -0.011868815966578386
+      },
+      "new_default": {
+        "frames": 58,
+        "voiced_frames": 58,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 58
+        },
+        "median_abs_cents": 4.891079532179828,
+        "p90_abs_cents": 6.736606358429884,
+        "signed_median_cents": 0.04064205603929555
+      },
+      "new_reasons": {
+        "ok": 58,
+        "silence": 0,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "new_median_abs_step_cents": 1.37
+    },
+    {
+      "case": "constant_210",
+      "frames_new": 58,
+      "legacy_default": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 0.017543859649122806,
+        "hit_100c": 0.017543859649122806,
+        "octave_error_rate": 0.9824561403508771,
+        "octave_kinds": {
+          "4x": 56,
+          "none": 1
+        },
+        "median_abs_cents": 2404.3335042628546,
+        "p90_abs_cents": 2404.4660426555797,
+        "signed_median_cents": 2404.3335042628546
+      },
+      "legacy_fmax500": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.319164870169501,
+        "p90_abs_cents": 6.491437381384811,
+        "signed_median_cents": 0.03029538225163974
+      },
+      "new_default": {
+        "frames": 58,
+        "voiced_frames": 58,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 58
+        },
+        "median_abs_cents": 4.862681858250989,
+        "p90_abs_cents": 6.754885922641322,
+        "signed_median_cents": 0.014241965919228772
+      },
+      "new_reasons": {
+        "ok": 58,
+        "silence": 0,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "new_median_abs_step_cents": 1.41
+    },
+    {
+      "case": "constant_300",
+      "frames_new": 58,
+      "legacy_default": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 0.017543859649122806,
+        "hit_100c": 0.017543859649122806,
+        "octave_error_rate": 0.9824561403508771,
+        "octave_kinds": {
+          "3x": 56,
+          "none": 1
+        },
+        "median_abs_cents": 1903.4990922231084,
+        "p90_abs_cents": 1912.8091683889957,
+        "signed_median_cents": 1903.4990922231084
+      },
+      "legacy_fmax500": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.230244117056903,
+        "p90_abs_cents": 6.414500419724063,
+        "signed_median_cents": -0.05446599007478029
+      },
+      "new_default": {
+        "frames": 58,
+        "voiced_frames": 58,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 58
+        },
+        "median_abs_cents": 4.782253884641097,
+        "p90_abs_cents": 6.669939084387001,
+        "signed_median_cents": -0.03284461920028181
+      },
+      "new_reasons": {
+        "ok": 58,
+        "silence": 0,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "new_median_abs_step_cents": 1.41
+    },
+    {
+      "case": "constant_350",
+      "frames_new": 58,
+      "legacy_default": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.3332080072482775,
+        "p90_abs_cents": 6.519259174419376,
+        "signed_median_cents": -0.06710231604707058
+      },
+      "legacy_fmax500": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.3332080072482775,
+        "p90_abs_cents": 6.519259174419376,
+        "signed_median_cents": -0.06710231604707058
+      },
+      "new_default": {
+        "frames": 58,
+        "voiced_frames": 58,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 58
+        },
+        "median_abs_cents": 4.869664790242034,
+        "p90_abs_cents": 6.74551244023171,
+        "signed_median_cents": -0.0492143286841874
+      },
+      "new_reasons": {
+        "ok": 58,
+        "silence": 0,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "new_median_abs_step_cents": 1.32
+    },
+    {
+      "case": "glide_110_220",
+      "frames_new": 58,
+      "legacy_default": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 0.8947368421052632,
+        "hit_100c": 0.8947368421052632,
+        "octave_error_rate": 0.10526315789473684,
+        "octave_kinds": {
+          "4x": 6,
+          "none": 51
+        },
+        "median_abs_cents": 5.339539486855178,
+        "p90_abs_cents": 961.222242453819,
+        "signed_median_cents": 1.7557761290686926
+      },
+      "legacy_fmax500": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 57
+        },
+        "median_abs_cents": 5.157852886361856,
+        "p90_abs_cents": 7.6141059950741665,
+        "signed_median_cents": -0.3142570808285529
+      },
+      "new_default": {
+        "frames": 58,
+        "voiced_frames": 58,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 58
+        },
+        "median_abs_cents": 5.140303500638303,
+        "p90_abs_cents": 7.301822090721472,
+        "signed_median_cents": -0.4143365104026574
+      },
+      "new_reasons": {
+        "ok": 58,
+        "silence": 0,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "new_median_abs_step_cents": 18.94
+    },
+    {
+      "case": "glide_300_130",
+      "frames_new": 58,
+      "legacy_default": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 0.6666666666666666,
+        "hit_100c": 0.6666666666666666,
+        "octave_error_rate": 0.3333333333333333,
+        "octave_kinds": {
+          "2x": 3,
+          "3x": 10,
+          "4x": 4,
+          "none": 40
+        },
+        "median_abs_cents": 6.5486137962393425,
+        "p90_abs_cents": 2097.41438752161,
+        "signed_median_cents": 3.6458917706599054
+      },
+      "legacy_fmax500": {
+        "frames": 57,
+        "voiced_frames": 57,
+        "rejection_rate": 0.0,
+        "hit_50c": 0.8771929824561403,
+        "hit_100c": 0.8771929824561403,
+        "octave_error_rate": 0.12280701754385964,
+        "octave_kinds": {
+          "2x": 6,
+          "none": 51
+        },
+        "median_abs_cents": 5.363755832946293,
+        "p90_abs_cents": 903.0252619798714,
+        "signed_median_cents": 1.8425510112120014
+      },
+      "new_default": {
+        "frames": 58,
+        "voiced_frames": 58,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 58
+        },
+        "median_abs_cents": 4.829143488627045,
+        "p90_abs_cents": 6.966477499194004,
+        "signed_median_cents": -0.7851211398699098
+      },
+      "new_reasons": {
+        "ok": 58,
+        "silence": 0,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "new_median_abs_step_cents": 23.97
+    },
+    {
+      "case": "vibrato_200_pm12",
+      "frames_new": 78,
+      "legacy_default": {
+        "frames": 77,
+        "voiced_frames": 77,
+        "rejection_rate": 0.0,
+        "hit_50c": 0.6363636363636364,
+        "hit_100c": 0.6363636363636364,
+        "octave_error_rate": 0.36363636363636365,
+        "octave_kinds": {
+          "4x": 28,
+          "none": 49
+        },
+        "median_abs_cents": 0.8767714227261021,
+        "p90_abs_cents": 2398.375183560351,
+        "signed_median_cents": 0.51433361249275
+      },
+      "legacy_fmax500": {
+        "frames": 77,
+        "voiced_frames": 77,
+        "rejection_rate": 0.0,
+        "hit_50c": 0.935064935064935,
+        "hit_100c": 0.935064935064935,
+        "octave_error_rate": 0.06493506493506493,
+        "octave_kinds": {
+          "2x": 5,
+          "none": 72
+        },
+        "median_abs_cents": 0.7387108240572389,
+        "p90_abs_cents": 1.725862415969407,
+        "signed_median_cents": 0.3443332254295735
+      },
+      "new_default": {
+        "frames": 78,
+        "voiced_frames": 78,
+        "rejection_rate": 0.0,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "octave_kinds": {
+          "none": 78
+        },
+        "median_abs_cents": 3.37992106071527,
+        "p90_abs_cents": 4.616139059211816,
+        "signed_median_cents": 1.2319202858890868
+      },
+      "new_reasons": {
+        "ok": 78,
+        "silence": 0,
+        "no_candidate": 0,
+        "low_confidence": 0,
+        "octave_ambiguous": 0,
+        "continuity_gated": 0
+      },
+      "new_median_abs_step_cents": 21.37
+    }
+  ],
+  "real": {
+    "utterances": 12,
+    "median_of_medians_hz": 226.6,
+    "legacy_median_of_medians_hz": 225.9,
+    "mean_rejection_rate": 0.4835,
+    "frames": 2052,
+    "reasons": {
+      "continuity_gated": 24,
+      "low_confidence": 24,
+      "no_candidate": 281,
+      "octave_ambiguous": 69,
+      "ok": 1077,
+      "silence": 577
+    },
+    "rejected_share": 0.4751,
+    "mean_octave_jump_rate": 0.0027,
+    "rows": [
+      {
+        "utt_id": "SSB09970003",
+        "speaker": "SSB0997",
+        "duration_s": 2.128,
+        "frames": 210,
+        "legacy_median_f0_hz": 289.9,
+        "legacy_voiced_ratio": 0.45,
+        "new_median_f0_hz": 285.5,
+        "new_voiced_ratio": 0.443,
+        "new_rejection_rate": 0.5571,
+        "new_reasons": {
+          "ok": 93,
+          "silence": 80,
+          "no_candidate": 12,
+          "low_confidence": 6,
+          "octave_ambiguous": 11,
+          "continuity_gated": 8
+        },
+        "new_median_abs_step_cents": 14.33,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB12740001",
+        "speaker": "SSB1274",
+        "duration_s": 2.4,
+        "frames": 237,
+        "legacy_median_f0_hz": 225.9,
+        "legacy_voiced_ratio": 0.665,
+        "new_median_f0_hz": 226.3,
+        "new_voiced_ratio": 0.62,
+        "new_rejection_rate": 0.3797,
+        "new_reasons": {
+          "ok": 147,
+          "silence": 75,
+          "no_candidate": 4,
+          "low_confidence": 1,
+          "octave_ambiguous": 9,
+          "continuity_gated": 1
+        },
+        "new_median_abs_step_cents": 15.53,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB13280001",
+        "speaker": "SSB1328",
+        "duration_s": 2.302,
+        "frames": 228,
+        "legacy_median_f0_hz": 120.9,
+        "legacy_voiced_ratio": 0.643,
+        "new_median_f0_hz": 121.5,
+        "new_voiced_ratio": 0.618,
+        "new_rejection_rate": 0.3816,
+        "new_reasons": {
+          "ok": 141,
+          "silence": 69,
+          "no_candidate": 11,
+          "low_confidence": 0,
+          "octave_ambiguous": 6,
+          "continuity_gated": 1
+        },
+        "new_median_abs_step_cents": 16.05,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB14520002",
+        "speaker": "SSB1452",
+        "duration_s": 1.569,
+        "frames": 154,
+        "legacy_median_f0_hz": 202.8,
+        "legacy_voiced_ratio": 0.516,
+        "new_median_f0_hz": 202.0,
+        "new_voiced_ratio": 0.494,
+        "new_rejection_rate": 0.5065,
+        "new_reasons": {
+          "ok": 76,
+          "silence": 4,
+          "no_candidate": 64,
+          "low_confidence": 1,
+          "octave_ambiguous": 6,
+          "continuity_gated": 3
+        },
+        "new_median_abs_step_cents": 17.85,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB00180248",
+        "speaker": "SSB0018",
+        "duration_s": 1.347,
+        "frames": 132,
+        "legacy_median_f0_hz": 274.1,
+        "legacy_voiced_ratio": 0.702,
+        "new_median_f0_hz": 273.9,
+        "new_voiced_ratio": 0.697,
+        "new_rejection_rate": 0.303,
+        "new_reasons": {
+          "ok": 92,
+          "silence": 13,
+          "no_candidate": 23,
+          "low_confidence": 3,
+          "octave_ambiguous": 0,
+          "continuity_gated": 1
+        },
+        "new_median_abs_step_cents": 17.08,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB02880036",
+        "speaker": "SSB0288",
+        "duration_s": 1.452,
+        "frames": 143,
+        "legacy_median_f0_hz": 216.0,
+        "legacy_voiced_ratio": 0.415,
+        "new_median_f0_hz": 217.0,
+        "new_voiced_ratio": 0.385,
+        "new_rejection_rate": 0.6154,
+        "new_reasons": {
+          "ok": 55,
+          "silence": 22,
+          "no_candidate": 60,
+          "low_confidence": 2,
+          "octave_ambiguous": 4,
+          "continuity_gated": 0
+        },
+        "new_median_abs_step_cents": 12.98,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB02990037",
+        "speaker": "SSB0299",
+        "duration_s": 1.6,
+        "frames": 157,
+        "legacy_median_f0_hz": 221.0,
+        "legacy_voiced_ratio": 0.513,
+        "new_median_f0_hz": 220.6,
+        "new_voiced_ratio": 0.516,
+        "new_rejection_rate": 0.4841,
+        "new_reasons": {
+          "ok": 81,
+          "silence": 37,
+          "no_candidate": 39,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 0
+        },
+        "new_median_abs_step_cents": 14.26,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB04350040",
+        "speaker": "SSB0435",
+        "duration_s": 1.37,
+        "frames": 134,
+        "legacy_median_f0_hz": 280.3,
+        "legacy_voiced_ratio": 0.414,
+        "new_median_f0_hz": 250.0,
+        "new_voiced_ratio": 0.418,
+        "new_rejection_rate": 0.5821,
+        "new_reasons": {
+          "ok": 56,
+          "silence": 73,
+          "no_candidate": 3,
+          "low_confidence": 0,
+          "octave_ambiguous": 0,
+          "continuity_gated": 2
+        },
+        "new_median_abs_step_cents": 15.02,
+        "new_octave_jump_rate": 0.0182
+      },
+      {
+        "utt_id": "SSB07100231",
+        "speaker": "SSB0710",
+        "duration_s": 1.514,
+        "frames": 149,
+        "legacy_median_f0_hz": 133.3,
+        "legacy_voiced_ratio": 0.527,
+        "new_median_f0_hz": 133.1,
+        "new_voiced_ratio": 0.477,
+        "new_rejection_rate": 0.5235,
+        "new_reasons": {
+          "ok": 71,
+          "silence": 70,
+          "no_candidate": 0,
+          "low_confidence": 0,
+          "octave_ambiguous": 8,
+          "continuity_gated": 0
+        },
+        "new_median_abs_step_cents": 20.15,
+        "new_octave_jump_rate": 0.0143
+      },
+      {
+        "utt_id": "SSB07580064",
+        "speaker": "SSB0758",
+        "duration_s": 1.486,
+        "frames": 146,
+        "legacy_median_f0_hz": 226.0,
+        "legacy_voiced_ratio": 0.566,
+        "new_median_f0_hz": 226.8,
+        "new_voiced_ratio": 0.493,
+        "new_rejection_rate": 0.5068,
+        "new_reasons": {
+          "ok": 72,
+          "silence": 39,
+          "no_candidate": 26,
+          "low_confidence": 0,
+          "octave_ambiguous": 9,
+          "continuity_gated": 0
+        },
+        "new_median_abs_step_cents": 10.18,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB09130001",
+        "speaker": "SSB0913",
+        "duration_s": 1.367,
+        "frames": 134,
+        "legacy_median_f0_hz": 246.1,
+        "legacy_voiced_ratio": 0.511,
+        "new_median_f0_hz": 246.5,
+        "new_voiced_ratio": 0.463,
+        "new_rejection_rate": 0.5373,
+        "new_reasons": {
+          "ok": 62,
+          "silence": 62,
+          "no_candidate": 2,
+          "low_confidence": 1,
+          "octave_ambiguous": 6,
+          "continuity_gated": 1
+        },
+        "new_median_abs_step_cents": 6.76,
+        "new_octave_jump_rate": 0.0
+      },
+      {
+        "utt_id": "SSB10080006",
+        "speaker": "SSB1008",
+        "duration_s": 2.307,
+        "frames": 228,
+        "legacy_median_f0_hz": 268.6,
+        "legacy_voiced_ratio": 0.643,
+        "new_median_f0_hz": 280.7,
+        "new_voiced_ratio": 0.575,
+        "new_rejection_rate": 0.4254,
+        "new_reasons": {
+          "ok": 131,
+          "silence": 33,
+          "no_candidate": 37,
+          "low_confidence": 10,
+          "octave_ambiguous": 10,
+          "continuity_gated": 7
+        },
+        "new_median_abs_step_cents": 31.16,
+        "new_octave_jump_rate": 0.0
+      }
+    ]
+  }
+}

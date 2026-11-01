@@ -89,6 +89,15 @@ def _difference(x: np.ndarray, lag_min: int, lag_max: int) -> tuple[np.ndarray, 
     return lags, diff, cmnd
 
 
+def cmnd_curve(centered: np.ndarray, lag_max: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Public (lags, d(tau), d'(tau)) over lags 1..lag_max.
+
+    Exposed so the multi-candidate tracker in pitch.py reuses this exact CMND core instead
+    of maintaining a second, subtly different copy.
+    """
+    return _difference(centered, 1, lag_max)
+
+
 #: Absolute CMND margin by which the second dip must beat the first one before the estimator
 #: accepts the longer period (EXP-0011; swept 0.008..0.08, see the experiment README).
 OCTAVE_TOLERANCE = 0.02

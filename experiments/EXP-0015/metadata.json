@@ -1,0 +1,21 @@
+{
+  "experiment_id": "EXP-0015",
+  "title": "Reliable F0 estimation with multi-candidate CMND and Viterbi continuity",
+  "hypothesis": "Multi-candidate CMND with harmonic-support scoring and Viterbi continuity reads 110-350 Hz sustained vowels and the 110->220 Hz, 300->130 Hz and 200+-12 Hz@5 Hz contours within 50 cents at the default 65-900 Hz range (no fmax narrowing), and on 12 real AISHELL-3 utterances it removes most of the octave jumps of the single-dip estimator while explicitly rejecting frames it cannot resolve instead of interpolating.",
+  "created_utc": "2026-11-01T05:17:44.141471+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "b9047f53b8442f5799d9ade3338e6bf5bdb2f993",
+    "status": "dirty: uncommitted pitch tracker (src/vhe/data/pitch.py, f0.cmnd_curve, data exports, tests/test_data_pitch.py)"
+  },
+  "seed": null,
+  "dataset_manifest_sha256": "10539f61d015bc81dff88cb0ee5ba72b640ab703ee57373324f7c446a624c80f",
+  "command": "python experiments/EXP-0015/probe_pitch.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v3/manifest.jsonl --output experiments/EXP-0015/logs/pitch_report_v2.json",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Synthetic 8/8 contours hit50=1.00, octave errors 0.00 at default fmax 900 (legacy default 0.02 at 210/300 Hz). v1 with frame_ms=40 failed the 300->130 glide (0.84/0.16) and is kept as the window-length ablation. Real 12 utterances: mean rejection 0.4835 (27% of non-silent frames), octave jump rate 0.0027 vs legacy 0.0248. No listening test. Directory was recreated with tools/new_experiment.py after an initial hand-made creation; artifacts restored and md5-checked.",
+  "completed_utc": "2026-11-01T05:35:00+00:00"
+}

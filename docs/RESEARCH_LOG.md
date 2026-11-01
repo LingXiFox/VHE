@@ -182,3 +182,14 @@
 - 结论：**F0 估计器暂不可直接用于成对构造**；若必须用只能 `fmax_hz ≤ 500` 并给配对打"F0 可能含八度错误"标记。下次 EXP-0015：多候选（lag/2lag/3lag）子谐波校验 + 帧间连续性平滑，用同一套轮廓与 12 条真实语音回归。
 - 证据：`experiments/EXP-0014/`（`probe_f0.py`、`logs/f0_report.json`）。
 
+## 2026-11-01 | EXP-0015 多候选 CMND + 谐波支撑 + Viterbi 连续性：F0 拒绝式跟踪
+
+- 假设：显式多候选周期（含 2×/3×/4× 与半频）+ 谐波一致性 + 帧间连续性，能在**不缩窄 `fmax`** 的默认 65–900 Hz 下修复 EXP-0014 的倍频错误，并对无把握的帧显式拒绝而不是插值。
+- 实现：`src/vhe/data/pitch.py`（`frame_candidates` / `prefer_shortest_period` / `_viterbi` / `track_pitch` / `octave_error_kind`；`cmnd_curve` 由 `vhe.data.f0` 提供）。评分 `(1-aperiodicity) * (0.7 + 0.3*harmonic_support)`，Viterbi 转移含连续性成本与未发声态，`f0_hz=0` + reason（ok/silence/no_candidate/low_confidence/octave_ambiguous/continuity_gated）。
+- 合成（8 条与 EXP-0014 完全相同的轮廓，默认 900 Hz）：**8/8 hit50 = 1.00、八度错误 0.00**；对照 legacy 默认 210/300 Hz 仅 0.02（八度帧 0.98）、下行滑音 0.67、颤音 0.64；legacy `fmax=500` 下行滑音仍 0.88/颤音 0.94。
+- 真实（同样 12 条 / 12 人 / 24 kHz）：总帧 2052，拒绝率 0.4835（其中静音 577 帧），非静音帧拒绝 0.2698；相邻帧八度跳变率均值 **0.0027**（EXP-0014 legacy 0.0248，约 9× 降低）；12 人中位 F0 的中位数 226.6 Hz（legacy 225.9）。
+- **失败记录**：v1 用 40 ms 分析窗时下行滑音 300→130 只有 0.84 命中、16% 八度帧（40 ms 内音高变化约 6%，真周期不再是 CMND 谷，静止的 880 Hz 共振峰获胜），改 30 ms 后 1.00/0.00，其余 7 条不变 → 保留 `logs/pitch_report_v1.json` 作窗长消融。另修掉 7 个实现缺陷（整数倍候选被误判歧义、基础 dip 按深度/长度选取各失败一次、`cmnd_curve` off-by-one 造成 +5…40 cents 偏高、家族折叠排序写反、谐波支撑等权导致共振峰周期胜出、歧义判据用评分窗过宽）。
+- 流程勘误：EXP-0015 目录最初手工创建，事后用 `tools/new_experiment.py` 重建骨架并原样回填探针与日志（md5 校验一致），未删除任何失败结果。
+- 结论：跟踪器显著优于 EXP-0014，但**仍不宣称"可直接用于成对构造"**：无真实 F0 真值、拒绝率偏高、SSB04350040 中位 F0 与 legacy 差 0.18 倍频程原因未查明。未做听音。
+- 证据：`experiments/EXP-0015/`（`probe_pitch.py`、`logs/pitch_report_v1.json`、`logs/pitch_report_v2.json`）。
+

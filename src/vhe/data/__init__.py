@@ -5,6 +5,14 @@ repository or fed to VHE from this package.
 """
 
 from .f0 import F0Frame, F0Track, estimate_f0
+from .pitch import (
+    PeriodCandidate,
+    PitchFrame,
+    PitchTrack,
+    frame_candidates,
+    octave_error_kind,
+    track_pitch,
+)
 from .resample import resample
 from .segment import Segment, Segmentation, check_syllable_count, segment_by_energy
 from .pairing import (
@@ -34,6 +42,8 @@ from .aishell3 import (
 
 __all__ = [
     "F0Frame", "F0Track", "estimate_f0", "resample", "Segment", "Segmentation",
+    "PeriodCandidate", "PitchFrame", "PitchTrack", "frame_candidates", "octave_error_kind",
+    "track_pitch",
     "check_syllable_count", "segment_by_energy", "Manifest", "ParseIssue", "Utterance",
     "apply_speaker_split", "build_manifest", "assign_speaker_split", "auto_split_sizes",
     "parse_split_sizes", "DEFAULT_SPLIT_SIZES", "SPLIT_SEED", "SPLIT_NAMES",
