@@ -56,3 +56,19 @@
 | Windows CUDA | 仍未真机验证 | — |
 
 **P1.5 结论**：管线端到端可跑，但`training_ready` 为 0，P1 的"至少人工检查 20 对"门槛未达成。进入 P2 前必须先有 phoneme-level 强制对齐（或人工边界）并完成听音验收。
+
+## Windows CUDA 真机验收（2026-11-01，WSL2 / RTX 4090 Laptop）
+
+| 项 | 结果 | 证据 |
+|---|---|---|
+| 环境 | Ubuntu 26.04.1 WSL2、28 核、21 GiB RAM、842 GB 空闲、`/dev/dxg` 直通 | `ssh -p 2222 hands@10.0.0.190` |
+| GPU | RTX 4090 Laptop GPU 16376 MiB，driver 621.01，`nvidia-smi` 在 `/usr/lib/wsl/lib` | `doctor` 输出 |
+| Python/torch | venv Python 3.12.14（uv），torch **2.11.0+cu128**，CUDA runtime 12.8 | `doctor` 输出 |
+| `vhe doctor --device cuda` | **通过**：`selected_device=cuda`、`cuda_available=true`、`precision_policy=float32` | 终端输出 |
+| `vhe smoke --device cuda` | **通过**：forward/backward/optimizer step，峰值显存 1.62 MB | 终端输出 |
+| `pytest -q` | **404 passed / 2 skipped**（skip 均为 MPS 专用用例；CUDA 专用用例在本机转为通过） | 终端输出 |
+| 数据镜像 | 88035 wav / 27,208,419,174 B；5314 条可渲染文件逐文件 sha256 一致 | 聚合摘要 `d26b7f68…` |
+| 训练 | **未开始**：P2 前置（forced alignment、听音验收）仍未达成 | — |
+
+注意：这是 WSL2 路径，不等于原生 Windows 图形会话验收；两者若要都算通过必须分别跑。
+

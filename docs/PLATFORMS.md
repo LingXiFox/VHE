@@ -62,3 +62,58 @@ python -m pytest -q
 - 记录：`torch.__version__`、torch CUDA runtime、CUDA driver（若有）、GPU 名称、设备类型、OS/Python、精度、seed、批大小、音频长度、测试命令及错误日志。
 
 资料：[PyTorch 官方安装](https://pytorch.org/get-started/locally/)；[PyTorch MPS](https://docs.pytorch.org/docs/stable/notes/mps.html)；[MPS 环境变量](https://docs.pytorch.org/docs/stable/mps_environment_variables.html)。
+## Windows + WSL2 + NVIDIA CUDA（2026-11-01 真机验证通过）
+
+实验机通过 WSL2 提供 Linux 环境，**不使用原生 PowerShell 路径**：`ssh -p 2222 hands@10.0.0.190`。
+
+实测环境：
+
+| 项 | 值 |
+|---|---|
+| OS / kernel | Ubuntu 26.04.1 LTS，`6.18.33.2-microsoft-standard-WSL2`，x86_64，28 核 |
+| GPU | NVIDIA GeForce RTX 4090 Laptop GPU，16376 MiB，driver 621.01 |
+| GPU 直通 | `/dev/dxg` 存在，`libcuda.so.1` 在 `/usr/lib/wsl/lib`（**不需要**在 WSL 里装驱动或 CUDA Toolkit） |
+| `nvidia-smi` | **不在 PATH**，只能用 `/usr/lib/wsl/lib/nvidia-smi` |
+| Python | 仓库 venv 用 uv 装 CPython 3.12.14（系统 Python 是 3.14.4，torch 的 cp314 轮子当时未取） |
+| torch | `2.11.0+cu128`（CUDA runtime 12.8），`torch.cuda.is_available() == True` |
+| 仓库 | `/home/hands/VHE`，`git clone` 自 GitHub，HEAD 与远端一致 |
+| 数据 | `/home/hands/datasets/VHE-Datasets`（ext4，**不要放 `/mnt/c`**，9p 会让 8.8 万个小文件极慢） |
+
+安装与验证（实测命令）：
+
+```bash
+cd ~/VHE
+~/.local/bin/uv venv --python 3.12 .venv
+~/.local/bin/uv pip install --python .venv/bin/python \
+    --index-url https://download.pytorch.org/whl/cu128 torch
+~/.local/bin/uv pip install --python .venv/bin/python -e ".[dev]"
+.venv/bin/python -m vhe doctor --device cuda     # selected_device=cuda, cuda_available=true
+.venv/bin/python -m vhe smoke --device cuda      # forward/backward/optimizer step on GPU
+.venv/bin/python -m pytest -q                    # 404 passed / 2 skipped（skip 均为 MPS 专用用例）
+```
+
+数据镜像与路径重定位（manifest 里的 `root` 记的是 mac 路径，不可直接复用）：
+
+```bash
+# 本机（mac）→ 实验机
+rsync -rt -e "ssh -p 2222" /Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted/ \
+    hands@10.0.0.190:/home/hands/datasets/VHE-Datasets/AISHELL-3/extracted/
+rsync -rt -e "ssh -p 2222" /Volumes/LingXiWorkspace/VHE-Datasets/derived/ \
+    hands@10.0.0.190:/home/hands/datasets/VHE-Datasets/derived/
+```
+
+```python
+from vhe.data.dataset import CorpusPairs
+pairs = CorpusPairs.from_manifest(
+    "/home/hands/datasets/VHE-Datasets/derived/aishell3-scan/v4/manifest.jsonl",
+    root="/home/hands/datasets/VHE-Datasets/AISHELL-3/extracted")   # 5314 句
+```
+
+传输与镜像校验（2026-11-01）：88035 个 wav / 88047 个文件 / 27,208,419,174 B；5314 条可渲染文件逐文件 sha256 聚合摘要
+`d26b7f686604c6c243f5fa9d3b8836834267720a04f53b4dbd6080d15c9db0da`、字节数 1,069,666,944，与本机完全一致；
+v4 manifest sha256 `1a8138c4…` 两端一致；`CorpusPairs` 在实验机加载得到 5314（train 4333 / dev 528 / test 453），
+`staleness.changed = 0`。
+
+**仍未验证**：这台机器是 WSL2，不是原生 Windows 图形会话；如果以后必须在纯 PowerShell 下运行，仍需按上一节单独验收。
+`/usr/lib/wsl/lib` 未加入 PATH 是有意为之，避免与未来系统 CUDA 冲突——需要 `nvidia-smi` 时写全路径。
+

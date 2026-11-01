@@ -53,3 +53,16 @@
 - 配对预览的落盘位置：`derived/aishell3-pairs/{v1_blocked_proxy_backend,v2}/`（数据集同盘，不进 Git）。v1 是后端选错的失败产物，保留作证据。
 - 预览的定位：`training_ready=false` 的配对（当前 20 条里 20 条）只能标 `preview_only`，**不得进入训练集**；连续语流上的能量分段不等于音素级强制对齐，结论见 EXP-0018。
 - 音色/模板：`yang`/`yin` 都是**合成原创模板**，不来自任何真人。禁止按目标说话人的 F0 或频谱拟合模板（EXP-0019 已证明 F0 不携带音色信息，且拟合目标就等于身份替换）。
+
+## 远程镜像：Windows/WSL2 实验机（2026-11-01）
+
+- 训练机（RTX 4090 Laptop 16 GB，WSL2 Ubuntu 26.04）通过 `ssh -p 2222 hands@10.0.0.190` 访问；数据放在 ext4 的 `/home/hands/datasets/VHE-Datasets`，**不放 `/mnt/c`**。
+- 镜像内容与来源同一份，逐字节校验过：
+  - `AISHELL-3/extracted`：88047 个文件 / 88035 个 wav / 27,208,419,174 B；
+  - `derived/`：`aishell3-scan/v{1..4}`、`aishell3-audit/v{1,2}`、`aishell3-pairs/v{1_blocked_proxy_backend,2}`；
+  - v4 manifest sha256 `1a8138c4d13e547d1d266a7aaf50d3a002a8e32dad78b0555f1b417c77074f31` 两端一致。
+- 可渲染音频（5314 条）做了**逐文件 sha256** 校验：字节数 1,069,666,944、聚合摘要 `d26b7f686604c6c243f5fa9d3b8836834267720a04f53b4dbd6080d15c9db0da` 两端相同；`CorpusPairs.from_manifest` 在实验机加载得到 5314 句（train 4333 / dev 528 / test 453），`staleness.changed = 0`。
+- **manifest 不携带可用的绝对路径**：`meta.root` 记的是本机 mac 路径，跨机加载必须显式传 `root=`，否则 `CorpusPairs` 会明确报 `corpus root ... does not exist; pass root= for a manifest built elsewhere`。派生 manifest 不因换机而重建，只换 root。
+- 未镜像：`AISHELL-3/raw`（18 GB）、`data_aishell3.tgz`（2.2 GB）、`sample`（76 MB）——它们不参与任何训练/评估路径；需要时再单独传。
+- 远程同样**不提交**任何数据或派生文件进 Git，只有代码与实验记录进仓库。
+
