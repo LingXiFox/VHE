@@ -1,15 +1,19 @@
-"""Pinyin syllable -> phoneme plan for the Mandarin physical synthesizer (P1-C).
+"""Pinyin syllable -> phoneme plan for the Mandarin physical synthesizer (P1-C/P1.3).
 
-This module is the *only* place where a pinyin spelling is turned into phoneme ids. It is
+This module is the only place where a pinyin spelling is turned into phoneme ids. It is
 deliberately strict: a syllable is either rendered with every one of its phonemes or it is
-blocked with a reason. Nothing is replaced by a vowel, by silence, or by a "close enough"
+blocked with a reason. Nothing is replaced by a vowel, by silence, or by a 'close enough'
 neighbour, because a plausible-sounding substitute silently teaches the model that the
 missing consonant is a vowel.
 
-Scope: the 26-phoneme subset in :mod:`vhe.synth.phonology`. Roughly half of the Mandarin
-finals (ia, ie, ian, uo, uan, üe, ...) and six onsets (zh, ch, h, r, plus the y/w glide
-spellings other than yi/wu) are outside it, so many real syllables are blocked. That is the
-intended behaviour until the inventory grows.
+Two inputs exist and they must not be confused:
+
+* The orthographic (initial, final) pair as written in the annotation ('y' + 'i', 'j' +
+  'u', 'zh' + 'i', 'l' + 'iu'). Resolution to the underlying final lives in
+  vhe.data.mandarin and is shared with the corpus scanner, so coverage statistics and the
+  synthesizer can never disagree about what a token means.
+* The synthesis inventory: the 26 phonemes in vhe.synth.phonology. Finals are units
+  ('an', 'ai', ...) with their own formant path; onsets are single consonants.
 
 Timing: the backend renders phonemes back-to-back with no silence slots, so the syllable
 duration measured from the recording has to be split between the onset and the nucleus.
@@ -25,29 +29,22 @@ from typing import Optional
 
 from ..synth.contract import INVENTORIES
 from ..synth.phonology import MANDARIN_PHONEMES, PhonemeSpec
+from .mandarin import ONSETS, PinyinError, Token, resolve_final, split_token
 
-#: pinyin final -> phoneme id, only for finals that are one phoneme of the inventory.
-PINYIN_FINAL_TO_PHONEME: dict[str, str] = {
+#: Underlying final id -> synthesizer phoneme id. Only finals that are one unit there.
+SYNTH_FINAL_TO_PHONEME: dict[str, str] = {
     "a": "a", "i": "i", "u": "u",
     "ai": "ai", "ei": "ei", "ao": "au", "ou": "ou",
     "an": "an", "ang": "ang",
 }
 
-#: Onsets written with two letters that the inventory does have.
-PINYIN_ONSET_TO_PHONEME: dict[str, str] = {
-    "b": "b", "p": "p", "m": "m", "f": "f", "d": "d", "t": "t", "n": "n", "l": "l",
-    "g": "g", "k": "k", "sh": "sh", "s": "s", "x": "x", "z": "z", "c": "c", "j": "j",
-    "q": "q",
-}
+#: Onsets the synthesizer can render, derived from the inventory itself (no second list).
+SUPPORTED_ONSETS: frozenset[str] = frozenset(onset for onset in ONSETS
+                                             if onset in MANDARIN_PHONEMES)
+SUPPORTED_FINALS: frozenset[str] = frozenset(SYNTH_FINAL_TO_PHONEME)
 
-#: Zero-initial spellings that are a single vowel: pinyin writes the glide, there is none.
-ZERO_INITIAL_SPELLINGS: dict[tuple[str, str], str] = {("y", "i"): "i", ("w", "u"): "u"}
-
-#: Onsets whose "i" is the apical vowel [ɿ]/[ʅ], not /i/. Substituting /i/ would be a lie.
+#: Onsets whose 'i' is the apical vowel [ɿ]/[ʅ], not /i/. Substituting /i/ would be a lie.
 APICAL_ONSETS = ("z", "c", "s", "zh", "ch", "sh", "r")
-
-#: Onsets after which a written "u" is really "ü" [y].
-FRONT_ROUNDED_ONSETS = ("j", "q", "x")
 
 #: A nucleus shorter than this is not a syllable any more.
 NUCLEUS_MIN_S = 0.060
@@ -68,8 +65,18 @@ def nominal_onset_s(phoneme: str) -> float:
     return 0.0
 
 
-def syllable_phonemes(initial: str, final: str, inventory: str = "mandarin"
-                      ) -> tuple[tuple[str, ...], Optional[str]]:
+def resolve(initial: str, final: str) -> tuple[Optional[Token], Optional[str]]:
+    """(token, None) or (None, blocking reason) for one orthographic syllable."""
+    try:
+        token = split_token(f"{initial}{final}1")
+    except PinyinError as error:
+        return None, (f"pinyin {initial + final!r} is not a Mandarin syllable: "
+                      f"{error.detail}")
+    return token, None
+
+
+def syllable_phonemes(initial: str, final: str, inventory: str = "mandarin", *,
+                      erhua: bool = False) -> tuple[tuple[str, ...], Optional[str]]:
     """Phoneme ids for one pinyin syllable, or an empty tuple plus a blocking reason."""
     if inventory not in INVENTORIES:  # pragma: no cover - guarded by PhonemeSequence
         raise ValueError(f"unknown inventory {inventory!r}")
@@ -80,31 +87,39 @@ def syllable_phonemes(initial: str, final: str, inventory: str = "mandarin"
             return (), f"final {final!r} is not in the {inventory!r} inventory"
         return (final,), None
 
-    if (initial, final) in ZERO_INITIAL_SPELLINGS:
-        return (ZERO_INITIAL_SPELLINGS[(initial, final)],), None
-    if initial and initial not in PINYIN_ONSET_TO_PHONEME:
+    token, reason = resolve(initial, final)
+    if token is None:
+        return (), reason
+    token = Token(token.pinyin, token.initial, token.final, token.tone, erhua)
+    if erhua:
+        return (), (f"pinyin {initial + final!r} is erhua (儿化): the final is modified, "
+                    f"not followed by /r/, and the {inventory!r} inventory has no erhua unit")
+    # y/w are orthographic glides, never onsets: 'yi' is /i/, 'wu' is /u/.
+    if initial and initial not in ("y", "w") and initial not in SUPPORTED_ONSETS:
         return (), f"onset {initial!r} is not in the {inventory!r} inventory"
-    if final == "i" and initial in APICAL_ONSETS:
-        return (), (f"pinyin {initial + final!r} spells the apical vowel, which is not in "
-                    f"the {inventory!r} inventory")
-    if initial in FRONT_ROUNDED_ONSETS and final.startswith("u"):
+    if token.final.startswith("apical_"):
+        symbol = "[ɿ]" if token.final == "apical_dental" else "[ʅ]"
+        return (), (f"pinyin {initial + final!r} spells the apical vowel {symbol}, which is "
+                    f"not in the {inventory!r} inventory")
+    if token.final.startswith("v"):
         return (), (f"pinyin {initial + final!r} spells ü, which is not in the "
                     f"{inventory!r} inventory")
-    if final not in PINYIN_FINAL_TO_PHONEME:
-        return (), f"final {final!r} is not in the {inventory!r} inventory"
-    phonemes = (PINYIN_ONSET_TO_PHONEME[initial],) if initial else ()
-    return phonemes + (PINYIN_FINAL_TO_PHONEME[final],), None
+    if token.final not in SYNTH_FINAL_TO_PHONEME:
+        return (), (f"pinyin {initial + final!r} needs the final {token.final!r}, which is "
+                    f"not in the {inventory!r} inventory")
+    phonemes = (initial,) if initial and initial not in ("y", "w") else ()
+    return phonemes + (SYNTH_FINAL_TO_PHONEME[token.final],), None
 
 
-def syllable_plan(initial: str, final: str, duration_s: float, inventory: str = "mandarin"
-                  ) -> tuple[tuple[tuple[str, float], ...], Optional[str]]:
+def syllable_plan(initial: str, final: str, duration_s: float, inventory: str = "mandarin",
+                  *, erhua: bool = False) -> tuple[tuple[tuple[str, float], ...], Optional[str]]:
     """((phoneme, seconds), ...) fitting one measured syllable duration, or a reason.
 
     The allocation is a heuristic: the onset takes its nominal physical length and the
     nucleus takes the rest. A syllable too short to hold both is blocked instead of being
     squeezed into a click-length consonant.
     """
-    phonemes, reason = syllable_phonemes(initial, final, inventory)
+    phonemes, reason = syllable_phonemes(initial, final, inventory, erhua=erhua)
     if reason is not None:
         return (), reason
     if len(phonemes) == 1:

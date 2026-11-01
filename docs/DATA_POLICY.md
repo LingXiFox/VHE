@@ -22,3 +22,14 @@
   **配对时必须显式重采样并把重采样写进记录**，不得悄悄改变采样率。
 - 唯一适配实现：`src/vhe/data/aishell3.py`；`python -m vhe manifest` 产出 JSONL（meta + utterance + issue），拒绝覆盖已有文件。
 - manifest 只保存相对路径、SHA256、划分与说话人属性，不含音频；真实语料不入库。
+
+## 说话人划分与派生数据（2026-11-01 实测）
+
+- **官方 train/test 是按句切分的**：`test/` 的 214 个说话人目录里 170 个与 `train/` 重名，并集恰为 218。因此官方 test 含说话人泄漏，不能用于 speaker-independent 评估。
+- 本项目改用说话人划分 **180 / 19 / 19**（seed 20261101，说话人 ID 排序后洗牌），原始音频路径不变；同一说话人的全部句子只落在一个 split（`tests/test_data_corpus.py` 有断言）。
+- 派生数据不进 Git，统一放数据集同盘：
+  - `/Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v2/manifest.jsonl`（sha256 `651bbbac…`，88035 行）与 `report.json`；
+  - `derived/aishell3-scan/v1/`：**有缺陷的首次扫描，保留作证据**，不得删除或覆盖；
+  - `derived/aishell3-audit/v1/prosody_audit.json`：韵律标注审计结果。
+- manifest 体积（数万行、含逐句音素）不进 Git，只提交生成命令与 sha256；复现靠 `python -m vhe scan`。
+- 文本以 `content.txt` 为准；`label_train-set.txt` 仅做韵律交叉核验。已确认 2 处标注冲突（`SSB19560288` `ni2`/`ni3`、`SSB15550353` `zheng1`/`zeng1`）与 4 条未标注，配对时必须打 `prosody_conflict` 标记，禁止静默择一。

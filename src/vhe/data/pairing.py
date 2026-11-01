@@ -30,6 +30,7 @@ from ..audio import read_wav, write_wav
 from ..synth import (PitchCurve, PhonemeSegment, PhonemeSequence, SynthesisRequest,
                      SynthBackend, Timing, VoiceTemplate, get_backend)
 from ..synth.contract import F0_MAX_HZ, F0_MIN_HZ
+from .mandarin import PinyinError, split_token
 from .g2p import syllable_plan, syllable_phonemes
 from .aishell3 import file_sha256
 from .f0 import F0Track, estimate_f0
@@ -44,11 +45,17 @@ PAIR_STATUS = ("ok", "blocked", "rejected")
 @dataclass(frozen=True)
 class Syllable:
     pinyin: str
+    #: orthographic onset as written ('y'/'w' included, '' for a vowel-initial syllable)
     initial: str
+    #: orthographic final as written after the onset ('ue' in yue4, 'i' in zhi1)
     final: str
     tone: int
     phonemes: tuple[str, ...] = ()
     reason: Optional[str] = None
+    #: resolved final: 've' for yue4, 'apical_retroflex' for zhi1, 'iou' for liu2
+    underlying_final: str = ""
+    #: trailing r is a modified final, not a coda; never rendered as base + /r/
+    erhua: bool = False
 
     @property
     def phoneme(self) -> Optional[str]:
@@ -57,29 +64,31 @@ class Syllable:
 
     def as_dict(self) -> dict:
         return {"pinyin": self.pinyin, "initial": self.initial, "final": self.final,
-                "tone": self.tone, "phonemes": list(self.phonemes),
+                "underlying_final": self.underlying_final, "tone": self.tone,
+                "erhua": self.erhua, "phonemes": list(self.phonemes),
                 "phoneme": self.phoneme, "reason": self.reason}
 
 
 def parse_syllable(pinyin: str, inventory: str = "vowels") -> Syllable:
     """Split an AISHELL-3 token like "guang3" into initial/final/tone (no fuzzy matching).
 
+    The orthographic split (what the annotation writes) and the resolved final (what the
+    syllable actually is) are both kept: "yue4" is initial y + final ue, underlying ve;
+    "zhi1" is zh + i, underlying apical_retroflex; "liu2" is l + iu, underlying iou.
+    Resolution is shared with the corpus scanner via vhe.data.mandarin, so coverage
+    statistics and rendering cannot disagree.
+
     "vowels" keeps the original behaviour of the {a, i, u} backend; "mandarin" resolves
-    onsets and codas through :mod:`vhe.data.g2p`.
+    onsets and finals through vhe.data.g2p.
     """
-    token = pinyin.strip().lower()
-    if not token or token[-1] not in "12345":
-        raise ValueError(f"pinyin token must end with a tone digit 1-5: {pinyin!r}")
-    tone = int(token[-1])
-    body = token[:-1]
-    if not body or not body.isalpha():
-        raise ValueError(f"pinyin body must be alphabetic: {pinyin!r}")
-    initial = next((item for item in INITIALS if body.startswith(item)), "")
-    final = body[len(initial):]
-    if not final:
-        raise ValueError(f"pinyin token has no final: {pinyin!r}")
-    phonemes, reason = syllable_phonemes(initial, final, inventory)
-    return Syllable(pinyin, initial, final, tone, phonemes, reason)
+    try:
+        token = split_token(pinyin)
+    except PinyinError as error:
+        raise ValueError(error.detail) from None
+    phonemes, reason = syllable_phonemes(token.initial, token.final, inventory,
+                                         erhua=token.erhua)
+    return Syllable(token.pinyin, token.initial, token.written or token.final, token.tone,
+                    phonemes, reason, underlying_final=token.final, erhua=token.erhua)
 
 
 @dataclass
@@ -221,7 +230,7 @@ def build_pair(wav_path: str | Path, pinyins: list[str], *, template: VoiceTempl
     for index, (syllable, segment) in enumerate(zip(syllables, seg.segments)):
         duration = max(0.01, float(segment.duration_s))
         plan, plan_reason = syllable_plan(syllable.initial, syllable.final, duration,
-                                          inventory)
+                                          inventory, erhua=syllable.erhua)
         if plan_reason is not None:
             result.add_issue("syllable_plan_blocked",
                              f"syllable {index} {syllable.pinyin!r}: {plan_reason}", "error")

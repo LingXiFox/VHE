@@ -154,3 +154,31 @@
   判据本身（5 ms 帧）需要改。两个失败都保留在原处。
 - 流程偏差：EXP-0009 的 README 判据是跑完才落盘（判据当时只在探针/测试代码里），EXP-0010 的判据文本先写进 metadata。
   三态日志（pre_band_fix / bandpass_only / final）全部保留，没有覆盖。证据：`experiments/EXP-0009/`、`experiments/EXP-0010/`。
+
+## 2026-11-01 | EXP-0012 AISHELL-3 语料索引、说话人划分与 26 音素覆盖率（本机全量文本扫描，不含波形）
+
+- 前提核实：官方 `train/`+`test/` 目录是**按句切分**——`test/` 的 214 个说话人目录中 170 个与 `train/` 重名（并集恰 218 人）。据此不能拿官方 test 做 speaker-independent 评估，本轮改为说话人划分 180/19/19（seed 20261101），句子路径完全不动。
+- 实现：`src/vhe/data/corpus.py`（`scan_corpus` 只读 `content.txt` 与 WAV 头、`write/read_corpus_manifest`、`audit_prosody_labels`、`rank_next_units` 精确边际排序）+ `vhe scan` / `vhe audit` 子命令。
+- 结果：**88035 句 / 218 人 / 0 解析错误 / 997,997 音节 / 85.6178 h**，音节总数与 `phone_set.txt` 词频总和逐项吻合；train 72966 句/180 人、dev 8189/19、test 6880/19。
+- 覆盖率：音节级 **0.309544**；整句可渲染仅 **187/88035 = 0.0021**。假设（<50%）成立，但整句维度远低于预期，是本轮最重要的负面结果：现有 26 音素表几乎无法整句合成。
+- 优先扩展（按"加入后可整音节解锁"精确边际，非单点频次）：final:e 74797 → final:ian +47442 → final:apical_retroflex +37864 → final:ing +37436 → final:iou +34896 → final:uo +34783 → onset:zh +34606 → final:ong +29562 → final:en +26197 → onset:h +25585。
+- **失败记录**：v1 扫描 9193 句 `bad_pinyin`，根因 `resolve_final` 的 j/q/x 分支提前 return 未还原 `iu` 缩写（`'jiu3': j + 'iu' is not a Mandarin final`）；另有 y/w 被当作声母导致 `onset:y` 86439 / `onset:w` 37524 虚假缺口。两处修复后 v2 才 0 错误。v1 产物（manifest sha256 `9ed0cc56…`，覆盖率 0.2728）原样保留在 `derived/aishell3-scan/v1/`，不覆盖。
+- 证据：`experiments/EXP-0012/`；manifest `651bbbac1468305c47b8fee2be417561a152097cca0edc5dba5313ef2c1e0093`（不入 Git）。
+
+## 2026-11-01 | EXP-0013 拼音正字法 vs 实际发音 + 韵律标注审计
+
+- 正字法解析层（`mandarin.split_token`）：缩写 iou/uei/uen 还原、j/q/x + u → ü、y/w 作滑音、舌尖元音 apical_dental/apical_retroflex、唇音 + o → uo、儿化标记单列。**1920 个 distinct token 全部解析成功（0 失败）**，全量 997,997 音节 0 个 `bad_pinyin`。
+- 触发证据：iou 34896、uei 27950、apical_retroflex 53935、apical_dental 20702、ü(v) 23661——这些单元在旧表里全部属于"阻塞"，说明旧统计确实是被解析能力限制住的。
+- 标注审计（`label_train-set.txt` vs `content.txt`）：checked 63262、matched 63260、**mismatched 2**（`SSB19560288` index 4 `ni2`/ `ni3`；`SSB15550353` index 2 `zheng1`/`zeng1`）、unlabelled 4。
+- 政策：文本以 `content.txt` 为准，label 只做韵律交叉核验；两处冲突在配对时打 `prosody_conflict` 标记，不得静默择一。未标注的 4 条 ID 本轮未落盘（下次补）。
+- 证据：`experiments/EXP-0013/`，审计输出 `derived/aishell3-audit/v1/prosody_audit.json`。
+
+## 2026-11-01 | EXP-0014 F0 估计器：合成真值与 12 条真实语音（小样本，不跑全量）
+
+- 合成真值：8 条轮廓（5 条常数 + 上行/下行滑音 + 颤音）由 `MandarinFormantSynth` 渲染 /a/，F0 真值即传入 `PitchCurve`，按 ±50 cents 命中率与八度帧比例评分。
+- **假设失败**：默认 65–900 Hz 下 210 Hz 命中 0.02、八度帧 0.98、中位误差 2404 cents（≈4f0）；300 Hz 同理 1903 cents（≈3f0）。`fmax_hz=500` 可修常数音（命中 1.00），但**下行滑音仍有 12% 八度帧、颤音 6%**——缺帧间连续性，EXP-0011 的"有界二次谷搜索"不足以外推到滑音。
+- 真实语音：test split 每位说话人 1 条、12 人、24 kHz。中位 F0 120.9–289.9 Hz（与性别相容，中位值的中位数 225.9 Hz），发声帧比例 0.415–0.702，相邻帧八度跳变率 0–5.6%（均值 2.48%），2 条各 1 帧越界。
+- **实现缺陷（保留证据）**：第一版把无声帧（`f0_hz=0`、`voicing=0`）当测量值，得出发声比例 1.0、中位 F0 0.0；第一版取样还全取自同一说话人。修正后重跑，旧报告保留为 `logs/f0_report_v1_unfiltered.json`。原假设中"44.1k vs 24k 中位差 <3%"本轮未测，不能声称通过。
+- 结论：**F0 估计器暂不可直接用于成对构造**；若必须用只能 `fmax_hz ≤ 500` 并给配对打"F0 可能含八度错误"标记。下次 EXP-0015：多候选（lag/2lag/3lag）子谐波校验 + 帧间连续性平滑，用同一套轮廓与 12 条真实语音回归。
+- 证据：`experiments/EXP-0014/`（`probe_f0.py`、`logs/f0_report.json`）。
+

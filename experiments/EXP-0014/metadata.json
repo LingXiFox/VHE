@@ -1,0 +1,21 @@
+{
+  "experiment_id": "EXP-0014",
+  "title": "F0 tracking on real speech (small sample) and synthetic ground truth",
+  "hypothesis": "The YIN/CMND estimator with the EXP-0011 octave rule tracks synthetic vowels within 2% of ground truth from 80 to 400 Hz, and on a small real subset (20 AISHELL-3 utterances, 44.1 kHz) shows no systematic octave error: median F0 per utterance is coherent with speaker gender and re-estimating at 24 kHz changes the median by less than 3%.",
+  "created_utc": "2026-11-01T04:06:09.495680+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "43d32185273ec767714b0cb1ab148115a7f168ca",
+    "status": "dirty: uncommitted P1.3 work (corpus/mandarin/dataset modules, tests, experiments)"
+  },
+  "seed": null,
+  "dataset_manifest_sha256": "651bbbac1468305c47b8fee2be417561a152097cca0edc5dba5313ef2c1e0093",
+  "command": "python experiments/EXP-0014/probe_f0.py --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v2/manifest.jsonl --output experiments/EXP-0014/logs/f0_report.json",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "Hypotheses 1-2 failed: default estimator octave-errors at 210/300 Hz (98% frames, ~2 octaves), glides still 12% after fmax_hz=500. v1 report kept as evidence of the f0=0 counting bug. 12 distinct test speakers, median F0 120.9-289.9 Hz.",
+  "completed_utc": "2026-11-01T04:19:50+00:00"
+}

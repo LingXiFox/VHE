@@ -1,0 +1,317 @@
+{
+  "sample_rate": 24000,
+  "estimator": {
+    "frame_s": 0.04,
+    "hop_s": 0.01,
+    "fmin_hz": 65.0
+  },
+  "synthetic": [
+    {
+      "case": "constant_110",
+      "default": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.485995446542163,
+        "p90_abs_cents": 6.596884946094206,
+        "signed_median_cents": 0.0009427620793013271
+      },
+      "fmax_500": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.485995446542163,
+        "p90_abs_cents": 6.596884946094206,
+        "signed_median_cents": 0.0009427620793013271
+      }
+    },
+    {
+      "case": "constant_165",
+      "default": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.3423092550696145,
+        "p90_abs_cents": 6.48719931561511,
+        "signed_median_cents": -0.011868815966578386
+      },
+      "fmax_500": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.3423092550696145,
+        "p90_abs_cents": 6.48719931561511,
+        "signed_median_cents": -0.011868815966578386
+      }
+    },
+    {
+      "case": "constant_210",
+      "default": {
+        "voiced_frames": 57,
+        "hit_50c": 0.017543859649122806,
+        "hit_100c": 0.017543859649122806,
+        "octave_error_rate": 0.9824561403508771,
+        "median_abs_cents": 2404.3335042628546,
+        "p90_abs_cents": 2404.4660426555797,
+        "signed_median_cents": 2404.3335042628546
+      },
+      "fmax_500": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.319164870169501,
+        "p90_abs_cents": 6.491437381384811,
+        "signed_median_cents": 0.03029538225163974
+      }
+    },
+    {
+      "case": "constant_300",
+      "default": {
+        "voiced_frames": 57,
+        "hit_50c": 0.017543859649122806,
+        "hit_100c": 0.017543859649122806,
+        "octave_error_rate": 0.9824561403508771,
+        "median_abs_cents": 1903.4990922231084,
+        "p90_abs_cents": 1912.8091683889957,
+        "signed_median_cents": 1903.4990922231084
+      },
+      "fmax_500": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.230244117056903,
+        "p90_abs_cents": 6.414500419724063,
+        "signed_median_cents": -0.05446599007478029
+      }
+    },
+    {
+      "case": "constant_350",
+      "default": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.3332080072482775,
+        "p90_abs_cents": 6.519259174419376,
+        "signed_median_cents": -0.06710231604707058
+      },
+      "fmax_500": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.3332080072482775,
+        "p90_abs_cents": 6.519259174419376,
+        "signed_median_cents": -0.06710231604707058
+      }
+    },
+    {
+      "case": "glide_110_220",
+      "default": {
+        "voiced_frames": 57,
+        "hit_50c": 0.8947368421052632,
+        "hit_100c": 0.8947368421052632,
+        "octave_error_rate": 0.10526315789473684,
+        "median_abs_cents": 5.339539486855178,
+        "p90_abs_cents": 961.222242453819,
+        "signed_median_cents": 1.7557761290686926
+      },
+      "fmax_500": {
+        "voiced_frames": 57,
+        "hit_50c": 1.0,
+        "hit_100c": 1.0,
+        "octave_error_rate": 0.0,
+        "median_abs_cents": 5.157852886361856,
+        "p90_abs_cents": 7.6141059950741665,
+        "signed_median_cents": -0.3142570808285529
+      }
+    },
+    {
+      "case": "glide_300_130",
+      "default": {
+        "voiced_frames": 57,
+        "hit_50c": 0.6666666666666666,
+        "hit_100c": 0.6666666666666666,
+        "octave_error_rate": 0.3333333333333333,
+        "median_abs_cents": 6.5486137962393425,
+        "p90_abs_cents": 2097.41438752161,
+        "signed_median_cents": 3.6458917706599054
+      },
+      "fmax_500": {
+        "voiced_frames": 57,
+        "hit_50c": 0.8771929824561403,
+        "hit_100c": 0.8771929824561403,
+        "octave_error_rate": 0.12280701754385964,
+        "median_abs_cents": 5.363755832946293,
+        "p90_abs_cents": 903.0252619798714,
+        "signed_median_cents": 1.8425510112120014
+      }
+    },
+    {
+      "case": "vibrato_200_pm12",
+      "default": {
+        "voiced_frames": 77,
+        "hit_50c": 0.6363636363636364,
+        "hit_100c": 0.6363636363636364,
+        "octave_error_rate": 0.36363636363636365,
+        "median_abs_cents": 0.8767714227261021,
+        "p90_abs_cents": 2398.375183560351,
+        "signed_median_cents": 0.51433361249275
+      },
+      "fmax_500": {
+        "voiced_frames": 77,
+        "hit_50c": 0.935064935064935,
+        "hit_100c": 0.935064935064935,
+        "octave_error_rate": 0.06493506493506493,
+        "median_abs_cents": 0.7387108240572389,
+        "p90_abs_cents": 1.725862415969407,
+        "signed_median_cents": 0.3443332254295735
+      }
+    }
+  ],
+  "real": {
+    "utterances": 12,
+    "median_of_medians_hz": 207.9,
+    "mean_octave_jump_rate": 0.026,
+    "rows": [
+      {
+        "utt_id": "SSB09970003",
+        "speaker": "SSB0997",
+        "duration_s": 2.128,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 0.0,
+        "p05_hz": 0.0,
+        "p95_hz": 352.9,
+        "octave_jump_rate": 0.0349,
+        "frames_out_of_range": 115
+      },
+      {
+        "utt_id": "SSB09970012",
+        "speaker": "SSB0997",
+        "duration_s": 2.898,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 198.0,
+        "p05_hz": 0.0,
+        "p95_hz": 376.1,
+        "octave_jump_rate": 0.0372,
+        "frames_out_of_range": 92
+      },
+      {
+        "utt_id": "SSB09970014",
+        "speaker": "SSB0997",
+        "duration_s": 1.856,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 225.7,
+        "p05_hz": 0.0,
+        "p95_hz": 303.8,
+        "octave_jump_rate": 0.0204,
+        "frames_out_of_range": 81
+      },
+      {
+        "utt_id": "SSB09970016",
+        "speaker": "SSB0997",
+        "duration_s": 2.241,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 207.3,
+        "p05_hz": 0.0,
+        "p95_hz": 378.7,
+        "octave_jump_rate": 0.0714,
+        "frames_out_of_range": 79
+      },
+      {
+        "utt_id": "SSB09970019",
+        "speaker": "SSB0997",
+        "duration_s": 1.896,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 208.4,
+        "p05_hz": 0.0,
+        "p95_hz": 288.1,
+        "octave_jump_rate": 0.0187,
+        "frames_out_of_range": 76
+      },
+      {
+        "utt_id": "SSB09970021",
+        "speaker": "SSB0997",
+        "duration_s": 2.69,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 208.4,
+        "p05_hz": 0.0,
+        "p95_hz": 351.9,
+        "octave_jump_rate": 0.0223,
+        "frames_out_of_range": 81
+      },
+      {
+        "utt_id": "SSB09970026",
+        "speaker": "SSB0997",
+        "duration_s": 2.634,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 238.1,
+        "p05_hz": 0.0,
+        "p95_hz": 384.8,
+        "octave_jump_rate": 0.0238,
+        "frames_out_of_range": 88
+      },
+      {
+        "utt_id": "SSB09970033",
+        "speaker": "SSB0997",
+        "duration_s": 2.292,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 213.0,
+        "p05_hz": 0.0,
+        "p95_hz": 344.8,
+        "octave_jump_rate": 0.0362,
+        "frames_out_of_range": 89
+      },
+      {
+        "utt_id": "SSB09970042",
+        "speaker": "SSB0997",
+        "duration_s": 2.45,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 198.7,
+        "p05_hz": 0.0,
+        "p95_hz": 339.4,
+        "octave_jump_rate": 0.0276,
+        "frames_out_of_range": 90
+      },
+      {
+        "utt_id": "SSB09970043",
+        "speaker": "SSB0997",
+        "duration_s": 1.966,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 0.0,
+        "p05_hz": 0.0,
+        "p95_hz": 309.1,
+        "octave_jump_rate": 0.0,
+        "frames_out_of_range": 109
+      },
+      {
+        "utt_id": "SSB09970049",
+        "speaker": "SSB0997",
+        "duration_s": 2.152,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 171.9,
+        "p05_hz": 0.0,
+        "p95_hz": 331.1,
+        "octave_jump_rate": 0.0,
+        "frames_out_of_range": 99
+      },
+      {
+        "utt_id": "SSB09970050",
+        "speaker": "SSB0997",
+        "duration_s": 2.57,
+        "voiced_ratio": 1.0,
+        "median_f0_hz": 203.9,
+        "p05_hz": 0.0,
+        "p95_hz": 349.4,
+        "octave_jump_rate": 0.02,
+        "frames_out_of_range": 95
+      }
+    ]
+  }
+}

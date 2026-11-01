@@ -18,14 +18,17 @@ import pytest
 from vhe.audio import write_wav
 from vhe.data import (
     apply_speaker_split,
+    assign_speaker_split,
+    auto_split_sizes,
     build_manifest,
-    carve_speaker_split,
     check_no_speaker_leak,
     discover_splits,
+    parse_split_sizes,
     read_manifest,
     write_manifest,
 )
 from vhe.data.aishell3 import (
+    SpeakerInfo,
     parse_content_line,
     parse_pinyin_file,
     parse_spk_info,
@@ -122,11 +125,13 @@ def test_discover_splits_and_missing_root(tmp_path: Path):
 
 def test_build_manifest_taxonomy(corpus: Path):
     manifest = build_manifest(corpus)
-    accepted = {(entry.split, entry.utt_id) for entry in manifest.entries}
+    # source_dir is the official (sentence-level) directory; split is the speaker partition.
+    accepted = {(entry.source_dir, entry.utt_id) for entry in manifest.entries}
     assert accepted == {
         ("train", "SSB00050001"), ("train", "SSB00050002"), ("train", "SSB00090001"),
         ("test", "SSB00110001"),
     }
+    assert {entry.split for entry in manifest.entries} == {"train"}  # auto 3/0/0
     codes = manifest.stats()["error_codes"]
     assert codes["missing_wav"] == 1
     assert codes["too_short"] == 1
@@ -145,9 +150,10 @@ def test_manifest_records_provenance(corpus: Path):
     assert first.n_samples == int(0.6 * 44100)
     assert len(first.sha256) == 64
     assert first.gender == "female" and first.accent == "north"
+    assert first.source_dir == "train"
     # SSB0012's only utterance is rejected as not_mono, so the speaker never enters the
     # manifest: rejected audio must not contribute speakers to split bookkeeping.
-    assert manifest.speakers_by_split()["test"] == {"SSB0011"}
+    assert manifest.speakers_by_split()["train"] == {"SSB0005", "SSB0009", "SSB0011"}
 
 
 def test_hashes_are_stable_and_detect_changes(corpus: Path):
@@ -159,23 +165,29 @@ def test_hashes_are_stable_and_detect_changes(corpus: Path):
 
 def test_speaker_split_never_leaks(corpus: Path):
     manifest = build_manifest(corpus)
-    assignment = carve_speaker_split(manifest, dev_fraction=0.5, seed=7)
+    sizes = {"train": 1, "dev": 1, "test": 1}
+    assignment = assign_speaker_split(["SSB0005", "SSB0009", "SSB0011"],
+                                      split_sizes=sizes, seed=7)
     assert set(assignment) == {"SSB0005", "SSB0009", "SSB0011"}
-    assert assignment["SSB0011"] == "test"
-    grouped = apply_speaker_split(manifest, assignment)
+    grouped = apply_speaker_split(manifest, assignment, split_sizes=sizes)
     table = check_no_speaker_leak(grouped)
-    assert sorted(table["train"] + table["dev"]) == ["SSB0005", "SSB0009"]
-    assert table["test"] == ["SSB0011"]
+    assert {split: len(names) for split, names in table.items()} == sizes
+    # Every utterance follows its speaker, including the one shipped under test/.
+    assert {entry.split for entry in grouped.entries if entry.speaker == "SSB0011"} == \
+        {assignment["SSB0011"]}
 
 
-def test_speaker_split_is_deterministic_and_sized(corpus: Path):
-    manifest = build_manifest(corpus)
-    first = carve_speaker_split(manifest, dev_fraction=0.5, seed=7)
-    second = carve_speaker_split(manifest, dev_fraction=0.5, seed=7)
-    assert first == second
-    assert list(first.values()).count("dev") == 1  # round(2 train speakers * 0.5)
-    with pytest.raises(ValueError, match="dev_fraction"):
-        carve_speaker_split(manifest, dev_fraction=1.0)
+def test_speaker_split_is_deterministic_and_sized():
+    speakers = ["SSB0005", "SSB0009", "SSB0011"]
+    sizes = {"train": 1, "dev": 1, "test": 1}
+    first = assign_speaker_split(speakers, split_sizes=sizes, seed=7)
+    assert first == assign_speaker_split(speakers, split_sizes=sizes, seed=7)
+    assert sorted(first.values()) == ["dev", "test", "train"]
+    assert assign_speaker_split(speakers, split_sizes=sizes, seed=8) != first
+    with pytest.raises(ValueError, match="do not cover"):
+        assign_speaker_split(speakers, split_sizes={"train": 1, "dev": 1, "test": 2})
+    with pytest.raises(ValueError, match="unknown split"):
+        assign_speaker_split(speakers, split_sizes={"train": 3, "holdout": 0})
 
 
 def test_manifest_jsonl_roundtrip(corpus: Path, tmp_path: Path):
@@ -201,11 +213,30 @@ def test_manifest_jsonl_roundtrip(corpus: Path, tmp_path: Path):
 
 
 def test_no_train_test_overlap_by_construction(corpus: Path):
-    manifest = build_manifest(corpus)
-    grouped = apply_speaker_split(manifest, carve_speaker_split(manifest, dev_fraction=0.0))
-    table = check_no_speaker_leak(grouped)
+    manifest = build_manifest(corpus, split_sizes={"train": 2, "dev": 0, "test": 1})
+    table = check_no_speaker_leak(manifest)
     assert not set(table["train"]) & set(table["test"])
     assert table["dev"] == []
+
+
+def test_full_corpus_split_shape_is_180_19_19():
+    assert auto_split_sizes(218) == {"train": 180, "dev": 19, "test": 19}
+    assert parse_split_sizes("180/19/19") == {"train": 180, "dev": 19, "test": 19}
+    assert parse_split_sizes("auto") is None
+    with pytest.raises(ValueError, match="integers"):
+        parse_split_sizes("180/19")
+    speakers = [f"SSB{index:04d}" for index in range(218)]
+    attributes = {name: SpeakerInfo(name, "B", "female" if index < 175 else "male", "north")
+                  for index, name in enumerate(speakers)}
+    assignment = assign_speaker_split(speakers, attributes=attributes)
+    counts = {split: sum(1 for value in assignment.values() if value == split)
+              for split in ("train", "dev", "test")}
+    assert counts == {"train": 180, "dev": 19, "test": 19}
+    # Stratified by gender: dev and test keep the corpus ratio (43 male in 218 -> 3-4 each).
+    for split in ("dev", "test"):
+        male = sum(1 for name, value in assignment.items()
+                   if value == split and attributes[name].gender == "male")
+        assert 2 <= male <= 5, (split, male)
 
 
 def test_manifest_cli_prints_report_and_writes_jsonl(corpus: Path, tmp_path: Path,
@@ -214,7 +245,7 @@ def test_manifest_cli_prints_report_and_writes_jsonl(corpus: Path, tmp_path: Pat
 
     out = tmp_path / "manifest.jsonl"
     monkeypatch.setattr("sys.argv", ["vhe", "manifest", "--root", str(corpus),
-                                     "--output", str(out), "--dev-fraction", "0.5"])
+                                     "--output", str(out), "--split-sizes", "1/1/1"])
     main()
     report = json.loads(capsys.readouterr().out)
     assert report["status"] == "manifest-only; no audio copied"

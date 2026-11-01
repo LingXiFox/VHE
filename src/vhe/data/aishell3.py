@@ -41,6 +41,12 @@ MAX_DURATION_S = 30.0
 
 SPLIT_NAMES = ("train", "dev", "test")
 
+#: Speaker split for the full 218-speaker corpus. Recorded in the manifest meta line.
+SPLIT_SEED = 20261101
+DEFAULT_SPLIT_SIZES = {"train": 180, "dev": 19, "test": 19}
+#: dev and test share the same fraction; small corpora (tests) use it to scale the sizes.
+DEV_SHARE = DEFAULT_SPLIT_SIZES["dev"] / sum(DEFAULT_SPLIT_SIZES.values())
+
 _TONE_SYLLABLE = re.compile(r"[a-zü]+[1-5]")
 
 
@@ -82,6 +88,7 @@ class Utterance:
 
     utt_id: str
     speaker: str
+    #: speaker-grouped split assigned by assign_speaker_split ('train'/'dev'/'test')
     split: str
     wav_path: str  # relative to the corpus root, POSIX style: never absolute
     text: str
@@ -90,6 +97,9 @@ class Utterance:
     n_samples: int
     duration_s: float
     sha256: str
+    #: directory the recording ships in ('train'/'test'): the official sentence-level
+    #: split, which leaks speakers and is therefore NOT used as the training split.
+    source_dir: str = ""
     age_group: str | None = None
     gender: str | None = None
     accent: str | None = None
@@ -99,6 +109,7 @@ class Utterance:
             "utt_id": self.utt_id,
             "speaker": self.speaker,
             "split": self.split,
+            "source_dir": self.source_dir,
             "wav_path": self.wav_path,
             "text": self.text,
             "pinyin": list(self.pinyin),
@@ -119,6 +130,9 @@ class Manifest:
     root: str
     entries: list[Utterance] = field(default_factory=list)
     issues: list[ParseIssue] = field(default_factory=list)
+    #: seed and sizes of the speaker split, so a manifest can be regenerated exactly
+    split_seed: int = SPLIT_SEED
+    split_sizes: dict = field(default_factory=dict)
 
     @property
     def errors(self) -> list[ParseIssue]:
@@ -146,6 +160,11 @@ class Manifest:
             "errors": len(self.errors),
             "warnings": len(self.warnings),
             "speakers_per_split": {name: len(spk) for name, spk in table.items()},
+            "utterances_per_split": {
+                name: sum(1 for entry in self.entries if entry.split == name)
+                for name in SPLIT_NAMES},
+            "split_seed": self.split_seed,
+            "split_sizes": dict(self.split_sizes),
             "error_codes": _count_codes(self.errors),
             "warning_codes": _count_codes(self.warnings),
         }
@@ -281,8 +300,16 @@ def build_manifest(
     compute_hashes: bool = True,
     min_duration_s: float = MIN_DURATION_S,
     max_duration_s: float = MAX_DURATION_S,
+    split_sizes: dict[str, int] | None = None,
+    split_seed: int = SPLIT_SEED,
 ) -> Manifest:
-    """Walk the corpus and return accepted utterances plus explicit issues."""
+    """Walk the corpus and return accepted utterances plus explicit issues.
+
+    The returned manifest is already re-partitioned by speaker (split_sizes=None scales
+    180/19/19 to the corpus: exactly 180/19/19 for all 218 AISHELL-3 speakers). The
+    official directory ('train'/'test') is kept per utterance in source_dir and is never
+    used as the training split.
+    """
     root_path = Path(root)
     splits = discover_splits(root_path)
     manifest = Manifest(root=str(root_path))
@@ -312,7 +339,12 @@ def build_manifest(
                 continue
             _accept_utterance(root_path, manifest, split, directory, entry, pinyin_table,
                               speaker_table, compute_hashes, min_duration_s, max_duration_s)
-    return manifest
+
+    speakers = {entry.speaker for entry in manifest.entries}
+    sizes = dict(split_sizes) if split_sizes is not None else auto_split_sizes(len(speakers))
+    assignment = assign_speaker_split(speakers, split_sizes=sizes, seed=split_seed,
+                                      attributes=speaker_table)
+    return apply_speaker_split(manifest, assignment, seed=split_seed, split_sizes=sizes)
 
 
 def _accept_utterance(root_path: Path, manifest: Manifest, split: str, directory: Path,
@@ -372,6 +404,7 @@ def _accept_utterance(root_path: Path, manifest: Manifest, split: str, directory
         utt_id=entry.utt_id,
         speaker=speaker,
         split=split,
+        source_dir=split,
         wav_path=wav_path.relative_to(root_path).as_posix(),
         text=entry.text,
         pinyin=pinyin,
@@ -388,44 +421,113 @@ def _accept_utterance(root_path: Path, manifest: Manifest, split: str, directory
 # --------------------------------------------------------------------------- splits
 
 
-def carve_speaker_split(manifest: Manifest, *, dev_fraction: float = 0.1,
-                        seed: int = 42) -> dict[str, str]:
-    """Assign every speaker to exactly one split, keeping the official train/test split.
+def parse_split_sizes(value: str) -> dict[str, int] | None:
+    """'180/19/19' (or 180:19:19, 180,19,19) -> sizes; 'auto'/'' -> None."""
+    text = str(value).strip().lower()
+    if text in ("", "auto"):
+        return None
+    parts = text.replace(":", "/").replace(",", "/").split("/")
+    if len(parts) != 3 or not all(part.strip().isdigit() for part in parts):
+        raise ValueError(f"split sizes must be train/dev/test integers: {value!r}")
+    return {"train": int(parts[0]), "dev": int(parts[1]), "test": int(parts[2])}
 
-    Speakers are the unit: an utterance never moves without its whole speaker, so
-    no speaker leaks across splits. 'test' stays untouched (it is a hold-out);
-    'dev' speakers are carved deterministically out of the official train set.
+
+def auto_split_sizes(n_speakers: int) -> dict[str, int]:
+    """Split sizes for n speakers: the 180/19/19 shape scaled by DEV_SHARE.
+
+    218 speakers give exactly 180/19/19; a 20-speaker test corpus gives 16/2/2.
     """
-    if not 0.0 <= dev_fraction < 1.0:
-        raise ValueError("dev_fraction must be in [0,1)")
-    speakers = sorted({entry.speaker for entry in manifest.entries})
-    official_test = {entry.speaker for entry in manifest.entries if entry.split == "test"}
-    train_speakers = [speaker for speaker in speakers if speaker not in official_test]
+    if n_speakers < 0:
+        raise ValueError("n_speakers must be non-negative")
+    dev = int(round(n_speakers * DEV_SHARE))
+    test = dev
+    return {"train": n_speakers - dev - test, "dev": dev, "test": test}
+
+
+def _balanced_sequence(n_items: int, sizes: dict[str, int]) -> list[str]:
+    """A split label per item whose counts equal sizes exactly, spread evenly.
+
+    Greedy on the smallest (assigned + 1) / size ratio. A split that reached its size has
+    ratio > 1 and is never picked again, so with n_items == sum(sizes) every split ends
+    exactly at its target while the labels stay interleaved instead of blocked together.
+    """
+    assigned = {name: 0 for name in sizes}
+    sequence: list[str] = []
+    for _ in range(n_items):
+        name = min(
+            SPLIT_NAMES,
+            key=lambda split: ((assigned[split] + 1) / sizes[split] if sizes[split] else
+                               float("inf"), SPLIT_NAMES.index(split)))
+        sequence.append(name)
+        assigned[name] += 1
+    return sequence
+
+
+def assign_speaker_split(speakers: Iterable[str], *,
+                         split_sizes: dict[str, int] | None = None,
+                         seed: int = SPLIT_SEED,
+                         attributes: dict[str, SpeakerInfo] | None = None,
+                         ) -> dict[str, str]:
+    """Assign every speaker to exactly one split (speaker is the unit, never an utterance).
+
+    The official AISHELL-3 layout splits *sentences*, not speakers: 170 of the 214
+    speakers under test/ also appear under train/. Re-using that boundary would leak
+    speakers into validation, so this function ignores it entirely and re-partitions all
+    speakers. Utterance paths are untouched; only the split label changes.
+
+    Allocation is stratified by gender when speaker attributes are available, so dev and
+    test keep the corpus ratio instead of depending on the shuffle, and deterministic
+    given (speakers, split_sizes, seed): re-running reproduces the same assignment.
+    """
+    names = sorted(set(speakers))
+    sizes = dict(split_sizes if split_sizes is not None else auto_split_sizes(len(names)))
+    unknown = set(sizes) - set(SPLIT_NAMES)
+    if unknown:
+        raise ValueError(f"unknown split name(s): {sorted(unknown)}")
+    if any(size < 0 for size in sizes.values()):
+        raise ValueError(f"split sizes must be non-negative: {sizes}")
+    if sum(sizes.values()) != len(names):
+        raise ValueError(f"split sizes {sizes} do not cover {len(names)} speakers")
+    missing = [name for name in SPLIT_NAMES if name not in sizes]
+    if missing:
+        raise ValueError(f"split sizes must name every split, missing {missing}")
 
     import random
-    ranked = list(train_speakers)
-    random.Random(seed).shuffle(ranked)
-    n_dev = int(round(len(ranked) * dev_fraction))
-    dev = set(ranked[:n_dev])
+    rng = random.Random(seed)
+    strata: dict[str, list[str]] = {}
+    for name in names:
+        info = (attributes or {}).get(name)
+        key = info.gender if info is not None and info.gender else "unknown"
+        strata.setdefault(key, []).append(name)
 
-    assignment: dict[str, str] = {}
-    for speaker in speakers:
-        if speaker in official_test:
-            assignment[speaker] = "test"
-        elif speaker in dev:
-            assignment[speaker] = "dev"
-        else:
-            assignment[speaker] = "train"
-    return assignment
+    # Deterministic stratum order: biggest first, ties by name; members shuffled by seed.
+    groups = [strata[key] for key in sorted(strata, key=lambda item: (-len(strata[item]), item))]
+    for members in groups:
+        rng.shuffle(members)
+    # Deal round-robin across strata so every split receives the corpus gender mix, then
+    # hand out the exactly-sized label sequence in that order.
+    ordered: list[str] = []
+    for index in range(len(names)):
+        for members in groups:
+            if index < len(members):
+                ordered.append(members[index])
+    return dict(zip(ordered, _balanced_sequence(len(ordered), sizes)))
 
 
-def apply_speaker_split(manifest: Manifest, assignment: dict[str, str]) -> Manifest:
+def apply_speaker_split(manifest: Manifest, assignment: dict[str, str], *,
+                        seed: int = SPLIT_SEED,
+                        split_sizes: dict[str, int] | None = None) -> Manifest:
     """Return a new manifest whose entries carry the speaker-grouped split."""
+    unassigned = sorted({entry.speaker for entry in manifest.entries} - set(assignment))
+    if unassigned:
+        raise ValueError(f"no split assigned for speaker(s) {unassigned[:5]}")
     entries = []
     for entry in manifest.entries:
         split = assignment[entry.speaker]
         entries.append(Utterance(**{**entry.__dict__, "split": split}))
-    return Manifest(root=manifest.root, entries=entries, issues=list(manifest.issues))
+    return Manifest(root=manifest.root, entries=entries, issues=list(manifest.issues),
+                    split_seed=seed,
+                    split_sizes=dict(split_sizes if split_sizes is not None else {}))
 
 
 def check_no_speaker_leak(manifest: Manifest) -> dict[str, list[str]]:
@@ -455,6 +557,8 @@ def write_manifest(path: str | Path, manifest: Manifest) -> str:
     target.parent.mkdir(parents=True, exist_ok=True)
     lines = [json.dumps({"type": "meta", "root": manifest.root,
                          "stats": manifest.stats(),
+                         "split_seed": manifest.split_seed,
+                         "split_sizes": dict(manifest.split_sizes),
                          "content_sha256": manifest.content_hash()},
                         sort_keys=True, ensure_ascii=False)]
     for entry in sorted(manifest.entries, key=lambda e: (e.split, e.utt_id)):
@@ -481,6 +585,8 @@ def read_manifest(path: str | Path) -> tuple[Manifest, dict]:
         if kind == "meta":
             meta = record
             manifest.root = record.get("root", "")
+            manifest.split_seed = int(record.get("split_seed", SPLIT_SEED))
+            manifest.split_sizes = dict(record.get("split_sizes", {}))
         elif kind == "utterance":
             record["pinyin"] = tuple(record.get("pinyin", ()))
             manifest.entries.append(Utterance(**record))

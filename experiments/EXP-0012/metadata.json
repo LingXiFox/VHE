@@ -1,0 +1,21 @@
+{
+  "experiment_id": "EXP-0012",
+  "title": "AISHELL-3 corpus index, speaker-disjoint split and 26-phoneme coverage",
+  "hypothesis": "The published train/test split is utterance-level, not speaker-level (170 of 174 train speakers also appear under test/), so a speaker-disjoint 180/19/19 split is required before any speaker-independent claim; with the current 26-phoneme inventory fewer than half of the syllable tokens are renderable, and a small set of missing onsets (zh, ch, h, r) plus frequent finals accounts for most of the blocked mass.",
+  "created_utc": "2026-11-01T04:06:09.398759+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "43d32185273ec767714b0cb1ab148115a7f168ca",
+    "status": "dirty: uncommitted P1.3 work (corpus/mandarin/dataset modules, tests, experiments)"
+  },
+  "seed": 20261101,
+  "dataset_manifest_sha256": "651bbbac1468305c47b8fee2be417561a152097cca0edc5dba5313ef2c1e0093",
+  "command": "python -m vhe scan --root /Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted --manifest /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v2/manifest.jsonl --report /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-scan/v2/report.json --top 12",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "v1 scan (bugs: j/q/x 'iu' abbreviation, y/w counted as onsets) kept as evidence under derived/aishell3-scan/v1/. v2: 88035 utterances, 0 parse errors, syllable coverage 0.309544, utterance coverage 187/88035.",
+  "completed_utc": "2026-11-01T04:19:50+00:00"
+}

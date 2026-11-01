@@ -29,12 +29,29 @@ def main() -> None:
     manifest = sub.add_parser("manifest", help="Build a speaker-grouped manifest from a local AISHELL-3 root")
     manifest.add_argument("--root", required=True, help="AISHELL-3 directory holding train/ and test/")
     manifest.add_argument("--output", required=True, help="JSONL manifest path; refuses to overwrite")
-    manifest.add_argument("--dev-fraction", type=float, default=0.1,
-                          help="share of official train speakers held out as dev (speaker-grouped)")
-    manifest.add_argument("--seed", type=int, default=42)
+    manifest.add_argument("--split-sizes", default="auto",
+                          help="speaker counts per split as train/dev/test (default: auto, "
+                               "which gives 180/19/19 for the 218 AISHELL-3 speakers)")
+    manifest.add_argument("--seed", type=int, default=None,
+                          help="speaker-split seed (default: vhe.data.SPLIT_SEED)")
     manifest.add_argument("--no-hashes", action="store_true", help="skip per-file SHA256 (fast inventory)")
     manifest.add_argument("--fail-on-errors", action="store_true",
                           help="exit 2 if any utterance was rejected")
+    scan = sub.add_parser("scan", help="Scan annotations + WAV headers into a light manifest and a coverage report")
+    scan.add_argument("--root", required=True, help="AISHELL-3 directory holding train/ and test/")
+    scan.add_argument("--manifest", required=True, help="JSONL light manifest path; refuses to overwrite")
+    scan.add_argument("--report", required=True, help="JSON coverage report path; refuses to overwrite")
+    scan.add_argument("--split-sizes", default="auto",
+                      help="speaker counts per split as train/dev/test (default: auto)")
+    scan.add_argument("--seed", type=int, default=None,
+                      help="speaker-split seed (default: vhe.data.SPLIT_SEED)")
+    scan.add_argument("--top", type=int, default=12,
+                      help="how many missing units to rank for the next inventory expansion")
+    scan.add_argument("--fail-on-errors", action="store_true",
+                      help="exit 2 if any utterance was rejected")
+    audit = sub.add_parser("audit", help="Cross-check train/label_train-set.txt against train/content.txt")
+    audit.add_argument("--root", required=True)
+    audit.add_argument("--output", required=True, help="JSON audit path; refuses to overwrite")
     args = parser.parse_args()
     if args.command == "doctor":
         from .backend import inspect_runtime
@@ -51,12 +68,13 @@ def main() -> None:
             parser.exit(2, f"Backend smoke failed: {exc}\n")
         print(json.dumps(report, indent=2, ensure_ascii=False))
     elif args.command == "manifest":
-        from .data import (apply_speaker_split, build_manifest, carve_speaker_split,
-                           check_no_speaker_leak, write_manifest)
+        from .data import (SPLIT_SEED, build_manifest, check_no_speaker_leak,
+                           parse_split_sizes, write_manifest)
         try:
-            built = build_manifest(args.root, compute_hashes=not args.no_hashes)
-            grouped = apply_speaker_split(built, carve_speaker_split(
-                built, dev_fraction=args.dev_fraction, seed=args.seed))
+            sizes = parse_split_sizes(args.split_sizes)
+            grouped = build_manifest(args.root, compute_hashes=not args.no_hashes,
+                                     split_sizes=sizes,
+                                     split_seed=SPLIT_SEED if args.seed is None else args.seed)
             check_no_speaker_leak(grouped)  # raises instead of writing a leaky manifest
             digest = write_manifest(args.output, grouped)
         except (FileNotFoundError, FileExistsError, ValueError) as exc:
@@ -73,6 +91,47 @@ def main() -> None:
         }, indent=2, ensure_ascii=False))
         if args.fail_on_errors and grouped.errors:
             parser.exit(2, f"{len(grouped.errors)} utterance(s) rejected; see {args.output}\n")
+    elif args.command == "scan":
+        from .data import SPLIT_SEED, parse_split_sizes
+        from .data.corpus import scan_corpus, write_corpus_manifest
+        try:
+            index = scan_corpus(args.root, split_sizes=parse_split_sizes(args.split_sizes),
+                                split_seed=SPLIT_SEED if args.seed is None else args.seed)
+            digest = write_corpus_manifest(args.manifest, index)
+            report = index.report(top_units=args.top)
+            report["manifest_sha256"] = digest
+            target = Path(args.report)
+            if target.exists():
+                raise FileExistsError(f"refusing to overwrite an existing report: {target}")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+                              encoding="utf-8")
+        except (FileNotFoundError, FileExistsError, ValueError, OSError) as exc:
+            parser.exit(2, f"Corpus scan failed: {exc}\n")
+        print(json.dumps({
+            "manifest": args.manifest, "manifest_sha256": digest, "report": str(target),
+            "utterances": len(index.entries), "errors": len(index.errors),
+            "syllable_coverage": round(index.stats.syllable_coverage, 4),
+            "utterance_coverage": round(index.stats.utterance_coverage, 4),
+            "status": "header-only scan; no audio decoded",
+        }, indent=2, ensure_ascii=False))
+        if args.fail_on_errors and index.errors:
+            parser.exit(2, f"{len(index.errors)} utterance(s) rejected; see {args.report}\n")
+    elif args.command == "audit":
+        from .data.corpus import audit_prosody_labels
+        try:
+            report = audit_prosody_labels(args.root, limit=50)
+        except FileNotFoundError as exc:
+            parser.exit(2, f"Annotation audit failed: {exc}\n")
+        target = Path(args.output)
+        if target.exists():
+            parser.exit(2, f"refusing to overwrite an existing audit: {target}\n")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+                          encoding="utf-8")
+        print(json.dumps({key: report[key] for key in
+                          ("checked", "matched", "mismatched", "unlabelled")} |
+                         {"output": str(target)}, indent=2, ensure_ascii=False))
     elif args.command == "synth":
         phones = [s.strip() for s in args.phonemes.split(",")]
         audio = synthesize(phones, f0_hz=args.f0, duration_s=args.duration,

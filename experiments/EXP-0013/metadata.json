@@ -1,0 +1,21 @@
+{
+  "experiment_id": "EXP-0013",
+  "title": "Pinyin orthography vs actual pronunciation in AISHELL-3 annotations",
+  "hypothesis": "A letter-level pinyin-to-phoneme mapping mislabels a measurable share of syllable tokens: y/w spellings hide i/u/ü medials, j/q/x + u is ü, iou/uei/uen are abbreviated to iu/ui/un, apical i after z/c/s/zh/ch/sh/r is not /i/, labial + o is /uo/, and 儿化 is written as a trailing r; an explicit orthography-resolution layer can parse every one of the 1920 distinct corpus tokens with zero silent substitutions.",
+  "created_utc": "2026-11-01T04:06:09.448724+00:00",
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "git": {
+    "commit": "43d32185273ec767714b0cb1ab148115a7f168ca",
+    "status": "dirty: uncommitted P1.3 work (corpus/mandarin/dataset modules, tests, experiments)"
+  },
+  "seed": null,
+  "dataset_manifest_sha256": "651bbbac1468305c47b8fee2be417561a152097cca0edc5dba5313ef2c1e0093",
+  "command": "python -m vhe audit --root /Volumes/LingXiWorkspace/VHE-Datasets/AISHELL-3/extracted --output /Volumes/LingXiWorkspace/VHE-Datasets/derived/aishell3-audit/v1/prosody_audit.json",
+  "torch_version": null,
+  "cuda_version": null,
+  "gpu": null,
+  "config_sha256": null,
+  "notes": "1920 distinct phone_set tokens parse with 0 failures after the iu fix; prosody audit 63262 lines, 2 mismatches (SSB19560288 ni2/ni3, SSB15550353 zheng1/zeng1) and 4 unlabelled kept unresolved.",
+  "completed_utc": "2026-11-01T04:19:50+00:00"
+}
